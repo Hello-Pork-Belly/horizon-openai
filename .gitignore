@@ -1,0 +1,75 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Logs / Temp
+*.log
+*.tmp
+tmp/
+.cache/
+.DS_Store?
+
+# Secrets / Env
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.csr
+*.jks
+secrets/
+**/secrets/
+**/*secret*
+**/*token*
+**/*auth*
+**/*credentials*
+
+# SSH
+.ssh/
+id_rsa
+id_ed25519
+known_hosts
+
+# Terraform / IaC state
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+terraform.tfvars.json
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ansible
+*.retry
+
+# Node / Python
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Docker
+**/.docker/
+docker-compose.override.yml
+
+# Backup artifacts
+*.bak
+*.backup
+*.old
+*.tar
+*.tar.gz
+*.tgz
+*.zip
