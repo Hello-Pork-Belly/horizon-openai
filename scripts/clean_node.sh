@@ -16,6 +16,7 @@ set -euo pipefail
 is_truthy() {
   local value
   value="${1:-}"
+  value="${value//[[:space:]]/}"
   value="${value,,}"
   case "$value" in
     true|1|yes|on) return 0 ;;
