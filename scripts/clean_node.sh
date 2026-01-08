@@ -26,9 +26,27 @@ is_truthy() {
 ts() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 log() { echo "[$(ts)] $*"; }
 
-APPLY=${APPLY:-false}
-PRUNE_VOLUMES=${PRUNE_VOLUMES:-false}
-CLEAN_WEB=${CLEAN_WEB:-false}
+if [[ -n ${APPLY+x} ]]; then
+  APPLY=${APPLY}
+else
+  APPLY=${CLEAN_APPLY:-false}
+fi
+
+if [[ -n ${PRUNE_VOLUMES+x} ]]; then
+  PRUNE_VOLUMES=${PRUNE_VOLUMES}
+elif [[ -n ${PRUNE_VOLUMES_RAW+x} ]]; then
+  PRUNE_VOLUMES=${PRUNE_VOLUMES_RAW}
+else
+  PRUNE_VOLUMES=false
+fi
+
+if [[ -n ${CLEAN_WEB+x} ]]; then
+  CLEAN_WEB=${CLEAN_WEB}
+elif [[ -n ${CLEAN_WEB_RAW+x} ]]; then
+  CLEAN_WEB=${CLEAN_WEB_RAW}
+else
+  CLEAN_WEB=false
+fi
 
 if is_truthy "$APPLY"; then
   MODE="APPLY"
