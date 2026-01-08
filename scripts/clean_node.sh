@@ -3,33 +3,48 @@ set -euo pipefail
 
 # Horizon-Lab Safe Cleaner
 # - default: DRY-RUN (no changes)
-# - apply requires: CLEAN_APPLY=1 CONFIRM="I_UNDERSTAND"
+# - apply requires: APPLY=true
 # - optional destructive flags via env:
-#     CLEAN_DOCKER_ALL=1      # remove containers/images/networks + prune volumes
-#     CLEAN_APT=1             # apt cache cleanup
-#     CLEAN_JOURNAL=1         # journal vacuum
-#     CLEAN_WEB=1             # remove common web dirs (with backup)
-#     CLEAN_SERVICES=1        # stop/disable common web stack services
+#     PRUNE_VOLUMES=true     # prune docker volumes
+#     CLEAN_WEB=true         # remove common web dirs (with backup)
 #
 # Safety:
 # - never touches tailscale
 # - never removes github runner directories unless you explicitly add it later
 # - backups web dirs before delete (tar.gz)
 
+is_truthy() {
+  local value
+  value="${1:-}"
+  value="${value,,}"
+  case "$value" in
+    true|1|yes|on) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 ts() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 log() { echo "[$(ts)] $*"; }
 
-DRY_RUN=1
-if [[ "${CLEAN_APPLY:-0}" == "1" && "${CONFIRM:-}" == "I_UNDERSTAND" ]]; then
-  DRY_RUN=0
+APPLY=${APPLY:-false}
+PRUNE_VOLUMES=${PRUNE_VOLUMES:-false}
+CLEAN_WEB=${CLEAN_WEB:-false}
+
+if is_truthy "$APPLY"; then
+  MODE="APPLY"
+else
+  MODE="DRY-RUN"
 fi
 
-run() {
-  if [[ "$DRY_RUN" == "1" ]]; then
-    log "[DRY] $*"
-  else
-    log "[RUN] $*"
+log "=== MODE: $MODE ==="
+log "Prune Volumes: $(is_truthy "$PRUNE_VOLUMES" && echo YES || echo NO)  Clean Web: $(is_truthy "$CLEAN_WEB" && echo YES || echo NO)"
+
+run_cmd() {
+  if [[ "$MODE" == "APPLY" ]]; then
+    log "[EXEC] $*"
     bash -lc "$*"
+  else
+    log "[DRY] Would run: $*"
   fi
 }
 
@@ -42,32 +57,15 @@ need_root() {
 
 preflight_report() {
   log "=== PREFLIGHT REPORT ==="
-  run "uname -a || true"
-  run "lsb_release -a 2>/dev/null || cat /etc/os-release || true"
-  run "uptime || true"
-  run "df -hT || true"
-  run "free -h || true"
-  run "ip -br a || true"
-  run "command -v docker >/dev/null 2>&1 && docker ps -a || true"
-  run "systemctl --no-pager --failed || true"
+  run_cmd "uname -a || true"
+  run_cmd "lsb_release -a 2>/dev/null || cat /etc/os-release || true"
+  run_cmd "uptime || true"
+  run_cmd "df -hT || true"
+  run_cmd "free -h || true"
+  run_cmd "ip -br a || true"
+  run_cmd "command -v docker >/dev/null 2>&1 && docker ps -a || true"
+  run_cmd "systemctl --no-pager --failed || true"
   log "=== END PREFLIGHT ==="
-}
-
-stop_disable_services() {
-  # common services (best-effort)
-  local units=(
-    nginx apache2 caddy
-    lsws openlitespeed
-    mysql mariadb
-    redis-server memcached
-    php8.1-fpm php8.2-fpm php8.3-fpm php-fpm
-  )
-
-  log "Stopping/disabling common web stack services (best-effort)..."
-  for u in "${units[@]}"; do
-    run "systemctl is-enabled $u >/dev/null 2>&1 && systemctl disable --now $u || true"
-    run "systemctl is-active  $u >/dev/null 2>&1 && systemctl stop $u || true"
-  done
 }
 
 clean_docker_all() {
@@ -76,27 +74,13 @@ clean_docker_all() {
     return 0
   fi
 
-  log "Docker cleanup: stop/remove containers + prune images/networks (and volumes if enabled)..."
-  run "docker ps -aq | xargs -r docker stop"
-  run "docker ps -aq | xargs -r docker rm -f"
-  run "docker system prune -af"
-  if [[ "${CLEAN_DOCKER_VOLUMES:-0}" == "1" ]]; then
-    run "docker volume prune -af"
+  log "Docker cleanup: remove containers + prune images/networks (and volumes if enabled)..."
+  run_cmd "docker ps -aq | xargs -r docker rm -f"
+  if is_truthy "$PRUNE_VOLUMES"; then
+    run_cmd "docker system prune -af --volumes"
+  else
+    run_cmd "docker system prune -af"
   fi
-}
-
-clean_apt() {
-  log "APT cleanup..."
-  run "apt-get update -qq || true"
-  run "apt-get autoremove -y --purge || true"
-  run "apt-get autoclean -y || true"
-  run "apt-get clean -y || true"
-  run "rm -rf /var/lib/apt/lists/* || true"
-}
-
-clean_journal() {
-  log "Journal cleanup (vacuum to 3 days)..."
-  run "journalctl --vacuum-time=3d || true"
 }
 
 backup_and_remove_web() {
@@ -110,7 +94,7 @@ backup_and_remove_web() {
   )
 
   local backup_dir="/var/backups/horizon-lab"
-  run "mkdir -p '$backup_dir'"
+  run_cmd "mkdir -p '$backup_dir'"
 
   for p in "${targets[@]}"; do
     if [[ -e "$p" ]]; then
@@ -118,8 +102,8 @@ backup_and_remove_web() {
       bn="$(echo "$p" | sed 's#/#_#g' | sed 's/^_//')"
       local out="$backup_dir/${bn}_$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
       log "Backup then remove: $p -> $out"
-      run "tar -czf '$out' '$p' || true"
-      run "rm -rf '$p'"
+      run_cmd "tar -czf '$out' '$p' || true"
+      run_cmd "rm -rf '$p'"
     else
       log "Skip (not exists): $p"
     fi
@@ -128,30 +112,25 @@ backup_and_remove_web() {
 
 post_report() {
   log "=== POST REPORT ==="
-  run "df -hT || true"
-  run "free -h || true"
-  run "command -v docker >/dev/null 2>&1 && docker ps -a || true"
-  run "systemctl --no-pager --failed || true"
+  run_cmd "df -hT || true"
+  run_cmd "free -h || true"
+  run_cmd "command -v docker >/dev/null 2>&1 && docker ps -a || true"
+  run_cmd "systemctl --no-pager --failed || true"
   log "=== END POST ==="
 }
 
 main() {
   need_root
-  log "Mode: $( [[ $DRY_RUN == 1 ]] && echo DRY-RUN || echo APPLY )"
-  log "Flags: SERVICES=${CLEAN_SERVICES:-0} DOCKER_ALL=${CLEAN_DOCKER_ALL:-0} DOCKER_VOLUMES=${CLEAN_DOCKER_VOLUMES:-0} APT=${CLEAN_APT:-0} JOURNAL=${CLEAN_JOURNAL:-0} WEB=${CLEAN_WEB:-0}"
 
   preflight_report
 
-  if [[ "${CLEAN_SERVICES:-0}" == "1" ]]; then stop_disable_services; fi
-  if [[ "${CLEAN_DOCKER_ALL:-0}" == "1" ]]; then clean_docker_all; fi
-  if [[ "${CLEAN_APT:-0}" == "1" ]]; then clean_apt; fi
-  if [[ "${CLEAN_JOURNAL:-0}" == "1" ]]; then clean_journal; fi
-  if [[ "${CLEAN_WEB:-0}" == "1" ]]; then backup_and_remove_web; fi
+  clean_docker_all
+  if is_truthy "$CLEAN_WEB"; then backup_and_remove_web; fi
 
   post_report
 
-  if [[ "$DRY_RUN" == "1" ]]; then
-    log "DRY-RUN finished. To APPLY: set CLEAN_APPLY=1 and CONFIRM=I_UNDERSTAND in workflow/env."
+  if [[ "$MODE" == "DRY-RUN" ]]; then
+    log "DRY-RUN finished. To APPLY: set APPLY=true in workflow/env."
   else
     log "APPLY finished."
   fi
