@@ -70,7 +70,7 @@ else
   MODE="DRY-RUN"
 fi
 
-log "=== MODE: $MODE === Configuration: Prune Volumes: $(is_truthy "$PRUNE_VOLUMES" && echo YES || echo NO), Clean Web: $(is_truthy "$CLEAN_WEB" && echo YES || echo NO)"
+log "=== MODE: $MODE === Configuration: Prune Volumes: [$(is_truthy "$PRUNE_VOLUMES" && echo YES || echo NO)], Clean Web: [$(is_truthy "$CLEAN_WEB" && echo YES || echo NO)]"
 
 run_cmd() {
   if [[ "$MODE" == "APPLY" ]]; then
