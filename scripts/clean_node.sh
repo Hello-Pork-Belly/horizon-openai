@@ -31,11 +31,21 @@ if [[ -n ${APPLY+x} ]]; then
 else
   APPLY=${CLEAN_APPLY:-false}
 fi
+if is_truthy "$APPLY"; then
+  APPLY=true
+else
+  APPLY=false
+fi
 
 if [[ -n ${PRUNE_VOLUMES+x} ]]; then
   PRUNE_VOLUMES=${PRUNE_VOLUMES}
 elif [[ -n ${PRUNE_VOLUMES_RAW+x} ]]; then
   PRUNE_VOLUMES=${PRUNE_VOLUMES_RAW}
+else
+  PRUNE_VOLUMES=false
+fi
+if is_truthy "$PRUNE_VOLUMES"; then
+  PRUNE_VOLUMES=true
 else
   PRUNE_VOLUMES=false
 fi
@@ -47,6 +57,11 @@ elif [[ -n ${CLEAN_WEB_RAW+x} ]]; then
 else
   CLEAN_WEB=false
 fi
+if is_truthy "$CLEAN_WEB"; then
+  CLEAN_WEB=true
+else
+  CLEAN_WEB=false
+fi
 
 if is_truthy "$APPLY"; then
   MODE="APPLY"
@@ -54,8 +69,7 @@ else
   MODE="DRY-RUN"
 fi
 
-log "=== MODE: $MODE ==="
-log "Prune Volumes: $(is_truthy "$PRUNE_VOLUMES" && echo YES || echo NO)  Clean Web: $(is_truthy "$CLEAN_WEB" && echo YES || echo NO)"
+log "=== MODE: $MODE === Configuration: Prune Volumes: $(is_truthy "$PRUNE_VOLUMES" && echo YES || echo NO), Clean Web: $(is_truthy "$CLEAN_WEB" && echo YES || echo NO)"
 
 run_cmd() {
   if [[ "$MODE" == "APPLY" ]]; then
