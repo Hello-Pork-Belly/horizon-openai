@@ -52,4 +52,4 @@ jobs:
             export CONFIRM="I_UNDERSTAND"
           fi
           
-          sudo -n APPLY=true PRUNE_VOLUMES=false CLEAN_WEB=false /usr/local/sbin/hz-clean-node
+          sudo bash -c "APPLY='${{ inputs.apply }}' PRUNE_VOLUMES='${{ inputs.docker_volumes }}' CLEAN_WEB='${{ inputs.clean_web }}' /usr/local/sbin/hz-clean-node"
