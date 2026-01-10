@@ -127,7 +127,8 @@ clean_docker_all() {
 
 backup_and_remove_web() {
   # conservative list; you can extend later
-  local targets=(
+  local targets
+  targets=(
     "/var/www"
     "/usr/local/lsws"
     "/usr/local/openlitespeed"
@@ -135,13 +136,15 @@ backup_and_remove_web() {
     "/etc/apache2"
   )
 
-  local backup_dir="/var/backups/horizon-lab"
+  local backup_dir
+  backup_dir="/var/backups/horizon-lab"
   run_cmd "mkdir -p '$backup_dir'"
 
   for p in "${targets[@]}"; do
     if [[ -e "$p" ]]; then
       local bn
       bn="$(echo "$p" | sed 's#/#_#g' | sed 's/^_//')"
+      # Split declaration/assignment to avoid SC2155.
       local out
       out="$backup_dir/${bn}_$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
       log "Backup then remove: $p -> $out"
