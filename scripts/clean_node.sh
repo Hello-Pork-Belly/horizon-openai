@@ -133,7 +133,8 @@ backup_and_remove_web() {
     "/etc/apache2"
   )
 
-  local backup_dir="/var/backups/horizon-lab"
+  local backup_dir
+  backup_dir="/var/backups/horizon-lab"
   run_cmd "mkdir -p '$backup_dir'"
 
   for p in "${targets[@]}"; do
