@@ -27,41 +27,36 @@ is_truthy() {
 ts() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 log() { echo "[$(ts)] $*"; }
 
+normalize_flag() {
+  local value
+  value="${1:-}"
+  if is_truthy "$value"; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
 if [[ -n ${APPLY+x} ]]; then
-  APPLY=${APPLY}
+  APPLY="$(normalize_flag "$APPLY")"
 else
-  APPLY=${CLEAN_APPLY:-false}
-fi
-if is_truthy "$APPLY"; then
-  APPLY=true
-else
-  APPLY=false
+  APPLY="$(normalize_flag "${CLEAN_APPLY:-false}")"
 fi
 
 if [[ -n ${PRUNE_VOLUMES+x} ]]; then
-  PRUNE_VOLUMES=${PRUNE_VOLUMES}
+  PRUNE_VOLUMES="$(normalize_flag "$PRUNE_VOLUMES")"
 elif [[ -n ${PRUNE_VOLUMES_RAW+x} ]]; then
-  PRUNE_VOLUMES=${PRUNE_VOLUMES_RAW}
+  PRUNE_VOLUMES="$(normalize_flag "$PRUNE_VOLUMES_RAW")"
 else
-  PRUNE_VOLUMES=false
-fi
-if is_truthy "$PRUNE_VOLUMES"; then
-  PRUNE_VOLUMES=true
-else
-  PRUNE_VOLUMES=false
+  PRUNE_VOLUMES="false"
 fi
 
 if [[ -n ${CLEAN_WEB+x} ]]; then
-  CLEAN_WEB=${CLEAN_WEB}
+  CLEAN_WEB="$(normalize_flag "$CLEAN_WEB")"
 elif [[ -n ${CLEAN_WEB_RAW+x} ]]; then
-  CLEAN_WEB=${CLEAN_WEB_RAW}
+  CLEAN_WEB="$(normalize_flag "$CLEAN_WEB_RAW")"
 else
-  CLEAN_WEB=false
-fi
-if is_truthy "$CLEAN_WEB"; then
-  CLEAN_WEB=true
-else
-  CLEAN_WEB=false
+  CLEAN_WEB="false"
 fi
 
 if is_truthy "$APPLY"; then
