@@ -125,7 +125,8 @@ clean_docker_all() {
 
 backup_and_remove_web() {
   # conservative list; you can extend later
-  local targets=(
+  local targets
+  targets=(
     "/var/www"
     "/usr/local/lsws"
     "/usr/local/openlitespeed"
