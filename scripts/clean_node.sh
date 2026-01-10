@@ -140,7 +140,8 @@ backup_and_remove_web() {
     if [[ -e "$p" ]]; then
       local bn
       bn="$(echo "$p" | sed 's#/#_#g' | sed 's/^_//')"
-      local out="$backup_dir/${bn}_$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
+      local out
+      out="$backup_dir/${bn}_$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
       log "Backup then remove: $p -> $out"
       run_cmd "tar -czf '$out' '$p' || true"
       run_cmd "rm -rf '$p'"
