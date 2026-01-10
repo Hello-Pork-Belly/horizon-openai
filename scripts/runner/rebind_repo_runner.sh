@@ -4,7 +4,7 @@ set -euo pipefail
 # Rebind GitHub Actions runner to a new repo (safe-ish)
 # Required env:
 #   REPO_URL="https://github.com/<owner>/<repo>"
-#   RUNNER_TOKEN="..."   (registration token from GitHub UI)
+#   RUNNER_TOKEN="<registration-token>"   (registration token from GitHub UI)
 # Optional env:
 #   RUNNER_DIR="/opt/actions-runner"
 #   RUNNER_NAME="$(hostname)-runner"
@@ -29,11 +29,11 @@ stop_and_uninstall_existing() {
 
   if [[ -d "${RUNNER_DIR}/" ]]; then
     if [[ -x "${RUNNER_DIR}/svc.sh" ]]; then
-      echo "[INFO] Stopping/uninstalling existing runner service (best-effort)..."
+      echo "[INFO] Stopping/uninstalling existing runner service (best-effort)."
       "${RUNNER_DIR}/svc.sh" stop || true
       "${RUNNER_DIR}/svc.sh" uninstall || true
     fi
-    echo "[INFO] Removing old runner local config files (keeps directory)..."
+    echo "[INFO] Removing old runner local config files (keeps directory)."
     rm -f "${RUNNER_DIR}/.runner" "${RUNNER_DIR}/.credentials" "${RUNNER_DIR}/.credentials_rsaparams" || true
   fi
 }
@@ -41,7 +41,7 @@ stop_and_uninstall_existing() {
 install_runner_if_needed() {
   mkdir -p "${RUNNER_DIR}"
   if [[ ! -x "${RUNNER_DIR}/config.sh" ]]; then
-    echo "[INFO] Runner not found in ${RUNNER_DIR}, installing latest..."
+    echo "[INFO] Runner not found in ${RUNNER_DIR}, installing latest."
     local tmp="/tmp/actions-runner-install"
     rm -rf "$tmp"
     mkdir -p "$tmp"

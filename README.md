@@ -21,15 +21,19 @@ operated via Tailscale mesh and GitHub Actions self-hosted runners.
    - One logical change per commit (atomicity). Default = deny.
 
 ## Repository structure (baseline)
-- `docs/`            Architecture notes, runbooks, audit logs
-- `scripts/`         Idempotent shell scripts (safe defaults)
+- `docs/`               Baseline rules, audit checklists, release policy
+- `skills/`             Planner/executor/auditor skill pack
+- `scripts/`            Idempotent shell scripts (safe defaults)
 - `.github/workflows/`  CI + manual_dispatch ops workflows
-- `inventory/`       Node inventory templates (no secrets)
 
 ## Quick start
 1. Add your nodes to Tailscale (mesh only; no public SSH).
 2. Install/attach GitHub runner to the hub node.
 3. Use workflows under `.github/workflows/` to apply changes.
+
+## Local/CI
+- `make ci`
+- `sudo bash scripts/clean_node.sh --dry-run`
 
 ## Security notes
 - NEVER commit secrets (tokens, keys, .env).
