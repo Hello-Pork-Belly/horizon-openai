@@ -141,6 +141,7 @@ backup_and_remove_web() {
     if [[ -e "$p" ]]; then
       local bn
       bn="$(echo "$p" | sed 's#/#_#g' | sed 's/^_//')"
+      # Split declaration/assignment to avoid SC2155.
       local out
       out="$backup_dir/${bn}_$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
       log "Backup then remove: $p -> $out"
