@@ -56,7 +56,7 @@ echo "=== MODE: [$MODE] === Configuration: Prune Volumes: [$PRUNE_LABEL], Clean 
 run_cmd() {
   if [[ "$MODE" == "APPLY" ]]; then
     log "[EXEC] $*"
-    bash -lc "$*"
+    eval "$*"
   else
     log "[DRY] Would run: $*"
   fi
