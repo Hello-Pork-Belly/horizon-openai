@@ -1,0 +1,25 @@
+name: Auto-merge (codex branches)
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  enable_auto_merge:
+    if: >
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'codex/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge (squash) for this PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr="${{ github.event.pull_request.number }}"
+          echo "[INFO] Enabling auto-merge (squash) for PR #${pr}"
+          gh pr merge "${pr}" --auto --squash --delete-branch
