@@ -1,45 +1,26 @@
-# Release Policy
+# Release Policy (Single Track)
 
-## English (primary)
+- The public entrypoint remains single-track.
+- HLab is used to iterate until the target quality bar is met.
+- When switching the public entrypoint target, prefer a tagged release.
 
-### Goals
-- Keep releases safe, auditable, and reversible.
-- Ensure HLab auto-merge is gated by CI and auditor PASS.
+## Auto-merge Policy (HLab only)
+- Auto-merge is allowed **only in HLab** (not in the stable 1 click repo).
+- Auto-merge may proceed **only when**:
+  1) Required CI checks are green (e.g. `make ci`, `make smoke`)
+  2) Gemini Auditor issues an explicit **PASS** based on `docs/AUDIT-CHECKLIST.md`
+- The PASS signal must be machine-readable (choose one):
+  - Gemini leaves an **Approve** review on the PR, OR
+  - Gemini applies a label: `audit-pass`
+- If any check fails or the audit is FAIL, auto-merge must not happen.
 
-### Auto-merge requirements (HLab)
-Auto-merge is allowed **only** when:
-1) Required CI checks are green (`make ci`, `make smoke`).
-2) Gemini Auditor issues an explicit PASS based on `docs/AUDIT-CHECKLIST.md`.
-   PASS must be machine-readable via either an **Approve** review or the `audit-pass` label.
+## Quality Bar (minimum)
+- LOMP-Lite end-to-end (including security/hardening wired)
+- `make ci` passes
+- Smoke test for the install path
+- Audit PASS
+- Auto-merge (if enabled) requires CI green + Gemini Audit PASS
 
-### Release steps
-1. Ensure baseline requirements are met (`docs/BASELINE.md`).
-2. Run `make ci` and confirm `make smoke` is non-destructive.
-3. Collect audit evidence per `docs/AUDIT-CHECKLIST.md`.
-4. Merge only after CI green and auditor PASS.
-
-### Rollback policy
-- Prefer revert commits or tagged rollback branches.
-- Document rollback steps in the PR if risk is non-trivial.
-
-## 中文（次要）
-
-### 目标
-- 发布过程安全、可审计、可回滚。
-- HLab 自动合并必须受 CI 与审计 PASS 约束。
-
-### 自动合并要求（HLab）
-仅当满足以下条件时允许自动合并：
-1) 必要 CI 通过（`make ci`, `make smoke`）。
-2) Gemini 审计员依据 `docs/AUDIT-CHECKLIST.md` 明确 PASS。
-   PASS 必须机器可读：**Approve** 评审或 `audit-pass` 标签。
-
-### 发布步骤
-1. 确认满足基线要求（`docs/BASELINE.md`）。
-2. 运行 `make ci` 并确认 `make smoke` 非破坏。
-3. 按 `docs/AUDIT-CHECKLIST.md` 收集审计证据。
-4. 仅在 CI 通过且审计 PASS 后合并。
-
-### 回滚策略
-- 优先使用 revert 提交或回滚分支。
-- 如有明显风险，需在 PR 中记录回滚步骤。
+## Rollback
+- Keep last known-good tag.
+- Re-point entry to the last known-good tag if issues appear.

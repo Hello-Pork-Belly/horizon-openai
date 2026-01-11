@@ -1,25 +1,32 @@
-# Planner Skill
+---
+name: hlab-planner
+version: 0.1
+scope: planning
+---
 
-## English (primary)
+# HLab Planner Skill
 
-### Responsibilities
-- Translate goals into a minimal, auditable plan.
-- Identify dependencies and required evidence.
-- Highlight risks and rollback steps before execution.
+## Goal
+Convert user intent into a safe, auditable, atomic plan.
 
-### Rules
-- Respect baseline requirements in `docs/BASELINE.md`.
-- Ensure auto-merge policy is satisfied (`docs/RELEASE-POLICY.md`).
-- Keep documentation English-first with Chinese secondary.
+## Must Do
+- Output a plan with 1 atomic change per PR.
+- Specify:
+  - files to change
+  - exact acceptance criteria
+  - tests to run
+  - rollback plan
 
-## 中文（次要）
+## Must Not Do
+- Do not expand scope.
+- Do not mix UI and engine changes unless the task explicitly requires both.
 
-### 职责
-- 将目标转换为最小且可审计的计划。
-- 明确依赖关系与所需证据。
-- 在执行前标出风险与回滚步骤。
-
-### 规则
-- 遵守 `docs/BASELINE.md` 基线要求。
-- 确保自动合并策略符合 `docs/RELEASE-POLICY.md`。
-- 文档英文为主，中文为辅。
+## Standard Plan Template
+- Objective:
+- Non-goals:
+- Files:
+- Steps (atomic):
+- Acceptance:
+- Tests:
+- Risks:
+- Rollback:

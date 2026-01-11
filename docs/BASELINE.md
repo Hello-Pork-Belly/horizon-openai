@@ -1,73 +1,43 @@
-# HLab Baseline (Runnable)
+# HLab Baseline (FROZEN RULES)
 
-## English (primary)
+This document defines the non-negotiable baseline for HLab.
 
-### Purpose
-This baseline defines the minimum rules and guardrails required to operate Horizon-Lab safely and repeatably.
+## A. Product Boundary
+- HLab is an experimental workspace to improve the "1 click" system safely.
+- Public entrypoint behavior must remain stable unless explicitly switched.
 
-### Language policy
-- Documentation is English-first; Chinese is secondary.
-- Engine/runtime logs must be English only.
-- Do **not** add language branching inside engines or scripts.
+## B. Language Policy
+- **Primary UI language**: English (EN-first). Chinese is secondary.
+- Development may contain EN/CN mix in comments or docs.
+- **Engine output/logs must be English only** and must not branch by language.
 
-### Execution safety
-- Default to dry-run for destructive scripts.
-- All destructive operations must be explicitly enabled (e.g., `APPLY=true`).
-- Remote execution is preferred through GitHub Actions self-hosted runners.
+## C. Architecture Rules
+1) UI/Engine separation is mandatory.
+2) Module menus call engines; engines do not call menus.
+3) Engines take env/args only; no interactive prompts inside engines.
 
-### Concurrency guardrails (mandatory)
-OpenLiteSpeed (OLS) + LSPHP/LSAPI limits **must** be set by RAM tier. Both the web server limits and PHP worker limits are required.
+## D. Security & Safety
+- No secrets in repo.
+- Any destructive action must include double confirmation in UI.
+- For mail alerts: Each server tier must use its own SMTP key (no sharing).
 
-| RAM tier | OLS `MaxConn` | OLS `MaxSSLConn` | PHP `PHP_LSAPI_CHILDREN` | LSAPI External App `Max Connections` |
-| --- | --- | --- | --- | --- |
-| ≤2 GB | 200 | 50 | 4 | 4 |
-| 3–4 GB | 400 | 100 | 8 | 8 |
-| 5–8 GB | 800 | 200 | 12 | 12 |
-| >8 GB | 1200 | 300 | 16 | 16 |
+## E. Operational Guarantees
+- Idempotency: Running the same install/repair twice should not break the system.
+- Verify step: every major action has a `verify` mode or verification block.
+- Logs should be structured: `[INFO]`, `[WARN]`, `[ERROR]`.
+- **Concurrency guardrails**: LOMP must enforce PHP worker/concurrency limits (OLS + LSPHP/LSAPI) by RAM tier to prevent OOM; every change must include a `verify` output showing effective values and config paths and reload/restart evidence.
 
-**Verify output requirement:** capture and record the configuration output for audits, including:
-- OLS server tuning values (e.g., `grep -n "MaxConn" -n /usr/local/lsws/conf/httpd_config.conf`).
-- LSAPI external app limits (e.g., `grep -n "maxConns" -n /usr/local/lsws/conf/httpd_config.conf`).
-- PHP worker environment (e.g., `grep -n "PHP_LSAPI_CHILDREN" -n /usr/local/lsws/conf/*`).
+## F. Compatibility
+- Ubuntu 22.04/24.04.
+- No assumptions about public SSH (Tailscale SSH common).
 
-### Auto-merge policy (HLab)
-Auto-merge is allowed only when:
-1) Required CI checks are green (`make ci`, `make smoke`), and
-2) Gemini Auditor provides an explicit PASS based on `docs/AUDIT-CHECKLIST.md`.
-   PASS must be machine-readable via either an **Approve** review or the `audit-pass` label.
+## G. Current Known Project Status (IMPORTANT)
+- Only a small part of LOMP-Lite is implemented.
+- The "Security/Hardening" part likely exists in scripts but **is not wired into the main flow**.
+- When starting a remediation plan, **must explicitly connect the security/hardening flow and add verification**.
 
-## 中文（次要）
-
-### 目的
-本基线定义了 Horizon-Lab 可运行的最低规则与保护措施。
-
-### 语言策略
-- 文档以英文为主；中文为次要补充。
-- 引擎/运行日志必须仅使用英文。
-- 不允许在引擎或脚本中做语言分支。
-
-### 执行安全
-- 破坏性脚本默认 dry-run。
-- 破坏性操作必须显式启用（例如 `APPLY=true`）。
-- 远程执行优先使用 GitHub Actions 自托管 Runner。
-
-### 并发保护（强制）
-必须按内存分档设置 OLS 与 LSPHP/LSAPI 的并发限制。
-
-| 内存档 | OLS `MaxConn` | OLS `MaxSSLConn` | PHP `PHP_LSAPI_CHILDREN` | LSAPI 外部应用 `Max Connections` |
-| --- | --- | --- | --- | --- |
-| ≤2 GB | 200 | 50 | 4 | 4 |
-| 3–4 GB | 400 | 100 | 8 | 8 |
-| 5–8 GB | 800 | 200 | 12 | 12 |
-| >8 GB | 1200 | 300 | 16 | 16 |
-
-**验证输出要求：**审计时需记录配置输出，包括：
-- OLS 调优值（例如 `grep -n "MaxConn" -n /usr/local/lsws/conf/httpd_config.conf`）。
-- LSAPI 外部应用限制（例如 `grep -n "maxConns" -n /usr/local/lsws/conf/httpd_config.conf`）。
-- PHP Worker 环境（例如 `grep -n "PHP_LSAPI_CHILDREN" -n /usr/local/lsws/conf/*`）。
-
-### 自动合并策略（HLab）
-仅在满足以下条件时允许自动合并：
-1) 必要 CI 通过（`make ci`, `make smoke`），且
-2) Gemini 审计员依据 `docs/AUDIT-CHECKLIST.md` 给出明确 PASS。
-   PASS 必须具备机器可读形式：**Approve** 评审或 `audit-pass` 标签。
+## H. Definition of Done (Phase 1)
+Phase 1 is done when:
+- LOMP-Lite full chain is complete (including security/hardening wired + verified).
+- `make ci` passes.
+- Regression checklist updated.

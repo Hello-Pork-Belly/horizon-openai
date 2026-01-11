@@ -1,43 +1,20 @@
-# LOMP-Lite Scope
+# LOMP-Lite — Phase 1 Scope
 
-## English (primary)
+## In Scope
+- EN-first menu flow for LOMP-Lite (CN secondary/optional in Phase 1)
+- Engine installation for OLS + WP core
+- Minimal baseline tuning that is proven (real file edits)
+- Security/Hardening flow must be wired and verified
+- PHP worker / concurrency limits by RAM tier (OLS + LSPHP/LSAPI) with `verify` output
 
-### In scope
-- OpenLiteSpeed (OLS) web server configuration.
-- LSPHP/LSAPI worker limits and tuning.
-- MariaDB or MySQL service configuration (resource limits, backups).
-- PHP runtime settings relevant to concurrency and memory.
-- Systemd service resource controls (`MemoryHigh`, `CPUQuota`).
-- Basic OS observability: disk, memory, and failed unit checks.
+## Out of Scope (Phase 1)
+- Full English/Chinese parity
+- Multi-node / Hub mode
+- Media/Net/Ops expansions not required for LOMP-Lite completion
 
-### Out of scope
-- Multi-tenant SaaS configuration or billing logic.
-- Application-layer feature development.
-- Non-OLS web servers unless explicitly approved.
-- Long-running data migrations not tied to LOMP-Lite operations.
-
-### Required audit evidence
-- OLS + LSAPI concurrency settings per RAM tier.
-- Service resource limits set for systemd units.
-- `make ci` and `make smoke` outputs.
-
-## 中文（次要）
-
-### 范围内
-- OpenLiteSpeed (OLS) 配置。
-- LSPHP/LSAPI 工作进程限制与调优。
-- MariaDB/MySQL 服务配置（资源限制、备份）。
-- 与并发/内存相关的 PHP 运行时设置。
-- systemd 服务资源控制（`MemoryHigh`, `CPUQuota`）。
-- 基本系统可观测性：磁盘、内存、失败单元检查。
-
-### 范围外
-- 多租户 SaaS 配置或计费逻辑。
-- 应用层功能开发。
-- 未明确批准的非 OLS Web 服务器。
-- 与 LOMP-Lite 无关的长时间数据迁移。
-
-### 必要审计证据
-- 按内存档设置的 OLS + LSAPI 并发。
-- systemd 单元资源限制设置。
-- `make ci` 与 `make smoke` 输出。
+## Acceptance
+- Fresh VM run succeeds
+- Re-run is idempotent
+- Site Health meets target for low-spec tier
+- Security checklist passes
+- `verify` shows effective PHP worker/concurrency limits (values + config paths) and services are reloaded/restarted
