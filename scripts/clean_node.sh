@@ -26,6 +26,7 @@ parse_bool() {
   fi
 
   case "$value" in
+codex/sync-allowed-policy/docs-from-1click-to-hlab
     true|1|yes|on)
       echo "true"
       ;;
@@ -36,6 +37,12 @@ parse_bool() {
       log "ERROR: invalid boolean value: '$1' (expected true/false)."
       exit 1
       ;;
+=======
+    "") echo "" ;;
+    true|1|yes|on) echo "true" ;;
+    false|0|no|off) echo "false" ;;
+    *) echo "invalid" ;;
+main
   esac
 }
 
@@ -46,7 +53,28 @@ APPLY_VALUE="$(parse_bool "${APPLY:-${CLEAN_APPLY:-}}")"
 PRUNE_VOLUMES_VALUE="$(parse_bool "${PRUNE_VOLUMES:-}")"
 CLEAN_WEB_VALUE="$(parse_bool "${CLEAN_WEB:-}")"
 
+codex/sync-allowed-policy/docs-from-1click-to-hlab
 if [[ "$APPLY_VALUE" == "true" ]]; then
+=======
+APPLY_STATE="$(parse_bool "$APPLY_VALUE")"
+PRUNE_STATE="$(parse_bool "$PRUNE_VOLUMES_VALUE")"
+CLEAN_WEB_STATE="$(parse_bool "$CLEAN_WEB_VALUE")"
+
+if [[ "$APPLY_STATE" == "invalid" ]]; then
+  log "[WARN] Invalid APPLY value '$APPLY_VALUE'; defaulting to DRY-RUN."
+  APPLY_STATE="false"
+fi
+if [[ "$PRUNE_STATE" == "invalid" ]]; then
+  log "[WARN] Invalid PRUNE_VOLUMES value '$PRUNE_VOLUMES_VALUE'; defaulting to NO."
+  PRUNE_STATE="false"
+fi
+if [[ "$CLEAN_WEB_STATE" == "invalid" ]]; then
+  log "[WARN] Invalid CLEAN_WEB value '$CLEAN_WEB_VALUE'; defaulting to NO."
+  CLEAN_WEB_STATE="false"
+fi
+
+if [[ "$APPLY_STATE" == "true" ]]; then
+main
   APPLY_ENABLED=true
   MODE="APPLY"
 else
@@ -54,17 +82,31 @@ else
   MODE="DRY-RUN"
 fi
 
+codex/sync-allowed-policy/docs-from-1click-to-hlab
 if [[ "$PRUNE_VOLUMES_VALUE" == "true" ]]; then
+=======
+if [[ "$PRUNE_STATE" == "true" && "$APPLY_ENABLED" == "true" ]]; then
+main
   PRUNE_VOLUMES_ENABLED=true
   PRUNE_LABEL="YES"
+elif [[ "$PRUNE_STATE" == "true" ]]; then
+  PRUNE_VOLUMES_ENABLED=false
+  PRUNE_LABEL="IGNORED (requires APPLY)"
 else
   PRUNE_VOLUMES_ENABLED=false
   PRUNE_LABEL="NO"
 fi
 
+codex/sync-allowed-policy/docs-from-1click-to-hlab
 if [[ "$CLEAN_WEB_VALUE" == "true" ]]; then
+=======
+if [[ "$CLEAN_WEB_STATE" == "true" && "$APPLY_ENABLED" == "true" ]]; then
+main
   CLEAN_WEB_ENABLED=true
   CLEAN_WEB_LABEL="YES"
+elif [[ "$CLEAN_WEB_STATE" == "true" ]]; then
+  CLEAN_WEB_ENABLED=false
+  CLEAN_WEB_LABEL="IGNORED (requires APPLY)"
 else
   CLEAN_WEB_ENABLED=false
   CLEAN_WEB_LABEL="NO"
@@ -83,6 +125,10 @@ fi
 echo "=== MODE: [$MODE] === Configuration: Prune Volumes: [$PRUNE_LABEL], Clean Web: [$CLEAN_WEB_LABEL]"
 
 run_cmd() {
+  if [[ "$#" -eq 0 ]]; then
+    log "[WARN] Empty command skipped."
+    return 0
+  fi
   if [[ "$APPLY_ENABLED" == "true" ]]; then
     if [[ "$#" -eq 0 ]]; then
       log "[WARN] Empty command skipped."
