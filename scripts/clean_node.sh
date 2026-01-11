@@ -22,8 +22,8 @@ parse_bool() {
   value="${value,,}"
   case "$value" in
     "") echo "false" ;;
-    true|1|yes|on) echo "true" ;;
-    false|0|no|off) echo "false" ;;
+    true|1|yes|y|on) echo "true" ;;
+    false|0|no|n|off) echo "false" ;;
     *) echo "invalid" ;;
   esac
 }
@@ -86,17 +86,22 @@ echo "=== MODE: [$MODE] === Configuration: Prune Volumes: [$PRUNE_LABEL], Clean 
 
 run_cmd() {
   local cmd
+  local requires_apply="false"
+  if [[ "${1:-}" == "--apply" ]]; then
+    requires_apply="true"
+    shift
+  fi
   cmd="$*"
   if [[ -z "$cmd" ]]; then
     log "[WARN] Empty command skipped."
     return 0
   fi
-  if [[ "$APPLY_ENABLED" == "true" ]]; then
-    log "[EXEC] $cmd"
-    eval "$cmd"
-  else
+  if [[ "$requires_apply" == "true" && "$APPLY_ENABLED" != "true" ]]; then
     log "[DRY] Would run: $cmd"
+    return 0
   fi
+  log "[EXEC] $cmd"
+  eval "$cmd"
 }
 
 need_root() {
@@ -126,11 +131,11 @@ clean_docker_all() {
   fi
 
   log "Docker cleanup: remove containers and prune images/networks (and volumes if enabled)."
-  run_cmd "docker ps -aq | xargs -r docker rm -f"
+  run_cmd --apply "docker ps -aq | xargs -r docker rm -f"
   if [[ "$PRUNE_VOLUMES_ENABLED" == "true" ]]; then
-    run_cmd "docker system prune -af --volumes"
+    run_cmd --apply "docker system prune -af --volumes"
   else
-    run_cmd "docker system prune -af"
+    run_cmd --apply "docker system prune -af"
   fi
 }
 
@@ -147,7 +152,7 @@ backup_and_remove_web() {
 
   local backup_dir
   backup_dir="/var/backups/horizon-lab"
-  run_cmd "mkdir -p '$backup_dir'"
+  run_cmd --apply "mkdir -p '$backup_dir'"
 
   for p in "${targets[@]}"; do
     if [[ -e "$p" ]]; then
@@ -157,8 +162,8 @@ backup_and_remove_web() {
       local out
       out="$backup_dir/${bn}_$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
       log "Backup then remove: $p -> $out"
-      run_cmd "tar -czf '$out' '$p' || true"
-      run_cmd "rm -rf '$p'"
+      run_cmd --apply "tar -czf '$out' '$p' || true"
+      run_cmd --apply "rm -rf '$p'"
     else
       log "Skip (not exists): $p"
     fi
