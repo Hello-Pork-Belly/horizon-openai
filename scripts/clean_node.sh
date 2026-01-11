@@ -29,51 +29,23 @@ is_truthy() {
 ts() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 log() { echo "[$(ts)] $*"; }
 
-normalize_flag() {
-  local value
-  value="${1:-}"
-  if is_truthy "$value"; then
-    echo "true"
-  else
-    echo "false"
-  fi
-}
+APPLY_VALUE="${APPLY:-${CLEAN_APPLY:-}}"
+PRUNE_VOLUMES_VALUE="${PRUNE_VOLUMES:-}"
+CLEAN_WEB_VALUE="${CLEAN_WEB:-}"
 
-if [[ -n ${APPLY+x} ]]; then
-  APPLY="$(normalize_flag "$APPLY")"
-else
-  APPLY="$(normalize_flag "${CLEAN_APPLY:-false}")"
-fi
-
-if [[ -n ${PRUNE_VOLUMES+x} ]]; then
-  PRUNE_VOLUMES="$(normalize_flag "$PRUNE_VOLUMES")"
-elif [[ -n ${PRUNE_VOLUMES_RAW+x} ]]; then
-  PRUNE_VOLUMES="$(normalize_flag "$PRUNE_VOLUMES_RAW")"
-else
-  PRUNE_VOLUMES="false"
-fi
-
-if [[ -n ${CLEAN_WEB+x} ]]; then
-  CLEAN_WEB="$(normalize_flag "$CLEAN_WEB")"
-elif [[ -n ${CLEAN_WEB_RAW+x} ]]; then
-  CLEAN_WEB="$(normalize_flag "$CLEAN_WEB_RAW")"
-else
-  CLEAN_WEB="false"
-fi
-
-if is_truthy "$APPLY"; then
+if is_truthy "$APPLY_VALUE"; then
   MODE="APPLY"
 else
   MODE="DRY-RUN"
 fi
 
-if is_truthy "$PRUNE_VOLUMES"; then
+if is_truthy "$PRUNE_VOLUMES_VALUE"; then
   PRUNE_LABEL="YES"
 else
   PRUNE_LABEL="NO"
 fi
 
-if is_truthy "$CLEAN_WEB"; then
+if is_truthy "$CLEAN_WEB_VALUE"; then
   CLEAN_WEB_LABEL="YES"
 else
   CLEAN_WEB_LABEL="NO"
@@ -118,7 +90,7 @@ clean_docker_all() {
 
   log "Docker cleanup: remove containers and prune images/networks (and volumes if enabled)."
   run_cmd "docker ps -aq | xargs -r docker rm -f"
-  if is_truthy "$PRUNE_VOLUMES"; then
+  if is_truthy "$PRUNE_VOLUMES_VALUE"; then
     run_cmd "docker system prune -af --volumes"
   else
     run_cmd "docker system prune -af"
@@ -175,7 +147,7 @@ main() {
   preflight_report
 
   clean_docker_all
-  if is_truthy "$CLEAN_WEB"; then backup_and_remove_web; fi
+  if is_truthy "$CLEAN_WEB_VALUE"; then backup_and_remove_web; fi
 
   post_report
 
