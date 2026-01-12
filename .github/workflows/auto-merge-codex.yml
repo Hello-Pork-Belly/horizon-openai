@@ -14,12 +14,12 @@ concurrency:
 
 jobs:
   auto-merge:
-    if: >-
-      !github.event.pull_request.draft &&
+    runs-on: ubuntu-latest
+    if: >
+      github.event.pull_request.draft == false &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       startsWith(github.event.pull_request.head.ref, 'codex/') &&
       contains(github.event.pull_request.labels.*.name, 'codex')
-    runs-on: ubuntu-latest
     steps:
       - name: Enable auto-merge (squash)
         env:
@@ -27,5 +27,6 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           GH_REPO: ${{ github.repository }}
         run: |
+          set -euo pipefail
           echo "[INFO] Enabling auto-merge (squash) for PR #${PR}"
           gh pr merge "$PR" --auto --squash --delete-branch --repo "$GH_REPO"
