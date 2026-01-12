@@ -33,7 +33,7 @@ log() { echo "[$(ts)] $*"; }
 
 APPLY_VALUE="${APPLY:-${CLEAN_APPLY:-}}"
 PRUNE_VOLUMES_VALUE="${PRUNE_VOLUMES:-}"
-CLEAN_WEB_VALUE="${CLEAN_WEB:-}"
+CLEAN_WEB_VALUE="${CLEAN_WEB:-${CLEAN:-}}"
 
 APPLY_STATE="$(parse_bool "$APPLY_VALUE")"
 PRUNE_STATE="$(parse_bool "$PRUNE_VOLUMES_VALUE")"
@@ -67,6 +67,7 @@ if [[ "$PRUNE_STATE" == "true" ]]; then
     PRUNE_VOLUMES_ENABLED=true
     PRUNE_LABEL="YES"
   else
+    log "[WARN] PRUNE_VOLUMES=true ignored without APPLY=true."
     PRUNE_LABEL="IGNORED (requires APPLY=true)"
   fi
 fi
@@ -78,6 +79,7 @@ if [[ "$CLEAN_WEB_STATE" == "true" ]]; then
     CLEAN_WEB_ENABLED=true
     CLEAN_WEB_LABEL="YES"
   else
+    log "[WARN] CLEAN_WEB=true ignored without APPLY=true."
     CLEAN_WEB_LABEL="IGNORED (requires APPLY=true)"
   fi
 fi
@@ -109,7 +111,11 @@ run_cmd() {
     return 0
   fi
   if [[ "$APPLY_ENABLED" != "true" ]]; then
-    if [[ "$requires_apply" == "true" || "$allow_dry_run" != "true" ]]; then
+    if [[ "$requires_apply" == "true" ]]; then
+      log "[DRY] Would run: $cmd"
+      return 0
+    fi
+    if [[ "$allow_dry_run" != "true" ]]; then
       log "[DRY] Would run: $cmd"
       return 0
     fi
