@@ -22,8 +22,8 @@ parse_bool() {
   value="${value,,}"
   case "$value" in
     "") echo "false" ;;
-    true|1|yes|y|on|t) echo "true" ;;
-    false|0|no|n|off|f) echo "false" ;;
+    true|1|yes|y|on) echo "true" ;;
+    false|0|no|n|off) echo "false" ;;
     *) echo "invalid" ;;
   esac
 }
@@ -90,7 +90,6 @@ run_cmd() {
   local cmd
   local requires_apply="false"
   local allow_dry_run="false"
-  local should_exec="false"
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --apply)
@@ -111,14 +110,15 @@ run_cmd() {
     log "[WARN] Empty command skipped."
     return 0
   fi
-  if [[ "$APPLY_ENABLED" == "true" ]]; then
-    should_exec="true"
-  elif [[ "$allow_dry_run" == "true" && "$requires_apply" != "true" ]]; then
-    should_exec="true"
-  fi
-  if [[ "$should_exec" != "true" ]]; then
-    log "[DRY] Would run: $cmd"
-    return 0
+  if [[ "$APPLY_ENABLED" != "true" ]]; then
+    if [[ "$requires_apply" == "true" ]]; then
+      log "[DRY] Would run: $cmd"
+      return 0
+    fi
+    if [[ "$allow_dry_run" != "true" ]]; then
+      log "[DRY] Would run: $cmd"
+      return 0
+    fi
   fi
   log "[EXEC] $cmd"
   eval "$cmd"
