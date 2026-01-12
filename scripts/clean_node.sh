@@ -19,13 +19,9 @@ parse_bool() {
   local value
   value="${1:-}"
   value="${value//[[:space:]]/}"
-  value="${value%\"}"
-  value="${value#\"}"
-  value="${value%\'}"
-  value="${value#\'}"
   value="${value,,}"
   case "$value" in
-    "") echo "unset" ;;
+    "") echo "false" ;;
     true|1|yes|y|on|t) echo "true" ;;
     false|0|no|n|off|f) echo "false" ;;
     *) echo "invalid" ;;
@@ -43,22 +39,13 @@ APPLY_STATE="$(parse_bool "$APPLY_VALUE")"
 PRUNE_STATE="$(parse_bool "$PRUNE_VOLUMES_VALUE")"
 CLEAN_WEB_STATE="$(parse_bool "$CLEAN_WEB_VALUE")"
 
-if [[ "$APPLY_STATE" == "unset" ]]; then
-  APPLY_STATE="false"
-fi
 if [[ "$APPLY_STATE" == "invalid" ]]; then
   log "[WARN] Invalid APPLY value '$APPLY_VALUE'; defaulting to DRY-RUN."
   APPLY_STATE="false"
 fi
-if [[ "$PRUNE_STATE" == "unset" ]]; then
-  PRUNE_STATE="false"
-fi
 if [[ "$PRUNE_STATE" == "invalid" ]]; then
   log "[WARN] Invalid PRUNE_VOLUMES value '$PRUNE_VOLUMES_VALUE'; defaulting to NO."
   PRUNE_STATE="false"
-fi
-if [[ "$CLEAN_WEB_STATE" == "unset" ]]; then
-  CLEAN_WEB_STATE="false"
 fi
 if [[ "$CLEAN_WEB_STATE" == "invalid" ]]; then
   log "[WARN] Invalid CLEAN_WEB value '$CLEAN_WEB_VALUE'; defaulting to NO."
@@ -122,10 +109,6 @@ run_cmd() {
   cmd="$*"
   if [[ -z "$cmd" ]]; then
     log "[WARN] Empty command skipped."
-    return 0
-  fi
-  if [[ "$requires_apply" == "true" && "$APPLY_ENABLED" != "true" ]]; then
-    log "[DRY] Would run (requires APPLY=true): $cmd"
     return 0
   fi
   if [[ "$APPLY_ENABLED" == "true" ]]; then
