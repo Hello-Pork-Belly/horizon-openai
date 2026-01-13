@@ -17,7 +17,7 @@ jobs:
       - name: Checkout hz-oneclick
         uses: actions/checkout@v4
         with:
-          repository: horizon-lab/hz-oneclick
+          repository: Hello-Pork-Belly/hz-oneclick
           path: /tmp/hz-oneclick
 
       - name: Sync batch-1 files
