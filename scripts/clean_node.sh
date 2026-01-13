@@ -87,7 +87,7 @@ if [[ "$PRUNE_STATE" == "true" ]]; then
     PRUNE_LABEL="YES"
   else
     log "[WARN] PRUNE_VOLUMES=true ignored without APPLY=true."
-    PRUNE_LABEL="IGNORED (requires APPLY=true)"
+    PRUNE_LABEL="REQUESTED (requires APPLY=true)"
   fi
 fi
 
@@ -99,7 +99,7 @@ if [[ "$CLEAN_WEB_STATE" == "true" ]]; then
     CLEAN_WEB_LABEL="YES"
   else
     log "[WARN] CLEAN_WEB=true ignored without APPLY=true."
-    CLEAN_WEB_LABEL="IGNORED (requires APPLY=true)"
+    CLEAN_WEB_LABEL="REQUESTED (requires APPLY=true)"
   fi
 fi
 
@@ -109,7 +109,6 @@ run_cmd() {
   local cmd
   local requires_apply="false"
   local allow_dry_run="false"
-  local should_exec="false"
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --apply)
@@ -135,16 +134,16 @@ run_cmd() {
     return 0
   fi
   if [[ "$APPLY_ENABLED" == "true" ]]; then
-    should_exec="true"
-  elif [[ "$allow_dry_run" == "true" ]]; then
-    should_exec="true"
-  fi
-  if [[ "$should_exec" != "true" ]]; then
-    log "[DRY] Would run: $cmd"
+    log "[EXEC] $cmd"
+    eval "$cmd"
     return 0
   fi
-  log "[EXEC] $cmd"
-  eval "$cmd"
+  if [[ "$allow_dry_run" == "true" ]]; then
+    log "[DRY] Running (allowed in dry-run): $cmd"
+    eval "$cmd"
+    return 0
+  fi
+  log "[DRY] Would run: $cmd"
 }
 
 need_root() {
