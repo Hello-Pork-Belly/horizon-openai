@@ -50,7 +50,7 @@ set_config_value() {
   local key="$1"
   local value="$2"
 
-  if rg -q "^\s*${key}\b" "${OLS_CONF}"; then
+  if grep -Eq "^[[:space:]]*${key}([[:space:]]|$)" "${OLS_CONF}"; then
     if [[ "${DRY_RUN}" -eq 1 ]]; then
       log_info "[DRY-RUN] Would set ${key} ${value} in ${OLS_CONF}"
     else
@@ -71,7 +71,7 @@ ensure_key_exists() {
   local key="$1"
   local value="$2"
 
-  if rg -q "^\s*${key}\b" "${OLS_CONF}"; then
+  if grep -Eq "^[[:space:]]*${key}([[:space:]]|$)" "${OLS_CONF}"; then
     log_info "${key} already present; leaving current value unchanged."
   else
     ensure_backup
@@ -114,5 +114,5 @@ if [[ "${DRY_RUN}" -eq 1 ]]; then
   log_info "[DRY-RUN] No changes were written."
 else
   log_info "Current OLS limits:"
-  rg -n "^\s*(maxConnections|instances)\b" "${OLS_CONF}" || log_warn "No OLS limit keys found."
+  grep -nE "^[[:space:]]*(maxConnections|instances)([[:space:]]|$)" "${OLS_CONF}" || log_warn "No OLS limit keys found."
 fi

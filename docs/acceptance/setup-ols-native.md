@@ -21,17 +21,17 @@ sudo OLS_ADMIN_PASS='example-only' bash scripts/web/setup_ols_native.sh
 ## Verify Configuration Changes
 1) Inspect current values before running (or to confirm after):
 ```bash
-sudo rg -n '^\s*(maxConnections|instances)\b' /usr/local/lsws/conf/httpd_config.conf
+sudo grep -nE '^[[:space:]]*(maxConnections|instances)([[:space:]]|$)' /usr/local/lsws/conf/httpd_config.conf
 ```
 
 2) On hosts with < 1900 MB RAM, confirm values are set to 10:
 ```bash
-sudo rg -n '^\s*(maxConnections|instances)\b' /usr/local/lsws/conf/httpd_config.conf
+sudo grep -nE '^[[:space:]]*(maxConnections|instances)([[:space:]]|$)' /usr/local/lsws/conf/httpd_config.conf
 ```
 
 3) If defaults were missing on higher-memory hosts, confirm the keys were appended.
 ```bash
-sudo rg -n '^\s*(maxConnections|instances)\b' /usr/local/lsws/conf/httpd_config.conf
+sudo grep -nE '^[[:space:]]*(maxConnections|instances)([[:space:]]|$)' /usr/local/lsws/conf/httpd_config.conf
 ```
 
 ## Notes
