@@ -54,8 +54,14 @@ parse_bool_or_default() {
 
 resolve_flag_value() {
   local candidate
+  local trimmed
   for candidate in "$@"; do
-    if [[ -n "$candidate" ]]; then
+    trimmed="${candidate//[[:space:]]/}"
+    trimmed="${trimmed%\"}"
+    trimmed="${trimmed#\"}"
+    trimmed="${trimmed%\'}"
+    trimmed="${trimmed#\'}"
+    if [[ -n "$trimmed" ]]; then
       echo "$candidate"
       return 0
     fi
@@ -133,13 +139,13 @@ run_cmd() {
     log "[DRY] Would run (requires APPLY=true): $cmd"
     return 0
   fi
-  if [[ "$APPLY_ENABLED" == "true" ]]; then
-    log "[EXEC] $cmd"
+  if [[ "$allow_dry_run" == "true" && "$APPLY_ENABLED" != "true" ]]; then
+    log "[DRY] Running (allowed in dry-run): $cmd"
     eval "$cmd"
     return 0
   fi
-  if [[ "$allow_dry_run" == "true" ]]; then
-    log "[DRY] Running (allowed in dry-run): $cmd"
+  if [[ "$APPLY_ENABLED" == "true" ]]; then
+    log "[EXEC] $cmd"
     eval "$cmd"
     return 0
   fi
