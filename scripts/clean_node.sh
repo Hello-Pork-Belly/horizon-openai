@@ -52,9 +52,20 @@ parse_bool_or_default() {
   echo "$state"
 }
 
-APPLY_VALUE="${APPLY:-${CLEAN_APPLY:-}}"
-PRUNE_VOLUMES_VALUE="${PRUNE_VOLUMES:-}"
-CLEAN_WEB_VALUE="${CLEAN_WEB:-${CLEAN:-}}"
+resolve_flag_value() {
+  local candidate
+  for candidate in "$@"; do
+    if [[ -n "$candidate" ]]; then
+      echo "$candidate"
+      return 0
+    fi
+  done
+  echo ""
+}
+
+APPLY_VALUE="$(resolve_flag_value "${APPLY:-}" "${CLEAN_APPLY:-}")"
+PRUNE_VOLUMES_VALUE="$(resolve_flag_value "${PRUNE_VOLUMES_RAW:-}" "${PRUNE_VOLUMES:-}")"
+CLEAN_WEB_VALUE="$(resolve_flag_value "${CLEAN_WEB_RAW:-}" "${CLEAN_WEB:-}" "${CLEAN:-}")"
 
 APPLY_STATE="$(parse_bool_or_default "APPLY" "$APPLY_VALUE" "false" "DRY-RUN")"
 PRUNE_STATE="$(parse_bool_or_default "PRUNE_VOLUMES" "$PRUNE_VOLUMES_VALUE" "false" "NO")"
@@ -123,7 +134,9 @@ run_cmd() {
     log "[DRY] Would run (requires APPLY=true): $cmd"
     return 0
   fi
-  if [[ "$APPLY_ENABLED" == "true" || ( "$allow_dry_run" == "true" && "$requires_apply" != "true" ) ]]; then
+  if [[ "$APPLY_ENABLED" == "true" ]]; then
+    should_exec="true"
+  elif [[ "$allow_dry_run" == "true" ]]; then
     should_exec="true"
   fi
   if [[ "$should_exec" != "true" ]]; then
