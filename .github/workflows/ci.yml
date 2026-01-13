@@ -1,5 +1,5 @@
 # noop: trigger CI
-name: CI
+name: ci
 
 on:
   pull_request:
