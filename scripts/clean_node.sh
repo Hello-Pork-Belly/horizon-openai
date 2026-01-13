@@ -25,7 +25,7 @@ parse_bool() {
   value="${value#\'}"
   value="${value,,}"
   case "$value" in
-    "") echo "unset" ;;
+    ""|unset|null|none) echo "unset" ;;
     true|1|yes|y|on|t) echo "true" ;;
     false|0|no|n|off|f) echo "false" ;;
     *) echo "invalid" ;;
@@ -94,6 +94,7 @@ if [[ "$PRUNE_STATE" == "true" ]]; then
   else
     log "[WARN] PRUNE_VOLUMES=true ignored without APPLY=true."
     PRUNE_LABEL="REQUESTED (requires APPLY=true)"
+    PRUNE_STATE="false"
   fi
 fi
 
@@ -106,6 +107,7 @@ if [[ "$CLEAN_WEB_STATE" == "true" ]]; then
   else
     log "[WARN] CLEAN_WEB=true ignored without APPLY=true."
     CLEAN_WEB_LABEL="REQUESTED (requires APPLY=true)"
+    CLEAN_WEB_STATE="false"
   fi
 fi
 
@@ -135,18 +137,17 @@ run_cmd() {
     log "[WARN] Empty command skipped."
     return 0
   fi
-  if [[ "$requires_apply" == "true" && "$APPLY_ENABLED" != "true" ]]; then
-    log "[DRY] Would run (requires APPLY=true): $cmd"
-    return 0
-  fi
-  if [[ "$allow_dry_run" == "true" && "$APPLY_ENABLED" != "true" ]]; then
-    log "[DRY] Running (allowed in dry-run): $cmd"
-    eval "$cmd"
-    return 0
-  fi
   if [[ "$APPLY_ENABLED" == "true" ]]; then
     log "[EXEC] $cmd"
     eval "$cmd"
+    return 0
+  fi
+  if [[ "$requires_apply" == "true" ]]; then
+    log "[DRY] Would run (requires APPLY=true): $cmd"
+    return 0
+  fi
+  if [[ "$allow_dry_run" == "true" ]]; then
+    log "[DRY] Would run (allowed in dry-run): $cmd"
     return 0
   fi
   log "[DRY] Would run: $cmd"
