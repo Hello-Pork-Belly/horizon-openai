@@ -204,7 +204,8 @@ run_cmd() {
     return 0
   fi
   if [[ "$allow_dry_run" == "true" ]]; then
-    log "[DRY] Would run (allowed in dry-run): $cmd"
+    log "[EXEC] (dry-run allowed) $cmd"
+    eval "$cmd"
     return 0
   fi
   log "[DRY] Would run: $cmd"
