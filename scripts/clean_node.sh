@@ -15,7 +15,7 @@ set -euo pipefail
 # noop
 
 
-parse_bool() {
+normalize_bool_input() {
   local value
   value="${1:-}"
   value="${value//[[:space:]]/}"
@@ -24,6 +24,12 @@ parse_bool() {
   value="${value%\'}"
   value="${value#\'}"
   value="${value,,}"
+  echo "$value"
+}
+
+parse_bool() {
+  local value
+  value="$(normalize_bool_input "$1")"
   case "$value" in
     ""|unset|null|none) echo "unset" ;;
     true|1|yes|y|on|t) echo "true" ;;
@@ -103,14 +109,16 @@ parse_bool_or_default() {
 
 resolve_flag_value() {
   local candidate
-  local trimmed
+  local normalized
   for candidate in "$@"; do
-    trimmed="${candidate//[[:space:]]/}"
-    trimmed="${trimmed%\"}"
-    trimmed="${trimmed#\"}"
-    trimmed="${trimmed%\'}"
-    trimmed="${trimmed#\'}"
-    if [[ -n "$trimmed" ]]; then
+    normalized="$(normalize_bool_input "$candidate")"
+    if [[ -z "$normalized" ]]; then
+      continue
+    fi
+    if [[ "$normalized" == "unset" || "$normalized" == "null" || "$normalized" == "none" ]]; then
+      continue
+    fi
+    if [[ -n "$normalized" ]]; then
       echo "$candidate"
       return 0
     fi
@@ -187,11 +195,6 @@ run_cmd() {
     return 0
   fi
   if [[ "$APPLY_ENABLED" == "true" ]]; then
-    log "[EXEC] $cmd"
-    eval "$cmd"
-    return 0
-  fi
-  if [[ "$allow_dry_run" == "true" && "$requires_apply" == "false" ]]; then
     log "[EXEC] $cmd"
     eval "$cmd"
     return 0
