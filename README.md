@@ -1,4 +1,4 @@
-# horizon-lab
+# horizon-lab test
 
 Horizon-Hybrid lab repo for Oracle Cloud Free Tier mixed-architecture nodes (ARM hub + x86 edge),
 operated via Tailscale mesh and GitHub Actions self-hosted runners.
