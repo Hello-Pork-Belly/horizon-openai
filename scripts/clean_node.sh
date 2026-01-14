@@ -35,6 +35,55 @@ parse_bool() {
 ts() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 log() { echo "[$(ts)] $*"; }
 
+CLI_APPLY_VALUE=""
+CLI_PRUNE_VALUE=""
+CLI_CLEAN_VALUE=""
+EXTRA_ARGS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --apply)
+      CLI_APPLY_VALUE="true"
+      shift
+      ;;
+    --dry-run)
+      CLI_APPLY_VALUE="false"
+      shift
+      ;;
+    --apply=*)
+      CLI_APPLY_VALUE="${1#*=}"
+      shift
+      ;;
+    --prune-volumes)
+      CLI_PRUNE_VALUE="true"
+      shift
+      ;;
+    --no-prune-volumes)
+      CLI_PRUNE_VALUE="false"
+      shift
+      ;;
+    --prune-volumes=*)
+      CLI_PRUNE_VALUE="${1#*=}"
+      shift
+      ;;
+    --clean-web)
+      CLI_CLEAN_VALUE="true"
+      shift
+      ;;
+    --no-clean-web)
+      CLI_CLEAN_VALUE="false"
+      shift
+      ;;
+    --clean-web=*)
+      CLI_CLEAN_VALUE="${1#*=}"
+      shift
+      ;;
+    *)
+      EXTRA_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
 parse_bool_or_default() {
   local name="$1"
   local value="$2"
@@ -69,9 +118,9 @@ resolve_flag_value() {
   echo ""
 }
 
-APPLY_VALUE="$(resolve_flag_value "${APPLY:-}" "${CLEAN_APPLY:-}")"
-PRUNE_VOLUMES_VALUE="$(resolve_flag_value "${PRUNE_VOLUMES_RAW:-}" "${PRUNE_VOLUMES:-}")"
-CLEAN_WEB_VALUE="$(resolve_flag_value "${CLEAN_WEB_RAW:-}" "${CLEAN_WEB:-}" "${CLEAN:-}")"
+APPLY_VALUE="$(resolve_flag_value "$CLI_APPLY_VALUE" "${APPLY:-}" "${CLEAN_APPLY:-}")"
+PRUNE_VOLUMES_VALUE="$(resolve_flag_value "$CLI_PRUNE_VALUE" "${PRUNE_VOLUMES_RAW:-}" "${PRUNE_VOLUMES:-}")"
+CLEAN_WEB_VALUE="$(resolve_flag_value "$CLI_CLEAN_VALUE" "${CLEAN_WEB_RAW:-}" "${CLEAN_WEB:-}" "${CLEAN:-}")"
 
 APPLY_STATE="$(parse_bool_or_default "APPLY" "$APPLY_VALUE" "false" "DRY-RUN")"
 PRUNE_STATE="$(parse_bool_or_default "PRUNE_VOLUMES" "$PRUNE_VOLUMES_VALUE" "false" "NO")"
@@ -138,6 +187,11 @@ run_cmd() {
     return 0
   fi
   if [[ "$APPLY_ENABLED" == "true" ]]; then
+    log "[EXEC] $cmd"
+    eval "$cmd"
+    return 0
+  fi
+  if [[ "$allow_dry_run" == "true" && "$requires_apply" == "false" ]]; then
     log "[EXEC] $cmd"
     eval "$cmd"
     return 0
