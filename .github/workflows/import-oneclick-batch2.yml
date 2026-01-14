@@ -56,3 +56,4 @@ jobs:
             - Import batch-2 files from hz-oneclick into upstream/oneclick.
             - Record upstream commit SHA.
           labels: import
+          token: ${{ secrets.HLAB_BOT_TOKEN }}
