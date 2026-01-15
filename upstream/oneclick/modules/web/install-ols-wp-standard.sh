@@ -335,6 +335,7 @@ run_mysql_client_secure() {
   local host="${4:-}"
   local port="${5:-}"
   local tmp
+  local status=0
 
   shift 5 || true
 
@@ -344,9 +345,12 @@ run_mysql_client_secure() {
   fi
 
   tmp="$(create_mysql_defaults_file "$user" "$password" "$host" "$port")" || return 1
-  trap 'rm -f "$tmp"' RETURN
+  if ! "$client" --defaults-extra-file="$tmp" "$@"; then
+    status=$?
+  fi
+  rm -f "$tmp"
 
-  "$client" --defaults-extra-file="$tmp" "$@"
+  return "$status"
 }
 
 docker_mysql_client_secure() {
