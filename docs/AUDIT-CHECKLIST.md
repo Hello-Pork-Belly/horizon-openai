@@ -56,6 +56,13 @@ FAIL if CI is not updated to cover new behavior.
 - ✅ Paths in docs match repo reality
 FAIL if docs are broken.
 
+## 8) Consistency & Integrity (The "A-F" Baseline)
+- **A) Docs ↔ Makefile**: Any referenced make target must exist in Makefile.
+- **B) Workflow ↔ Repo**: Referenced scripts/paths must exist in the repo.
+- **C) Env Consistency**: Workflow env vars must match script usage exactly (names, defaults).
+- **D) No Dead Inputs**: Required inputs/args must be utilized by implementation.
+- **E) Dependency Reality**: Used tools (e.g., rg, jq) must be explicitly installed/verified.
+
 ## Auditor Output Format
 - Decision: PASS / FAIL
 - Reasons (bullet list)
