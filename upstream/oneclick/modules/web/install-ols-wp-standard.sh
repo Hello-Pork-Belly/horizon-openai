@@ -5537,7 +5537,7 @@ prompt_redis_info_lite() {
   read -rp "是否配置 Redis 对象缓存？[y/N]: " choice
   choice="${choice:-N}"
   if ! [[ "$choice" =~ ^[Yy] ]]; then
-    return
+    return 0
   fi
 
   REDIS_ENABLED="yes"
@@ -5559,6 +5559,7 @@ prompt_redis_info_lite() {
 
   read -rsp "Redis 密码（可留空）: " REDIS_PASSWORD
   echo
+  return 0
 }
 
 test_redis_connection_lite() {
@@ -5597,7 +5598,7 @@ test_redis_connection_lite() {
   fi
 
   log_info "TCP 连通性检测: ${host}:${port}"
-  if ! tcp_err="$(timeout 3 bash -c "cat < /dev/null > /dev/tcp/${host}/${port}" 2>&1 >/dev/null)"; then
+  if ! tcp_err="$(timeout 3 bash -c 'cat < /dev/null > /dev/tcp/$1/$2' _ "$host" "$port" 2>&1 >/dev/null)"; then
     log_error "无法连接到 ${host}:${port}（TCP 不可达）。"
     log_warn "可能原因：防火墙/安全组未放行端口、服务未监听、内网或隧道未连接、地址填写错误。"
     [ -n "$tcp_err" ] && log_warn "系统提示: ${tcp_err}"
