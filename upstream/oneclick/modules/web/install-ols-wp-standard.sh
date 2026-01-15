@@ -377,14 +377,16 @@ docker_mysql_client_secure() {
   fi
 
   docker exec -i "$container" /bin/sh -c '
+    old_umask="$(umask)"
     umask 077
+    tmp=""
+    trap "rm -f \"$tmp\"; umask \"$old_umask\"" EXIT
     tmp="$(mktemp /tmp/hz-mysql-XXXXXX.cnf)" || exit 1
     cat <&3 >"$tmp"
     client="$1"
     shift
     "$client" --defaults-extra-file="$tmp" "$@"
     status=$?
-    rm -f "$tmp"
     exit "$status"
   ' sh "$client" "$@" 3<<HZEOF
 [client]
