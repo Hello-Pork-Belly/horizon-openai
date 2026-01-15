@@ -310,7 +310,7 @@ create_mysql_defaults_file() {
     return 1
   }
 
-  {
+  if ! {
     echo "[client]"
     echo "user=${user}"
     echo "password=${password}"
@@ -320,7 +320,11 @@ create_mysql_defaults_file() {
     if [ -n "$port" ]; then
       echo "port=${port}"
     fi
-  } >"$tmp"
+  } >"$tmp"; then
+    rm -f "$tmp"
+    umask "$old_umask"
+    return 1
+  fi
 
   umask "$old_umask"
   chmod 600 "$tmp" 2>/dev/null || true
@@ -345,11 +349,10 @@ run_mysql_client_secure() {
   fi
 
   tmp="$(create_mysql_defaults_file "$user" "$password" "$host" "$port")" || return 1
+  trap 'rm -f "$tmp"' RETURN
   if ! "$client" --defaults-extra-file="$tmp" "$@"; then
     status=$?
   fi
-  rm -f "$tmp"
-
   return "$status"
 }
 
