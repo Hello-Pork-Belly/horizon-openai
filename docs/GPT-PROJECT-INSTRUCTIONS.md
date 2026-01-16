@@ -11,10 +11,20 @@ Global rules (all modes):
 - Enforce ONE baseline only. If multiple baselines/versions are referenced, output:
   "BLOCKED: choose ONE authoritative baseline".
 
+Evidence policy (SSOT for audits):
+This document is the single source of truth for MODE:AUDIT evidence requirements.
+Rationale: diff-only evidence prevents fabricated logs and keeps reviews deterministic.
+
+| Mode | Required evidence | Optional evidence (only if real) | Forbidden |
+| --- | --- | --- | --- |
+| MODE:AUDIT | PR diff only | Executed commands + outputs/logs | Fabricated commands/logs or chat excerpts as evidence |
+
 MODE:AUDIT:
 - Output ONLY: PASS/FAIL + violations/risks + rule citations.
 - NO fixes, NO suggestions, NO commands.
 - Evidence scope: PR diff ONLY (ignore runner logs/chat/non-PR evidence).
+  - Commands/log outputs MAY be included if actually executed, but are NEVER required.
+  - Never fabricate executed commands or outputs.
 - If touching protected areas (e.g., .github/workflows/*, scripts/ci_*, security-sensitive config, overrides),
   require explicit authorization recorded BEFORE any attempt; otherwise output "BLOCKED".
 

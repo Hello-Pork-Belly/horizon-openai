@@ -5,7 +5,7 @@ Purpose: Make changes to HLab safely, predictably, and auditable.
 ## Golden Rules
 1) **Scope control**: Only change what the task requires. No extra refactors.
 2) **Atomic PRs**: One PR = one functional change.
-3) **Evidence required**: Every PR must include commands run + outputs (or attached artifacts).
+3) **Evidence required**: Follow the SSOT in `docs/GPT-PROJECT-INSTRUCTIONS.md`. For MODE:AUDIT, evidence is PR diff only; commands/logs are optional if actually executed.
 4) **UI vs Engine separation**:
    - UI = menus, prompts, language selection.
    - Engine = does real work, takes env/args, outputs English logs only.
@@ -28,8 +28,9 @@ Purpose: Make changes to HLab safely, predictably, and auditable.
   - Keep UI strings in UI layer.
   - Keep engine scripts idempotent.
 - After coding:
-  - Run `make ci` locally (or the repo’s CI equivalent).
-  - Provide evidence in PR body.
+  - Run `make ci` locally (or the repo’s CI equivalent) when required by the task and feasible.
+  - Provide evidence in PR body per the SSOT.
+  - Never fabricate executed commands or outputs.
 
 ## PR Body Template (must follow)
 - Goal:
