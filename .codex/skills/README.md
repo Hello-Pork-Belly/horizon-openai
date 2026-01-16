@@ -2,6 +2,7 @@
 
 ## Purpose
 This directory is the canonical source for HLab Codex auto-discovery skills.
+Do not edit `skills/*/SKILL.md` directly; treat this directory as the SSOT.
 
 ## Skills
 - **hlab-planner**: Turns user intent into a safe, auditable, atomic plan.
