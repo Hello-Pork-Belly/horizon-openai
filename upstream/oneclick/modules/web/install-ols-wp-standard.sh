@@ -4970,54 +4970,100 @@ prompt_remote_db_info_frontend() {
   REMOTE_DB_PASSWORD=""
   REMOTE_DB_PASSWORD_CONFIRM=""
 
+  local db_host=""
+  local db_port=""
+  local db_name=""
+  local db_user=""
+  local db_password=""
+  local db_password_confirm=""
+
   while :; do
-    read -rp "REMOTE DB Host（Tailscale IP 常见，例如 100.64.x.x）: " REMOTE_DB_HOST
-    [ -n "$REMOTE_DB_HOST" ] && break
+    if ! read -rp "REMOTE DB Host（Tailscale IP 常见，例如 100.64.x.x）: " db_host; then
+      db_password=""
+      db_password_confirm=""
+      unset db_password_confirm
+      return 1
+    fi
+    [ -n "$db_host" ] && break
     log_warn "REMOTE DB Host 不能为空。"
   done
 
   while :; do
-    read -rp "REMOTE DB Port [3306]: " REMOTE_DB_PORT
-    REMOTE_DB_PORT="${REMOTE_DB_PORT:-3306}"
-    if [[ "$REMOTE_DB_PORT" =~ ^[0-9]+$ ]]; then
+    if ! read -rp "REMOTE DB Port [3306]: " db_port; then
+      db_password=""
+      db_password_confirm=""
+      unset db_password_confirm
+      return 1
+    fi
+    db_port="${db_port:-3306}"
+    if [[ "$db_port" =~ ^[0-9]+$ ]]; then
       break
     fi
     log_warn "REMOTE DB Port 必须为数字。"
   done
 
   while :; do
-    read -rp "DB 名称（必须与已创建数据库名称完全一致，例如: ${SITE_SLUG}_wp）: " DB_NAME
-    [ -n "$DB_NAME" ] && break
+    if ! read -rp "DB 名称（必须与已创建数据库名称完全一致，例如: ${SITE_SLUG}_wp）: " db_name; then
+      db_password=""
+      db_password_confirm=""
+      unset db_password_confirm
+      return 1
+    fi
+    [ -n "$db_name" ] && break
     log_warn "DB 名称不能为空。"
   done
 
   while :; do
-    read -rp "REMOTE DB 用户名（例如: ${SITE_SLUG}_user）: " REMOTE_DB_USER
-    [ -n "$REMOTE_DB_USER" ] && break
+    if ! read -rp "REMOTE DB 用户名（例如: ${SITE_SLUG}_user）: " db_user; then
+      db_password=""
+      db_password_confirm=""
+      unset db_password_confirm
+      return 1
+    fi
+    [ -n "$db_user" ] && break
     log_warn "REMOTE DB 用户名不能为空。"
   done
 
   while :; do
-    REMOTE_DB_PASSWORD=""
-    REMOTE_DB_PASSWORD_CONFIRM=""
-    read -rsp "REMOTE DB 密码（不会回显）: " REMOTE_DB_PASSWORD
+    db_password=""
+    db_password_confirm=""
+    if ! read -rsp "REMOTE DB 密码（不会回显）: " db_password; then
+      db_password=""
+      db_password_confirm=""
+      unset db_password_confirm
+      return 1
+    fi
     echo
-    if [ -z "$REMOTE_DB_PASSWORD" ]; then
+    if [ -z "$db_password" ]; then
       log_warn "REMOTE DB 密码不能为空。"
       continue
     fi
 
-    read -rsp "请再次输入 REMOTE DB 密码进行确认: " REMOTE_DB_PASSWORD_CONFIRM
+    if ! read -rsp "请再次输入 REMOTE DB 密码进行确认: " db_password_confirm; then
+      echo
+      db_password=""
+      db_password_confirm=""
+      unset db_password_confirm
+      return 1
+    fi
     echo
-    if [ "$REMOTE_DB_PASSWORD" != "$REMOTE_DB_PASSWORD_CONFIRM" ]; then
+    if [ "$db_password" != "$db_password_confirm" ]; then
+      db_password=""
+      db_password_confirm=""
+      unset db_password_confirm
       log_error "两次输入的 REMOTE DB 密码不一致，请重新输入。"
       continue
     fi
 
-    unset REMOTE_DB_PASSWORD_CONFIRM
+    unset db_password_confirm
     break
   done
 
+  REMOTE_DB_HOST="$db_host"
+  REMOTE_DB_PORT="$db_port"
+  DB_NAME="$db_name"
+  REMOTE_DB_USER="$db_user"
+  REMOTE_DB_PASSWORD="$db_password"
   DB_HOST="$REMOTE_DB_HOST"
   DB_PORT="$REMOTE_DB_PORT"
   DB_USER="$REMOTE_DB_USER"
@@ -5038,25 +5084,41 @@ prompt_remote_redis_info_frontend() {
   REDIS_PORT=""
   REDIS_PASSWORD=""
 
+  local redis_host=""
+  local redis_port=""
+  local redis_password=""
+
   while :; do
-    read -rp "REMOTE Redis Host（例如 100.64.x.x 或 redis.internal）: " REMOTE_REDIS_HOST
-    [ -n "$REMOTE_REDIS_HOST" ] && break
+    if ! read -rp "REMOTE Redis Host（例如 100.64.x.x 或 redis.internal）: " redis_host; then
+      redis_password=""
+      return 1
+    fi
+    [ -n "$redis_host" ] && break
     log_warn "REMOTE Redis Host 不能为空。"
   done
 
   while :; do
-    read -rp "REMOTE Redis Port [6379]: " REMOTE_REDIS_PORT
-    REMOTE_REDIS_PORT="${REMOTE_REDIS_PORT:-6379}"
-    if [[ "$REMOTE_REDIS_PORT" =~ ^[0-9]+$ ]]; then
+    if ! read -rp "REMOTE Redis Port [6379]: " redis_port; then
+      redis_password=""
+      return 1
+    fi
+    redis_port="${redis_port:-6379}"
+    if [[ "$redis_port" =~ ^[0-9]+$ ]]; then
       break
     fi
     log_warn "REMOTE Redis Port 必须为数字。"
   done
 
-  read -rsp "REMOTE Redis 密码（可留空）: " REMOTE_REDIS_PASSWORD
+  if ! read -rsp "REMOTE Redis 密码（可留空）: " redis_password; then
+    redis_password=""
+    return 1
+  fi
   echo
 
   REDIS_ENABLED="yes"
+  REMOTE_REDIS_HOST="$redis_host"
+  REMOTE_REDIS_PORT="$redis_port"
+  REMOTE_REDIS_PASSWORD="$redis_password"
   REDIS_HOST="$REMOTE_REDIS_HOST"
   REDIS_PORT="$REMOTE_REDIS_PORT"
   REDIS_PASSWORD="$REMOTE_REDIS_PASSWORD"
@@ -5071,7 +5133,9 @@ test_frontend_remote_db_with_retry() {
 
   while :; do
     attempts=$((attempts + 1))
-    prompt_remote_db_info_frontend
+    if ! prompt_remote_db_info_frontend; then
+      return 1
+    fi
     if [ -z "${DB_HOST:-}" ] || [ -z "${DB_USER:-}" ]; then
       log_warn "REMOTE DB Host/用户名 不能为空，请重新输入。"
       continue
@@ -5117,7 +5181,9 @@ test_frontend_remote_redis_with_retry() {
 
   while :; do
     attempts=$((attempts + 1))
-    prompt_remote_redis_info_frontend
+    if ! prompt_remote_redis_info_frontend; then
+      return 1
+    fi
     if test_redis_connection_lite; then
       return 0
     fi
