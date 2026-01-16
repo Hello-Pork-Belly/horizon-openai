@@ -3,13 +3,17 @@
 This checklist is used by the auditor to judge every PR.
 
 ## 0) Required Evidence
+See docs/GPT-PROJECT-INSTRUCTIONS.md (SSOT). This checklist must not diverge.
+
 PR must include:
 - Goal summary (1-3 lines)
 - List of changed files
-- Commands executed (copy/paste)
-- Outputs (lint/smoke/ci logs)
+- PR diff (reviewable and complete)
 
-FAIL if evidence is missing.
+Optional (only if actually executed): commands + outputs/logs.
+Never fabricate executed commands or outputs.
+
+FAIL if PR diff is missing, unclear, or unreviewable.
 
 ## 1) Scope & Atomicity
 - ✅ Only requested scope changed
