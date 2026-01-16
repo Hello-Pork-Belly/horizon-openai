@@ -13,3 +13,5 @@ This directory is the canonical source for HLab Codex auto-discovery skills.
 - The `skills/*/SKILL.md` paths are symlinks to the canonical files to enforce SSOT.
 - If symlinks are not supported in a target environment, replace the symlink with a copy
   and add a prominent WARNING line stating it mirrors the canonical file and must not diverge.
+  Example warning line for copies:
+  `WARNING: This file mirrors .codex/skills/<skill>/SKILL.md and must remain identical.`
