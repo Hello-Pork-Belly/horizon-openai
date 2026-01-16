@@ -4963,6 +4963,13 @@ prompt_remote_db_info_frontend() {
   echo "  - 独立数据库用户，例如: ${SITE_SLUG}_user，并分配该库全部权限"
   echo
 
+  REMOTE_DB_HOST=""
+  REMOTE_DB_PORT=""
+  DB_NAME=""
+  REMOTE_DB_USER=""
+  REMOTE_DB_PASSWORD=""
+  REMOTE_DB_PASSWORD_CONFIRM=""
+
   while :; do
     read -rp "REMOTE DB Host（Tailscale IP 常见，例如 100.64.x.x）: " REMOTE_DB_HOST
     [ -n "$REMOTE_DB_HOST" ] && break
@@ -4991,6 +4998,8 @@ prompt_remote_db_info_frontend() {
   done
 
   while :; do
+    REMOTE_DB_PASSWORD=""
+    REMOTE_DB_PASSWORD_CONFIRM=""
     read -rsp "REMOTE DB 密码（不会回显）: " REMOTE_DB_PASSWORD
     echo
     if [ -z "$REMOTE_DB_PASSWORD" ]; then
@@ -5013,6 +5022,7 @@ prompt_remote_db_info_frontend() {
   DB_PORT="$REMOTE_DB_PORT"
   DB_USER="$REMOTE_DB_USER"
   DB_PASSWORD="$REMOTE_DB_PASSWORD"
+  return 0
 }
 
 prompt_remote_redis_info_frontend() {
