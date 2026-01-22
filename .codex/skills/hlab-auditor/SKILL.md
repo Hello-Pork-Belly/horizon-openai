@@ -7,6 +7,10 @@ metadata:
 
 # HLab Auditor Skill
 
+## Rulebook (Non-Negotiable)
+All audits MUST enforce the repository rulebook: `docs/BASELINE.md`. If any output conflicts with `docs/BASELINE.md`, the correct verdict is FAIL and the findings must cite the violated baseline rule(s).
+
+
 ## Audit Checklist
 1. **Architecture Compliance**:
    - Does the Executor try to ask the user questions? (FAIL)
