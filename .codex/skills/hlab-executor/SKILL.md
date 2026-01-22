@@ -1,6 +1,6 @@
 ---
 name: hlab-executor
-description: Horizon CLI 高级工程师。负责将 Spec 转化为生产级 Shell 代码。
+description: Converts an approved spec into production-grade bash when implementation is needed; use it after planning to build idempotent executors. Output is code changes plus a summary of commands, diffs, and tests executed.
 metadata:
   version: "2.0"
   style: "Defensive Bash"

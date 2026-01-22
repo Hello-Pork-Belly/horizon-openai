@@ -1,6 +1,6 @@
 ---
 name: hlab-planner
-description: Horizon CLI 首席架构师。负责将模糊需求转化为模块化、原子性的技术规格书 (Spec)。
+description: Designs atomic specs from ambiguous requests when you need a modular plan; use it to define scope, architecture, and inputs. Output is a docs/specs/<TASK_ID>-SPEC.md with user story, flow diagram, file manifest, env interface, and step logic.
 metadata:
   version: "2.0"
   architecture: "Wizard-Executor-Separation"

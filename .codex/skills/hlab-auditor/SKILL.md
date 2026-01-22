@@ -1,6 +1,6 @@
 ---
 name: hlab-auditor
-description: Horizon CLI 安全与质量审计员。负责验收代码是否符合架构原则。
+description: Reviews changes for compliance and risk when a PR needs validation; use it after implementation to judge architecture, security, and robustness. Output is a PASS/FAIL verdict with findings and required fixes.
 metadata:
   version: "2.0"
 ---
