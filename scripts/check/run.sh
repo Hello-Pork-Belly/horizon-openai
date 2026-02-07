@@ -16,6 +16,20 @@ else
   echo "[check] shellcheck skipped (not installed)"
 fi
 
+if [ -x "scripts/check/inventory_validate.sh" ]; then
+  echo "[check] inventory"
+  bash scripts/check/inventory_validate.sh
+else
+  echo "[check] inventory skipped (validator not present)"
+fi
+
+if command -v shfmt >/dev/null 2>&1; then
+  echo "[check] shfmt"
+  shfmt -d scripts
+else
+  echo "[check] shfmt skipped (not installed)"
+fi
+
 echo "[check] smoke"
 if [[ "${BASH_VERSINFO[0]}" -ge 4 ]] && [[ "$(uname -s)" == "Linux" ]]; then
   bash scripts/clean_node.sh --dry-run
