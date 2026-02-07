@@ -1,7 +1,7 @@
 # horizon-lab test
 
-Horizon-Hybrid lab repo for Oracle Cloud Free Tier mixed-architecture nodes (ARM hub + x86 edge),
-operated via Tailscale mesh and GitHub Actions self-hosted runners.
+Horizon-Hybrid lab repo for mixed-architecture nodes (ARM hub + x86 edge),
+operated via Tailscale mesh and GitHub-hosted CI checks.
 
 ## Roles
 - **Rules Authority:** You (owner of rules & approvals)
@@ -17,7 +17,8 @@ operated via Tailscale mesh and GitHub Actions self-hosted runners.
    - Public ports allowed: **80, 443, 4433 (UDP/TCP)** only.
    - SSH/DB ports MUST accept traffic from **Tailscale interface (tailscale0) only**.
 3. **Execution Protocol**
-   - Prefer **GitHub Actions (self-hosted runner)** for remote execution.
+   - CI checks run on **GitHub-hosted runners** only.
+   - No SSH/remote execution in CI check workflows.
    - One logical change per commit (atomicity). Default = deny.
 
 ## Repository structure (baseline)
@@ -36,11 +37,12 @@ operated via Tailscale mesh and GitHub Actions self-hosted runners.
 
 ## Quick start
 1. Add your nodes to Tailscale (mesh only; no public SSH).
-2. Install/attach GitHub runner to the hub node.
-3. Use workflows under `.github/workflows/` to apply changes.
+2. Run local validation with `make check`.
+3. Open a PR and rely on `.github/workflows/ci.yml` for hosted checks.
 
 ## Local/CI
-- `make ci`
+- `make check`
+- `make ci` (alias)
 - `sudo bash scripts/clean_node.sh --dry-run`
 
 ## Security notes
