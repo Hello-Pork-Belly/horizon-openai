@@ -78,3 +78,14 @@
 - Next Action:
   - add masking utility and minimal log directory policy docs, then create PR.
 - STOP Triggered: `NO`
+
+## 2026-02-07T14:30:06Z
+- Milestone/PR: Milestone 1 / PR #9
+- Branch: `codex/m1-logging-mask-baseline`
+- PR Summary (`gh pr view 9 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - enable auto-merge with fixed prefix command, then wait for `ci`.
+- STOP Triggered: `NO`
