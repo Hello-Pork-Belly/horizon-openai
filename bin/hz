@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+VERSION_FILE="${REPO_ROOT}/VERSION"
+
+if [ -f "${VERSION_FILE}" ]; then
+  HZ_VERSION="$(cat "${VERSION_FILE}")"
+else
+  HZ_VERSION="0.0.0"
+fi
+
+SUBCOMMANDS="install status check upgrade backup restore uninstall diagnostics"
+
+usage() {
+  cat <<EOF
+Usage:
+  hz --version
+  hz module <name> <subcommand>
+  hz recipe <name> <subcommand>
+  hz menu
+
+Supported subcommands:
+  ${SUBCOMMANDS}
+EOF
+}
+
+require_valid_subcommand() {
+  local cmd="$1"
+  case "${cmd}" in
+    install|status|check|upgrade|backup|restore|uninstall|diagnostics) ;;
+    *)
+      echo "ERROR: unsupported subcommand: ${cmd}" >&2
+      usage
+      exit 1
+      ;;
+  esac
+}
+
+run_module() {
+  local name="$1"
+  local subcommand="$2"
+  require_valid_subcommand "${subcommand}"
+  echo "INFO: module placeholder invoked (name=${name}, subcommand=${subcommand})"
+}
+
+run_recipe() {
+  local name="$1"
+  local subcommand="$2"
+  require_valid_subcommand "${subcommand}"
+  echo "INFO: recipe placeholder invoked (name=${name}, subcommand=${subcommand})"
+}
+
+if [ "${#}" -lt 1 ]; then
+  usage
+  exit 1
+fi
+
+case "$1" in
+  --version)
+    echo "${HZ_VERSION}"
+    ;;
+  module)
+    [ "${#}" -eq 3 ] || { usage; exit 1; }
+    run_module "$2" "$3"
+    ;;
+  recipe)
+    [ "${#}" -eq 3 ] || { usage; exit 1; }
+    run_recipe "$2" "$3"
+    ;;
+  menu)
+    echo "INFO: menu placeholder; use non-interactive module/recipe commands."
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac
