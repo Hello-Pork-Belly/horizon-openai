@@ -47,3 +47,34 @@
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-07T14:26:58Z
+- Milestone/PR: Milestone 1 / PR #8
+- Branch: `codex/m1-check-gate-expansion`
+- PR Summary (`gh pr view 8 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - wait for `ci` completion.
+- STOP Triggered: `NO`
+
+## 2026-02-07T14:27:44Z
+- Milestone/PR: Milestone 1 / PR #8
+- Branch: `main`
+- PR Summary (`gh pr view 8 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - continue next single-change PR from `main`.
+- STOP Triggered: `NO`
+
+## 2026-02-07T14:28:36Z
+- Milestone/PR: Milestone 1 / PR (pending create) for logging and masking baseline
+- Branch: `codex/m1-logging-mask-baseline`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add masking utility and minimal log directory policy docs, then create PR.
+- STOP Triggered: `NO`
