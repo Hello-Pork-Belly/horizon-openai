@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+TMP_HITS=""
+
+cleanup() {
+  if [ -n "${TMP_HITS}" ] && [ -f "${TMP_HITS}" ]; then
+    rm -f "${TMP_HITS}"
+  fi
+}
+
 b64_decode() {
   if printf '' | base64 --decode >/dev/null 2>&1; then
     base64 --decode
@@ -53,17 +61,16 @@ main() {
   local pattern
   pattern="$(build_pattern)"
 
-  local tmp_hits
-  tmp_hits="$(mktemp)"
-  trap "rm -f '$tmp_hits'" EXIT
+  TMP_HITS="$(mktemp)"
+  trap cleanup EXIT
 
   while IFS= read -r path; do
     [ -f "$path" ] || continue
-    grep -Hn -I -i -E "$pattern" "$path" 2>/dev/null | cut -d: -f1,2 >>"$tmp_hits" || true
+    grep -Hn -I -i -E "$pattern" "$path" 2>/dev/null | cut -d: -f1,2 >>"$TMP_HITS" || true
   done < <(git ls-files)
 
-  if [ -s "$tmp_hits" ]; then
-    sort -u "$tmp_hits"
+  if [ -s "$TMP_HITS" ]; then
+    sort -u "$TMP_HITS"
     exit 1
   fi
 
