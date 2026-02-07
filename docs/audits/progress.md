@@ -36,3 +36,14 @@
 - Next Action:
   - implement single-change check gate expansion and create PR.
 - STOP Triggered: `NO`
+
+## 2026-02-07T14:26:24Z
+- Milestone/PR: Milestone 1 / PR #8
+- Branch: `codex/m1-check-gate-expansion`
+- PR Summary (`gh pr view 8 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - enable auto-merge with fixed prefix command, then wait for `ci`.
+- STOP Triggered: `NO`
