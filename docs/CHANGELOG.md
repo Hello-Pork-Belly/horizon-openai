@@ -7,3 +7,7 @@ For canonical history, see Git + PRs (per docs/VERSIONING.md).
 - Established versioning/change-history SSOT in docs/VERSIONING.md.
 - Aligned audit evidence policy with MODE:AUDIT diff-only requirements.
 - Clarified that per-file “last modified” timestamps are not maintained.
+
+## 0.1.1 - 2026-02-08
+- Added repository `LICENSE` (MIT).
+- Added project `VERSION` file (`0.1.1`) as canonical version source for CLI and release flow.

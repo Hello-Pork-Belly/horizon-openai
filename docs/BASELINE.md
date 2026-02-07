@@ -88,3 +88,19 @@ Method: Use Environment Variables (e.g., ${DB_PASSWORD:?}).
 
 5.2 Network & Firewalls
 Rule: When opening ports, default to "Deny All" strategies. Only allow specific IPs/Subnets if possible.
+
+---
+
+## 6. Repository Metadata Baseline
+
+### 6.1 License
+* **Rule**: Repository MUST include a top-level `LICENSE` file.
+* **Current Policy**: MIT.
+
+### 6.2 Version Source
+* **Rule**: Repository MUST include a top-level `VERSION` file.
+* **Usage**: CLI, release notes, and audit artifacts must read the same version value from this file.
+
+### 6.3 Change History
+* **Rule**: Human-readable change history MUST be maintained in `docs/CHANGELOG.md`.
+* **Scope**: User-facing or policy-facing changes only.
