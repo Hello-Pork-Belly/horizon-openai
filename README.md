@@ -15,10 +15,10 @@ operated via Tailscale mesh and GitHub-hosted CI checks.
    - Low-spec x86 nodes must cap services to ~200–400MB each (unless explicitly approved).
 2. **Network Security**
    - Public ports allowed: **80, 443, 4433 (UDP/TCP)** only.
-   - SSH/DB ports MUST accept traffic from **Tailscale interface (tailscale0) only**.
+   - Admin/data ports MUST accept traffic from **Tailscale interface (tailscale0) only**.
 3. **Execution Protocol**
    - CI checks run on **GitHub-hosted runners** only.
-   - No SSH/remote execution in CI check workflows.
+   - No direct host command channels in CI check workflows.
    - One logical change per commit (atomicity). Default = deny.
 
 ## Repository structure (baseline)
@@ -36,7 +36,7 @@ operated via Tailscale mesh and GitHub-hosted CI checks.
 - [1-click → HLab Migration Plan](docs/migration/oneclick-to-hlab.md)
 
 ## Quick start
-1. Add your nodes to Tailscale (mesh only; no public SSH).
+1. Add your nodes to Tailscale (mesh-only admin path).
 2. Run local validation with `make check`.
 3. Open a PR and rely on `.github/workflows/ci.yml` for hosted checks.
 

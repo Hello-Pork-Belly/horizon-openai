@@ -6,7 +6,7 @@
 
 ## CI Policy
 - CI check workflow runs on GitHub-hosted runners only.
-- Do not introduce SSH-based or other remote execution into the check workflow.
+- Do not introduce direct host command channels into the check workflow.
 - Keep the workflow entrypoint single and stable (`make check`).
 
 ## Vendor-Neutral Content Gate
