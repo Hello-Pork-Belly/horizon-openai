@@ -1,0 +1,23 @@
+id: hub-01
+role: hub
+os: ubuntu-24.04
+arch: aarch64
+resources:
+  cpu_bucket: 4c
+  ram_bucket: 24g
+  disk_bucket: medium
+tailscale:
+  node_name: hub-01
+  ip: 100.64.0.20
+ssh:
+  user: ubuntu
+  port: 22
+allow_from:
+  - host-01
+services:
+  mariadb:
+    port: 3306
+    bind_interface: tailscale0
+  redis:
+    port: 6379
+    bind_interface: tailscale0

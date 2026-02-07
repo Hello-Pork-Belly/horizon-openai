@@ -1,0 +1,12 @@
+site_id: site-001
+domain: example.com
+slug: site001
+stack: lomp
+topology: lite
+host_ref: host-01
+hub_ref: hub-01
+db:
+  name: wp_site001
+  user: wp_site001
+redis:
+  namespace: site001
