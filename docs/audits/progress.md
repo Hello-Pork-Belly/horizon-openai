@@ -89,3 +89,25 @@
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-07T14:30:41Z
+- Milestone/PR: Milestone 1 / PR #9
+- Branch: `codex/m1-logging-mask-baseline`
+- PR Summary (`gh pr view 9 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - wait for `ci` completion and merged state.
+- STOP Triggered: `NO`
+
+## 2026-02-07T14:31:36Z
+- Milestone/PR: Milestone 1 / PR #9
+- Branch: `main`
+- PR Summary (`gh pr view 9 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - baseline delivery sequence reached current completion target.
+- STOP Triggered: `NO`
