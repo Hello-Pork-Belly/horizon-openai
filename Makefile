@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: lint lint-strict smoke ci
+.PHONY: check lint lint-strict smoke ci vendor-neutral
 
 lint-strict: lint
 
@@ -11,4 +11,10 @@ smoke:
 	bash -n scripts/clean_node.sh
 	bash scripts/clean_node.sh --dry-run
 
-ci: lint smoke
+vendor-neutral:
+	bash scripts/check/vendor_neutral_gate.sh
+
+check:
+	bash scripts/check/run.sh
+
+ci: check
