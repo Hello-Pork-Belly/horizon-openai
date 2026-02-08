@@ -205,6 +205,21 @@
   - create PR for contract document, then start skeleton script PR.
 - STOP Triggered: `NO`
 
+## 2026-02-08T06:52:45Z
+- Milestone/PR: Milestone 2 / PR #15
+- Branch: `codex/m2-lomp-lite-contract-doc`
+- PR Summary (`gh pr view 15 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=QUEUED`, `auto-merge=SKIPPED`
+- Acceptance Commands:
+  - `make check`
+  - `bash scripts/check/vendor_neutral_gate.sh`
+  - strict secret-risk pattern scan
+- Next Action:
+  - enable auto-merge with fixed prefix command, then wait for `ci`.
+- STOP Triggered: `NO`
+
 ## 2026-02-08T06:44:02Z
 - Milestone/PR: Milestone 1 / PR #14
 - Branch: `codex/m1-interface-consistency-check`
