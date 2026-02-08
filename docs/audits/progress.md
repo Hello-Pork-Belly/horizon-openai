@@ -796,3 +796,12 @@
 - Next Action:
   - add neutral hub-focused example inventory and notes.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:57:40Z
+- Milestone/PR: Queue C / PR1 (started)
+- Branch: `codex/m4-c-pr1-security-contract`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add host security and alerting contract doc.
+- STOP Triggered: `NO`
