@@ -220,6 +220,38 @@
   - enable auto-merge with fixed prefix command, then wait for `ci`.
 - STOP Triggered: `NO`
 
+## 2026-02-08T06:54:16Z
+- Milestone/PR: Milestone 2 / PR (pending create) for LOMP Lite recipe skeleton
+- Branch: `codex/m2-lomp-lite-skeleton`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Acceptance Commands:
+  - `make check`
+  - `HZ_DRY_RUN=1 bash bin/hz recipe lomp-lite install`
+  - `HZ_DRY_RUN=2 bash bin/hz recipe lomp-lite diagnostics`
+  - `bash scripts/check/vendor_neutral_gate.sh`
+  - strict secret-risk pattern scan
+- Next Action:
+  - add LOMP Lite recipe contract + dry-run runner.
+- STOP Triggered: `NO`
+
+## 2026-02-08T06:55:53Z
+- Milestone/PR: Milestone 2 / PR #16
+- Branch: `codex/m2-lomp-lite-skeleton`
+- PR Summary (`gh pr view 16 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Acceptance Commands:
+  - `make check`
+  - `HZ_DRY_RUN=1 bash bin/hz recipe lomp-lite install`
+  - `HZ_DRY_RUN=2 bash bin/hz recipe lomp-lite diagnostics`
+  - `bash scripts/check/vendor_neutral_gate.sh`
+  - strict secret-risk pattern scan
+- Next Action:
+  - enable auto-merge with fixed prefix command, then wait for `ci`.
+- STOP Triggered: `NO`
+
 ## 2026-02-08T06:44:02Z
 - Milestone/PR: Milestone 1 / PR #14
 - Branch: `codex/m1-interface-consistency-check`
