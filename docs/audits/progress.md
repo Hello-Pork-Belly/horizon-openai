@@ -645,3 +645,47 @@
 - Next Action:
   - add maintenance dry-run checker and wire into unified `make check`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:34:06Z
+- Milestone/PR: Four-track queue A / PR #25 (created)
+- Branch: `codex/m4-a-pr3-ols-wp-maintenance-check`
+- PR Summary (`gh pr view 25 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:34:06Z
+- Milestone/PR: Four-track queue A / PR #25 (auto-merge enabled)
+- Branch: `codex/m4-a-pr3-ols-wp-maintenance-check`
+- PR Summary (`gh pr view 25 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - wait for required `ci` to pass and auto-merge to complete.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:34:40Z
+- Milestone/PR: Four-track queue A / PR #25 (created)
+- Branch: `codex/m4-a-pr3-ols-wp-maintenance-check`
+- PR Summary (`gh pr view 25 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:34:40Z
+- Milestone/PR: Four-track queue A / PR #25 (auto-merge enabled)
+- Branch: `codex/m4-a-pr3-ols-wp-maintenance-check`
+- PR Summary (`gh pr view 25 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - wait for required `ci` to pass and auto-merge to complete.
+- STOP Triggered: `NO`
