@@ -499,3 +499,14 @@
 - Next Action:
   - enable auto-merge with fixed prefix command and wait for required `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:18:39Z
+- Milestone/PR: Milestone 3 / PR #21 (auto-merge enabled)
+- Branch: `codex/m3-ols-wp-check-coverage`
+- PR Summary (`gh pr view 21 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - wait for required `ci` to pass and auto-merge to complete.
+- STOP Triggered: `NO`
