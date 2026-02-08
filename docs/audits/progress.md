@@ -296,6 +296,22 @@
   - add neutral-named LOMP Lite example inventory files.
 - STOP Triggered: `NO`
 
+## 2026-02-08T07:02:23Z
+- Milestone/PR: Milestone 2 / PR #18
+- Branch: `codex/m2-lomp-lite-inventory-examples`
+- PR Summary (`gh pr view 18 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Acceptance Commands:
+  - `bash scripts/check/inventory_validate.sh`
+  - `make check`
+  - `bash scripts/check/vendor_neutral_gate.sh`
+  - strict secret-risk pattern scan
+- Next Action:
+  - enable auto-merge with fixed prefix command, then wait for `ci`.
+- STOP Triggered: `NO`
+
 ## 2026-02-08T06:44:02Z
 - Milestone/PR: Milestone 1 / PR #14
 - Branch: `codex/m1-interface-consistency-check`
