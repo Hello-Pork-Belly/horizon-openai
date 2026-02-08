@@ -583,3 +583,34 @@
 - Next Action:
   - enable auto-merge with fixed prefix command and wait for required `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:24:30Z
+- Milestone/PR: Four-track queue A / PR #23 (merged)
+- Branch: `main`
+- PR Summary (`gh pr view 23 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - sync local `main` and continue A/PR2 dry-run skeleton.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:24:30Z
+- Milestone/PR: Four-track queue A / PR #23 (post-merge main sync)
+- Branch: `main`
+- PR Summary (`gh pr view 23 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - create branch for A/PR2 and add maintenance dry-run recipe skeleton.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:24:30Z
+- Milestone/PR: Four-track queue A / PR2 (started)
+- Branch: `codex/m4-a-pr2-ols-wp-maintenance-dryrun`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add maintenance dry-run recipe skeleton with required plan sections.
+- STOP Triggered: `NO`
