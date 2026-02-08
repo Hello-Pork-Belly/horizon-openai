@@ -1,0 +1,3 @@
+name: hub-data
+runner: recipes/hub-data/run.sh
+supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics

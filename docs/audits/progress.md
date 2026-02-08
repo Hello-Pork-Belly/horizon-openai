@@ -725,3 +725,34 @@
 - Next Action:
   - add Redis+MariaDB hub contract with local dry-run requirements.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:44:20Z
+- Milestone/PR: Queue B / PR #27 (merged)
+- Branch: `main`
+- PR Summary (`gh pr view 27 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - sync local `main` and continue queue B / PR2.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:44:20Z
+- Milestone/PR: Queue B / PR #27 (post-merge main sync)
+- Branch: `main`
+- PR Summary (`gh pr view 27 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - create branch for queue B / PR2 hub dry-run.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:44:20Z
+- Milestone/PR: Queue B / PR2 (started)
+- Branch: `codex/m4-b-pr2-hub-dryrun`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add hub dry-run recipe skeleton.
+- STOP Triggered: `NO`
