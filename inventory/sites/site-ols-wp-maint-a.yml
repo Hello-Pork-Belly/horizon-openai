@@ -1,0 +1,19 @@
+site_id: site-ols-wp-maint-a
+domain: olswp-maint-a.example.test
+slug: mainta
+stack: lomp
+topology: lite
+host_ref: host-ols-wp-a
+hub_ref: hub-ols-wp-a
+db:
+  name: wp_mainta
+  user: wp_mainta
+redis:
+  namespace: mainta
+maintenance:
+  php_profile: low-memory
+  swap_policy: auto-tier
+  scheduler_mode: system-cron
+  backup_target: cloud-drive-target
+  retention_count: 14
+  site_health_target: good
