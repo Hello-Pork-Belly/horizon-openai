@@ -1,0 +1,24 @@
+id: host-security-a
+role: host
+os: ubuntu-24.04
+arch: x86_64
+resources:
+  cpu_bucket: 2c
+  ram_bucket: 4g
+  disk_bucket: small
+tailscale:
+  node_name: host-security-a
+  ip: 100.64.0.71
+ssh:
+  user: ubuntu
+  port: 22
+allow_from: []
+services:
+  web:
+    port: 443
+    bind_interface: 0.0.0.0
+security_profile:
+  bruteforce_guard: enabled
+  scan_schedule: daily
+  mail_alerts: enabled
+  log_retention_days: 14
