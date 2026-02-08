@@ -266,6 +266,22 @@
   - add recipe dry-run check and wire into unified check pipeline.
 - STOP Triggered: `NO`
 
+## 2026-02-08T06:58:48Z
+- Milestone/PR: Milestone 2 / PR #17
+- Branch: `codex/m2-lomp-lite-check-coverage`
+- PR Summary (`gh pr view 17 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Acceptance Commands:
+  - `bash scripts/check/lomp_lite_dryrun_check.sh`
+  - `make check`
+  - `bash scripts/check/vendor_neutral_gate.sh`
+  - strict secret-risk pattern scan
+- Next Action:
+  - enable auto-merge with fixed prefix command, then wait for `ci`.
+- STOP Triggered: `NO`
+
 ## 2026-02-08T06:44:02Z
 - Milestone/PR: Milestone 1 / PR #14
 - Branch: `codex/m1-interface-consistency-check`
