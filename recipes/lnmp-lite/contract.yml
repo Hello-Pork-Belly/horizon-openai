@@ -1,0 +1,3 @@
+name: lnmp-lite
+runner: recipes/lnmp-lite/run.sh
+supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
