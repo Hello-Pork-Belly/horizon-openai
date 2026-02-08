@@ -725,3 +725,25 @@
 - Next Action:
   - add Redis+MariaDB hub contract with local dry-run requirements.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:43:38Z
+- Milestone/PR: Queue B / PR #27 (created)
+- Branch: `codex/m4-b-pr1-hub-contract`
+- PR Summary (`gh pr view 27 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:43:38Z
+- Milestone/PR: Queue B / PR #27 (auto-merge enabled)
+- Branch: `codex/m4-b-pr1-hub-contract`
+- PR Summary (`gh pr view 27 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - wait for required `ci` to pass and auto-merge to complete.
+- STOP Triggered: `NO`
