@@ -192,6 +192,19 @@
   - add module/recipe contract consistency check and wire into `make check`.
 - STOP Triggered: `NO`
 
+## 2026-02-08T06:51:26Z
+- Milestone/PR: Milestone 2 / PR (pending create) for LOMP Lite contract document
+- Branch: `codex/m2-lomp-lite-contract-doc`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Acceptance Commands:
+  - `make check`
+  - `bash scripts/check/vendor_neutral_gate.sh`
+  - strict secret-risk pattern scan
+- Next Action:
+  - create PR for contract document, then start skeleton script PR.
+- STOP Triggered: `NO`
+
 ## 2026-02-08T06:44:02Z
 - Milestone/PR: Milestone 1 / PR #14
 - Branch: `codex/m1-interface-consistency-check`
