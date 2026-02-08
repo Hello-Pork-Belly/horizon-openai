@@ -56,6 +56,13 @@ if [ -x "scripts/check/hub_data_dryrun_check.sh" ]; then
 else
   echo "[check] hub-data skipped (checker not present)"
 fi
+if [ -x "scripts/check/security_host_dryrun_check.sh" ]; then
+  echo "[check] security-host"
+  bash scripts/check/security_host_dryrun_check.sh
+else
+  echo "[check] security-host skipped (checker not present)"
+fi
+
 
 
 if command -v shfmt >/dev/null 2>&1; then

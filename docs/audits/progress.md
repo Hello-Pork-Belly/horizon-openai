@@ -825,3 +825,23 @@
 - Next Action:
   - add security/alert dry-run recipe skeleton.
 - STOP Triggered: `NO`
+
+## 2026-02-08T09:01:44Z
+- Milestone/PR: Queue C / PR #32 (merged)
+- Branch: `main`
+- PR Summary (`gh pr view 32 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - sync local `main` and continue queue C / PR3.
+- STOP Triggered: `NO`
+
+## 2026-02-08T09:01:44Z
+- Milestone/PR: Queue C / PR3 (started)
+- Branch: `codex/m4-c-pr3-security-check`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add security-host dry-run checker and wire into unified check.
+- STOP Triggered: `NO`
