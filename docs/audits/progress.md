@@ -865,3 +865,12 @@
 - Next Action:
   - add neutral examples for security-host planning inputs.
 - STOP Triggered: `NO`
+
+## 2026-02-08T09:05:32Z
+- Milestone/PR: Queue D / PR1 (started)
+- Branch: `codex/m4-d-pr1-lnmp-contract`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add LNMP Lite contract with shared hub/maintenance rules and web-stack-only differences.
+- STOP Triggered: `NO`
