@@ -796,3 +796,38 @@
 - Next Action:
   - add neutral hub-focused example inventory and notes.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:55:55Z
+- Milestone/PR: Queue B / PR #30 (created)
+- Branch: `codex/m4-b-pr4-hub-examples`
+- PR Summary (`gh pr view 30 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:55:55Z
+- Milestone/PR: Queue B / PR #30 (auto-merge enabled)
+- Branch: `codex/m4-b-pr4-hub-examples`
+- PR Summary (`gh pr view 30 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - wait for required `ci` to pass and auto-merge to complete.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:57:09Z
+- Milestone/PR: Lock recovery (index.lock handling)
+- Branch: `codex/m4-b-pr4-hub-examples`
+- Detection:
+  - `git status` executed before recovery.
+  - active git process observed on first check; waited and re-checked.
+  - no stale `index.lock` file present after re-check.
+- Recovery Action:
+  - safe retry of pending progress commit/push without deleting lock files.
+- Next Action:
+  - continue PR #30 merge tracking.
+- STOP Triggered: `NO`
