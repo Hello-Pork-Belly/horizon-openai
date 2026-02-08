@@ -1,0 +1,16 @@
+site_id: site-lnmp-lite-a
+domain: lnmplite-a.example.test
+slug: lnmplitea
+stack: lnmp
+topology: lite
+host_ref: host-ols-wp-a
+hub_ref: hub-ols-wp-a
+db:
+  name: wp_lnmplitea
+  user: wp_lnmplitea
+redis:
+  namespace: lnmplitea
+web_stack:
+  engine: nginx-php-fpm
+  tls_mode: managed
+  app_runtime_profile: low-memory

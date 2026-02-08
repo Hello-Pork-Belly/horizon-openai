@@ -883,3 +883,12 @@
 - Next Action:
   - add LNMP Lite dry-run recipe skeleton.
 - STOP Triggered: `NO`
+
+## 2026-02-08T09:22:54Z
+- Milestone/PR: Queue D / PR4 (started)
+- Branch: `codex/m4-d-pr4-lnmp-examples`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add neutral LNMP Lite example inventory and notes.
+- STOP Triggered: `NO`
