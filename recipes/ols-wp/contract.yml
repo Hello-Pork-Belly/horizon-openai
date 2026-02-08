@@ -1,0 +1,3 @@
+name: ols-wp
+runner: recipes/ols-wp/run.sh
+supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
