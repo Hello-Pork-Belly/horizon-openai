@@ -62,6 +62,13 @@ if [ -x "scripts/check/security_host_dryrun_check.sh" ]; then
 else
   echo "[check] security-host skipped (checker not present)"
 fi
+if [ -x "scripts/check/lnmp_lite_dryrun_check.sh" ]; then
+  echo "[check] lnmp-lite"
+  bash scripts/check/lnmp_lite_dryrun_check.sh
+else
+  echo "[check] lnmp-lite skipped (checker not present)"
+fi
+
 
 
 
