@@ -805,3 +805,23 @@
 - Next Action:
   - add host security and alerting contract doc.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:59:52Z
+- Milestone/PR: Queue C / PR #31 (created + auto-merge)
+- Branch: `codex/m4-c-pr1-security-contract`
+- PR Summary (`gh pr view 31 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - sync local `main` and continue queue C / PR2.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:59:52Z
+- Milestone/PR: Queue C / PR2 (started)
+- Branch: `codex/m4-c-pr2-security-dryrun`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add security/alert dry-run recipe skeleton.
+- STOP Triggered: `NO`
