@@ -5,7 +5,7 @@ SHELL := /bin/bash
 lint-strict: lint
 
 lint:
-	bash -c 'shopt -s globstar; shellcheck scripts/**/*.sh'
+	bash -c 'find scripts recipes modules upstream/oneclick -type f -name "*.sh" -print0 | xargs -0 -n1 shellcheck'
 
 smoke:
 	bash -n scripts/clean_node.sh

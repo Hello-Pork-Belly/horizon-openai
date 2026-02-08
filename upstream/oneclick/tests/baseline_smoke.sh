@@ -187,12 +187,24 @@ if [ ${#filtered_paths[@]} -gt 0 ] && [ -n "$vendor_regex" ]; then
 fi
 
 echo "[baseline-smoke] sanitization coverage"
-sanitize_input=$'Authorization: Bearer abc123\npassword=xyz\napi_key: token123\nquery key=value\nTOKEN=raw'
+gen_token() {
+  if command -v openssl >/dev/null 2>&1; then
+    openssl rand -hex 12
+  else
+    LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 24
+  fi
+}
+
+sample_auth="$(gen_token)"
+sample_pass="$(gen_token)"
+sample_api="$(gen_token)"
+sample_key="$(gen_token)"
+sanitize_input=$'Authorization: Bearer '"${sample_auth}"$'\npassword='"${sample_pass}"$'\napi_key: '"${sample_api}"$'\nquery key='"${sample_key}"$'\nTOKEN='"$(gen_token)"
 sanitized_output="$(printf "%s" "$sanitize_input" | baseline_sanitize_text)"
-assert_not_contains "$sanitized_output" "abc123"
-assert_not_contains "$sanitized_output" "xyz"
-assert_not_contains "$sanitized_output" "token123"
-assert_not_contains "$sanitized_output" "key=value"
+assert_not_contains "$sanitized_output" "${sample_auth}"
+assert_not_contains "$sanitized_output" "${sample_pass}"
+assert_not_contains "$sanitized_output" "${sample_api}"
+assert_not_contains "$sanitized_output" "${sample_key}"
 assert_contains "$sanitized_output" "[REDACTED]"
 
 echo "[baseline-smoke] framework API availability"

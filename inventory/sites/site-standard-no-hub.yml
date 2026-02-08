@@ -1,0 +1,11 @@
+site_id: site-standard-no-hub
+domain: standard-no-hub.example.test
+slug: stdnohub
+stack: lomp
+topology: standard
+host_ref: host-minimal-no-optional
+db:
+  name: wp_stdnohub
+  user: wp_stdnohub
+redis:
+  namespace: stdnohub

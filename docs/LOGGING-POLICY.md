@@ -9,8 +9,8 @@
 - The following key patterns must be masked:
   - `*_PASS`
   - `*_TOKEN*`
-  - `*_KEY`
-  - `*_SECRET`
+  - `*_KEY*`
+  - `*_SECRET*`
 - Use `hz_mask_kv_line` to mask `KEY=VALUE` lines before writing diagnostics or logs.
 
 ## Output Safety

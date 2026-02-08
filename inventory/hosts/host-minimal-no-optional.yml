@@ -1,0 +1,14 @@
+id: host-minimal-no-optional
+role: host
+os: ubuntu-24.04
+arch: x86_64
+resources:
+  cpu_bucket: 2c
+  ram_bucket: 2g
+  disk_bucket: small
+tailscale:
+  node_name: host-minimal-no-optional
+  ip: 100.64.0.81
+ssh:
+  user: ubuntu
+  port: 22
