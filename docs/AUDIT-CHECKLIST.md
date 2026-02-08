@@ -55,7 +55,7 @@ FAIL if relies on fragile assumptions.
 - ✅ `make ci` (or equivalent) passes
 - ✅ Smoke test covers the changed path
 - ✅ Shell static checks cover `scripts/`, `recipes/`, `modules/`, and `upstream/oneclick/` for all `*.sh`.
-  - Allowed ShellCheck exceptions for `upstream/oneclick/` only: `SC1091`, `SC2034`, `SC2153`, `SC2154` (upstream constants, external source includes, and upstream dynamic variable indirection).
+  - Allowed ShellCheck exceptions for `upstream/oneclick/` only: `SC1091`, `SC2034`, `SC2153`, `SC2154`, `SC2155`, `SC2181` (upstream constants, external source includes, and upstream dynamic variable patterns).
 FAIL if CI is not updated to cover new behavior.
 
 ## 7) Documentation

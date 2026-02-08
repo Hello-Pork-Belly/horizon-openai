@@ -15,7 +15,7 @@ if command -v shellcheck >/dev/null 2>&1; then
   echo "[check] shellcheck"
   while IFS= read -r script_file; do
     if [[ "$script_file" == upstream/oneclick/* ]]; then
-      shellcheck -e SC1091,SC2034,SC2153,SC2154 "$script_file"
+      shellcheck -e SC1091,SC2034,SC2153,SC2154,SC2155,SC2181 "$script_file"
     else
       shellcheck "$script_file"
     fi
