@@ -335,3 +335,14 @@
 - Next Action:
   - run local checks and scans, then create PR with this contract-only change.
 - STOP Triggered: `NO`
+
+## 2026-02-08T07:10:31Z
+- Milestone/PR: Milestone 3 / PR #19 (created) for OLS+WP contract doc
+- Branch: `codex/m3-ols-wp-contract-doc`
+- PR Summary (`gh pr view 19 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=QUEUED`, `auto-merge=SKIPPED`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
