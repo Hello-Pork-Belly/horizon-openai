@@ -1,0 +1,23 @@
+id: hub-lite-a
+role: hub
+os: ubuntu-24.04
+arch: aarch64
+resources:
+  cpu_bucket: 4c
+  ram_bucket: 24g
+  disk_bucket: medium
+tailscale:
+  node_name: hub-lite-a
+  ip: 100.64.0.41
+ssh:
+  user: ubuntu
+  port: 22
+allow_from:
+  - host-lite-a
+services:
+  mariadb:
+    port: 3306
+    bind_interface: tailscale0
+  redis:
+    port: 6379
+    bind_interface: tailscale0

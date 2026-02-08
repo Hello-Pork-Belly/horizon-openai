@@ -1,0 +1,19 @@
+id: host-lite-a
+role: host
+os: ubuntu-24.04
+arch: x86_64
+resources:
+  cpu_bucket: 2c
+  ram_bucket: 1g
+  disk_bucket: small
+tailscale:
+  node_name: host-lite-a
+  ip: 100.64.0.31
+ssh:
+  user: ubuntu
+  port: 22
+allow_from: []
+services:
+  web:
+    port: 443
+    bind_interface: 0.0.0.0
