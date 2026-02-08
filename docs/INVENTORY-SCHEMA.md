@@ -13,6 +13,10 @@
 - `tailscale`
 - `ssh`
 
+## Host Optional Keys
+- `allow_from`
+- `services`
+
 ## Site Required Keys
 - `site_id`
 - `domain`
@@ -26,6 +30,7 @@
 ## Reference Resolution Rules
 - `site.host_ref` must resolve to an existing `hosts.id`.
 - If `topology: lite`, `hub_ref` must be non-null and resolve to an existing `hosts.id`.
+- If `topology: standard`, `hub_ref` may be omitted.
 
 ## Validation Command
 - `bash scripts/check/inventory_validate.sh`

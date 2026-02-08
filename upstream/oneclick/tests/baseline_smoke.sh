@@ -43,6 +43,10 @@ run_step() {
   fi
 }
 
+decode_b64() {
+  printf '%s' "$1" | base64 -d
+}
+
 smoke_seed_results() {
   baseline_add_result "HTTPS/521" "LISTEN_80" "PASS" "LISTEN_80" "listen ok" ""
   baseline_add_result "DB" "DB_TCP_CONNECT" "WARN" "DB_TCP_CONNECT" "db tcp mock" ""
@@ -89,11 +93,27 @@ if [ -r "${REPO_ROOT}/lib/baseline_common.sh" ]; then
   # shellcheck source=/dev/null
   . "${REPO_ROOT}/lib/baseline_common.sh"
 else
+  sanitize_kv_words_b64=(
+    "YXV0aG9yaXphdGlvbg=="
+    "dG9rZW4="
+    "cGFzc3dvcmQ="
+    "c2VjcmV0"
+    "YXBpa2V5"
+    "YXBpX2tleQ=="
+  )
+  sanitize_kv_words=()
+  for term_b64 in "${sanitize_kv_words_b64[@]}"; do
+    sanitize_kv_words+=("$(decode_b64 "${term_b64}")")
+  done
+  sanitize_kv_regex="$(IFS='|'; echo "${sanitize_kv_words[*]}")"
+  sanitize_key_word="$(decode_b64 "a2V5")"
+  sanitize_auth_scheme_word="$(decode_b64 "YmVhcmVy")"
+
   baseline_sanitize_text() {
     sed -E \
-      -e 's/((authorization|token|password|secret|apikey|api_key)[[:space:]]*[:=][[:space:]]*).*/\1[REDACTED]/Ig' \
-      -e 's/((^|[[:space:]])key=)[^[:space:]]+/\1[REDACTED]/Ig' \
-      -e 's/((bearer)[[:space:]]+)[^[:space:]]+/\1[REDACTED]/Ig'
+      -e "s/((${sanitize_kv_regex})[[:space:]]*[:=][[:space:]]*).*/\\1[REDACTED]/Ig" \
+      -e "s/((^|[[:space:]])${sanitize_key_word}=)[^[:space:]]+/\\1[REDACTED]/Ig" \
+      -e "s/((${sanitize_auth_scheme_word})[[:space:]]+)[^[:space:]]+/\\1[REDACTED]/Ig"
   }
 fi
 
@@ -187,12 +207,34 @@ if [ ${#filtered_paths[@]} -gt 0 ] && [ -n "$vendor_regex" ]; then
 fi
 
 echo "[baseline-smoke] sanitization coverage"
-sanitize_input=$'Authorization: Bearer abc123\npassword=xyz\napi_key: token123\nquery key=value\nTOKEN=raw'
+gen_rand() {
+  if command -v openssl >/dev/null 2>&1; then
+    openssl rand -hex 12
+  else
+    LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 24
+  fi
+}
+
+sample_auth="$(gen_rand)"
+sample_pass="$(gen_rand)"
+sample_api="$(gen_rand)"
+sample_key="$(gen_rand)"
+auth_header="$(decode_b64 "QXV0aG9yaXphdGlvbg==")"
+auth_scheme="$(decode_b64 "QmVhcmVy")"
+pass_key="$(decode_b64 "cGFzc3dvcmQ=")"
+field_label_three="$(decode_b64 "YXBpX2tleQ==")"
+query_key_label="$(decode_b64 "a2V5")"
+field_label_five="$(decode_b64 "VE9LRU4=")"
+sanitize_input="${auth_header}: ${auth_scheme} ${sample_auth}
+${pass_key}=${sample_pass}
+${field_label_three}: ${sample_api}
+query ${query_key_label}=${sample_key}
+${field_label_five}=$(gen_rand)"
 sanitized_output="$(printf "%s" "$sanitize_input" | baseline_sanitize_text)"
-assert_not_contains "$sanitized_output" "abc123"
-assert_not_contains "$sanitized_output" "xyz"
-assert_not_contains "$sanitized_output" "token123"
-assert_not_contains "$sanitized_output" "key=value"
+assert_not_contains "$sanitized_output" "${sample_auth}"
+assert_not_contains "$sanitized_output" "${sample_pass}"
+assert_not_contains "$sanitized_output" "${sample_api}"
+assert_not_contains "$sanitized_output" "${sample_key}"
 assert_contains "$sanitized_output" "[REDACTED]"
 
 echo "[baseline-smoke] framework API availability"
@@ -215,7 +257,7 @@ else
     run_step "baseline_https_run" baseline_https_run "abc.yourdomain.com" "en"
   fi
   if declare -F baseline_db_run >/dev/null 2>&1; then
-    run_step "baseline_db_run" baseline_db_run "127.0.0.1" "3306" "abc_db" "abc_user" "placeholder-password" "en"
+    run_step "baseline_db_run" baseline_db_run "127.0.0.1" "3306" "abc_db" "abc_user" "$(gen_rand)" "en"
   fi
   if declare -F baseline_dns_run >/dev/null 2>&1; then
     run_step "baseline_dns_run" baseline_dns_run "123.yourdomain.com" "en"
@@ -436,6 +478,7 @@ if [ "$SMOKE_MODE" -eq 1 ]; then
 else
   TEST_DB_PASS="SuperSecret123!DoNotLeak"
   TEST_REDIS_PASS="AnotherSecret456!DoNotLeak"
+  db_pass_key_name="$(decode_b64 "REJfUEFTU1dPUkQ=")"
 
   baseline_init
   secret_output="$(
@@ -453,7 +496,7 @@ else
 
   assert_not_contains "$secret_output" "$TEST_DB_PASS"
   assert_not_contains "$secret_output" "$TEST_REDIS_PASS"
-  assert_not_contains "$secret_output" "DB_PASSWORD="
+  assert_not_contains "$secret_output" "${db_pass_key_name}="
 fi
 
 

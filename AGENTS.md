@@ -31,6 +31,7 @@ Purpose: Make changes to HLab safely, predictably, and auditable.
 - After coding:
   - Run `make ci` locally (or the repo’s CI equivalent) when required by the task and feasible.
   - Provide evidence in PR body per the SSOT.
+  - PR merge is manual-only in this stage (no auto-merge workflow).
   - Never fabricate executed commands or outputs.
 
 ## PR Body Template (must follow)

@@ -5,7 +5,7 @@ SHELL := /bin/bash
 lint-strict: lint
 
 lint:
-	bash -c 'shopt -s globstar; shellcheck scripts/**/*.sh'
+	bash -c 'set -euo pipefail; while IFS= read -r script_file; do if [[ "$${script_file}" == upstream/oneclick/* ]]; then shellcheck -S error "$${script_file}"; else shellcheck "$${script_file}"; fi; done < <(find scripts recipes modules upstream/oneclick -type f -name "*.sh" | sort)'
 
 smoke:
 	bash -n scripts/clean_node.sh

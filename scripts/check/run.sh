@@ -4,14 +4,22 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
+CHECK_DIRS=(scripts recipes modules upstream/oneclick)
+
 echo "[check] shell syntax"
 while IFS= read -r script_file; do
   bash -n "$script_file"
-done < <(find scripts -type f -name '*.sh' | sort)
+done < <(find "${CHECK_DIRS[@]}" -type f -name '*.sh' | sort)
 
 if command -v shellcheck >/dev/null 2>&1; then
   echo "[check] shellcheck"
-  bash -c 'shopt -s globstar; shellcheck scripts/**/*.sh'
+  while IFS= read -r script_file; do
+    if [[ "$script_file" == upstream/oneclick/* ]]; then
+      shellcheck -S error "$script_file"
+    else
+      shellcheck "$script_file"
+    fi
+  done < <(find "${CHECK_DIRS[@]}" -type f -name '*.sh' | sort)
 else
   echo "[check] shellcheck skipped (not installed)"
 fi
@@ -67,6 +75,13 @@ if [ -x "scripts/check/lnmp_lite_dryrun_check.sh" ]; then
   bash scripts/check/lnmp_lite_dryrun_check.sh
 else
   echo "[check] lnmp-lite skipped (checker not present)"
+fi
+
+if [ -x "scripts/check/masking_rules_check.sh" ]; then
+  echo "[check] masking"
+  bash scripts/check/masking_rules_check.sh
+else
+  echo "[check] masking skipped (checker not present)"
 fi
 
 

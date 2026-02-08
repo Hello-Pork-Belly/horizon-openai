@@ -35,13 +35,15 @@ hz_mask_kv_line() {
   local line="${1:-}"
   local key="${line%%=*}"
   local value="${line#*=}"
+  local upper_key=""
   if [[ "${key}" == "${line}" ]]; then
     printf '%s\n' "${line}"
     return
   fi
 
-  case "${key}" in
-    *_PASS|*_TOKEN*|*_KEY|*_SECRET)
+  upper_key="$(printf '%s' "${key}" | tr '[:lower:]' '[:upper:]')"
+  case "${upper_key}" in
+    *_PASS|*_TOKEN*|*_KEY*|*_SECRET*)
       printf '%s=%s\n' "${key}" "$(hz_mask_value "${value}")"
       ;;
     *)

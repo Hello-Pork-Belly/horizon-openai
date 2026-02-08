@@ -54,6 +54,8 @@ FAIL if relies on fragile assumptions.
 ## 6) Tests / CI
 - ✅ `make ci` (or equivalent) passes
 - ✅ Smoke test covers the changed path
+- ✅ Shell static checks cover `scripts/`, `recipes/`, `modules/`, and `upstream/oneclick/` for all `*.sh`.
+  - `upstream/oneclick/` uses ShellCheck with severity gate `-S error` (upstream warning/info noise does not block CI, parse/syntax and error-level findings still block).
 FAIL if CI is not updated to cover new behavior.
 
 ## 7) Documentation

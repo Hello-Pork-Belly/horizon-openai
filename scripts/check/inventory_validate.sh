@@ -74,8 +74,6 @@ main() {
     require_key "${file}" "resources" || rc=1
     require_key "${file}" "tailscale" || rc=1
     require_key "${file}" "ssh" || rc=1
-    require_key "${file}" "allow_from" || rc=1
-    require_key "${file}" "services" || rc=1
     require_key "${file}" "node_name" || rc=1
     require_key "${file}" "ip" || rc=1
     require_key "${file}" "user" || rc=1
@@ -139,7 +137,6 @@ main() {
     require_key "${file}" "stack" || rc=1
     require_key "${file}" "topology" || rc=1
     require_key "${file}" "host_ref" || rc=1
-    require_key "${file}" "hub_ref" || rc=1
     require_key "${file}" "db" || rc=1
     require_key "${file}" "redis" || rc=1
     require_key "${file}" "name" || rc=1
@@ -176,6 +173,11 @@ main() {
         err "UNRESOLVED_REF" "${file}" "lite topology requires non-null hub_ref"
         rc=1
       elif ! grep -Fxq "${hub_ref}" "${HOST_IDS_FILE}"; then
+        err "UNRESOLVED_REF" "${file}" "hub_ref not found in inventory/hosts"
+        rc=1
+      fi
+    elif [ -n "${hub_ref}" ] && [ "${hub_ref}" != "null" ]; then
+      if ! grep -Fxq "${hub_ref}" "${HOST_IDS_FILE}"; then
         err "UNRESOLVED_REF" "${file}" "hub_ref not found in inventory/hosts"
         rc=1
       fi
