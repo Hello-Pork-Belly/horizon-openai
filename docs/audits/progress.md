@@ -530,3 +530,14 @@
 - Next Action:
   - add neutral example inventory files and field notes for OLS+WP recipe.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:21:08Z
+- Milestone/PR: Milestone 3 / PR #22 (created) for OLS+WP examples
+- Branch: `codex/m3-ols-wp-examples`
+- PR Summary (`gh pr view 22 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
