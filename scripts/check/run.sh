@@ -50,6 +50,13 @@ if [ -x "scripts/check/ols_wp_maintenance_dryrun_check.sh" ]; then
 else
   echo "[check] ols-wp-maintenance skipped (checker not present)"
 fi
+if [ -x "scripts/check/hub_data_dryrun_check.sh" ]; then
+  echo "[check] hub-data"
+  bash scripts/check/hub_data_dryrun_check.sh
+else
+  echo "[check] hub-data skipped (checker not present)"
+fi
+
 
 if command -v shfmt >/dev/null 2>&1; then
   echo "[check] shfmt"

@@ -756,3 +756,34 @@
 - Next Action:
   - add hub dry-run recipe skeleton.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:46:14Z
+- Milestone/PR: Queue B / PR #28 (merged)
+- Branch: `main`
+- PR Summary (`gh pr view 28 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - sync local `main` and continue queue B / PR3.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:46:14Z
+- Milestone/PR: Queue B / PR #28 (post-merge main sync)
+- Branch: `main`
+- PR Summary (`gh pr view 28 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - create branch for queue B / PR3 check coverage.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:46:14Z
+- Milestone/PR: Queue B / PR3 (started)
+- Branch: `codex/m4-b-pr3-hub-check`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add hub dry-run check script and wire into unified `make check`.
+- STOP Triggered: `NO`
