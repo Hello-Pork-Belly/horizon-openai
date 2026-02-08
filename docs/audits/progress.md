@@ -322,3 +322,27 @@
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T07:09:20Z
+- Milestone/PR: Milestone 3 / PR1 (pending create) for OLS+WP contract doc
+- Branch: `codex/m3-ols-wp-contract-doc`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Acceptance Commands:
+  - `make check`
+  - `bash scripts/check/vendor_neutral_gate.sh`
+  - strict secret-risk pattern scan
+- Next Action:
+  - run local checks and scans, then create PR with this contract-only change.
+- STOP Triggered: `NO`
+
+## 2026-02-08T07:10:31Z
+- Milestone/PR: Milestone 3 / PR #19 (created) for OLS+WP contract doc
+- Branch: `codex/m3-ols-wp-contract-doc`
+- PR Summary (`gh pr view 19 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=QUEUED`, `auto-merge=SKIPPED`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
