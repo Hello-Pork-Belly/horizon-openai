@@ -14,7 +14,11 @@ done < <(find "${CHECK_DIRS[@]}" -type f -name '*.sh' | sort)
 if command -v shellcheck >/dev/null 2>&1; then
   echo "[check] shellcheck"
   while IFS= read -r script_file; do
-    shellcheck "$script_file"
+    if [[ "$script_file" == upstream/oneclick/* ]]; then
+      shellcheck -e SC2034,SC1091 "$script_file"
+    else
+      shellcheck "$script_file"
+    fi
   done < <(find "${CHECK_DIRS[@]}" -type f -name '*.sh' | sort)
 else
   echo "[check] shellcheck skipped (not installed)"

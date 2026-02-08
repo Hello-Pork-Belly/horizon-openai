@@ -19,5 +19,6 @@ assert_masked() {
 assert_masked "FOO_KEY_ID=Alpha123456789"
 assert_masked "BAR_SECRET_NAME=Beta123456789"
 assert_masked "BAZ_TOKEN_X=Gamma123456789"
+assert_masked "qux_key_name=Delta123456789"
 
 echo "masking rules check: PASS"
