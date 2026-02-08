@@ -23,6 +23,13 @@ else
   echo "[check] inventory skipped (validator not present)"
 fi
 
+if [ -x "scripts/check/interface_consistency.sh" ]; then
+  echo "[check] interface"
+  bash scripts/check/interface_consistency.sh
+else
+  echo "[check] interface skipped (checker not present)"
+fi
+
 if command -v shfmt >/dev/null 2>&1; then
   echo "[check] shfmt"
   shfmt -d scripts
