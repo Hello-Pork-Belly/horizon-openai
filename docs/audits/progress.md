@@ -442,3 +442,49 @@
   - `gh pr create --base main --head codex/m3-ols-wp-check-coverage --title "M3: OLS+WP dry-run check coverage" --body-file <prepared-body-file>`
   - `gh pr merge --auto --squash --delete-branch <PR_NUMBER>`
 - STOP Triggered: `YES` (invalid GitHub CLI token for account `Hello-Pork-Belly`)
+
+## 2026-02-08T07:35:18Z
+- Milestone/PR: STOP recovery attempt (auth remediation)
+- Branch: `codex/m3-ols-wp-check-coverage`
+- Auth Host Checked:
+  - `github.com`
+- Step Results (conclusion only):
+  - `gh auth status -h github.com`: invalid login state persists for active account.
+  - `env | egrep '^(GH_TOKEN|GITHUB_TOKEN)='`: no matching env override found.
+  - `gh auth refresh -h github.com -s repo,workflow`: failed due host connection error.
+  - `gh auth status -h github.com` (re-check): still invalid.
+  - `gh auth login -h github.com --web`: initiated but not completed in this execution environment.
+- Next Action:
+  - complete interactive login locally with `gh auth login -h github.com --web`, then re-run `gh auth status -h github.com` until valid.
+  - once valid, resume paused item: create PR for `codex/m3-ols-wp-check-coverage` (commit `558c518`) and continue required `ci` + auto-merge.
+- STOP Triggered: `YES` (GitHub CLI auth still invalid)
+
+## 2026-02-08T07:40:33Z
+- Milestone/PR: STOP recovery re-check
+- Branch: `codex/m3-ols-wp-check-coverage`
+- PR Summary (`gh auth status -h github.com`):
+  - `github.com auth state=INVALID` for active account.
+- Next Action:
+  - run `gh auth login -h github.com --web` in this same environment, then verify with `gh auth status -h github.com`.
+  - resume paused task only after auth is valid.
+- STOP Triggered: `YES` (GitHub CLI auth remains invalid)
+
+## 2026-02-08T07:51:25Z
+- Milestone/PR: STOP recovery re-check
+- Branch: `codex/m3-ols-wp-check-coverage`
+- PR Summary (`gh auth status -h github.com` + `gh api user --jq .login`):
+  - `github.com auth state=INVALID` in this execution environment.
+  - second command not reachable because auth check failed.
+- Next Action:
+  - complete auth in this same environment and retry paused PR creation.
+- STOP Triggered: `YES` (auth still invalid)
+
+## 2026-02-08T08:17:32Z
+- Milestone/PR: STOP cleared (auth restored)
+- Branch: `codex/m3-ols-wp-check-coverage`
+- PR Summary (`gh auth status -h github.com` + `gh api user --jq .login`):
+  - `github.com auth state=VALID`
+  - `login=Hello-Pork-Belly`
+- Next Action:
+  - create PR for `codex/m3-ols-wp-check-coverage` and continue required `ci` + auto-merge.
+- STOP Triggered: `NO`
