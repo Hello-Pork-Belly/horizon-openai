@@ -182,3 +182,12 @@
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T06:42:03Z
+- Milestone/PR: Milestone 1 / PR (pending create) for interface consistency checks
+- Branch: `codex/m1-interface-consistency-check`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add module/recipe contract consistency check and wire into `make check`.
+- STOP Triggered: `NO`
