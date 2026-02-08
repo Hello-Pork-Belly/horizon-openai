@@ -430,3 +430,15 @@
 - Next Action:
   - add `scripts/check/ols_wp_dryrun_check.sh` and wire into `scripts/check/run.sh`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T07:16:56Z
+- Milestone/PR: Milestone 3 / PR3 (creation blocked)
+- Branch: `codex/m3-ols-wp-check-coverage`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR creation failed)
+- Next Action:
+  - restore GitHub CLI auth, then run:
+  - `gh auth login -h github.com`
+  - `gh pr create --base main --head codex/m3-ols-wp-check-coverage --title "M3: OLS+WP dry-run check coverage" --body-file <prepared-body-file>`
+  - `gh pr merge --auto --squash --delete-branch <PR_NUMBER>`
+- STOP Triggered: `YES` (invalid GitHub CLI token for account `Hello-Pork-Belly`)
