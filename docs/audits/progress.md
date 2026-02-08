@@ -162,3 +162,23 @@
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T06:38:07Z
+- Milestone/PR: Milestone 1 / PR (pending create) for strict inventory validation
+- Branch: `codex/m1-inventory-strict-validation`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - strengthen inventory schema checks and normalize error output format.
+- STOP Triggered: `NO`
+
+## 2026-02-08T06:40:09Z
+- Milestone/PR: Milestone 1 / PR #13
+- Branch: `codex/m1-inventory-strict-validation`
+- PR Summary (`gh pr view 13 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - enable auto-merge with fixed prefix command, then wait for `ci`.
+- STOP Triggered: `NO`
