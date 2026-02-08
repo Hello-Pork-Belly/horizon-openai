@@ -388,3 +388,14 @@
 - Next Action:
   - add recipe contract and dry-run skeleton runner.
 - STOP Triggered: `NO`
+
+## 2026-02-08T07:13:32Z
+- Milestone/PR: Milestone 3 / PR #20 (created) for OLS+WP dry-run skeleton
+- Branch: `codex/m3-ols-wp-skeleton`
+- PR Summary (`gh pr view 20 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=QUEUED`, `auto-merge=SKIPPED`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
