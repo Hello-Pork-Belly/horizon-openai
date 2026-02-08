@@ -1,0 +1,23 @@
+id: hub-ols-wp-a
+role: hub
+os: ubuntu-24.04
+arch: aarch64
+resources:
+  cpu_bucket: 4c
+  ram_bucket: 16g
+  disk_bucket: medium
+tailscale:
+  node_name: hub-ols-wp-a
+  ip: 100.64.0.61
+ssh:
+  user: ubuntu
+  port: 22
+allow_from:
+  - host-ols-wp-a
+services:
+  mariadb:
+    port: 3306
+    bind_interface: tailscale0
+  redis:
+    port: 6379
+    bind_interface: tailscale0

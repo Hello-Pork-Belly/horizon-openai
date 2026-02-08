@@ -1,0 +1,12 @@
+site_id: site-ols-wp-a
+domain: olswpa.example.test
+slug: olswpa
+stack: lomp
+topology: lite
+host_ref: host-ols-wp-a
+hub_ref: hub-ols-wp-a
+db:
+  name: wp_olswpa
+  user: wp_olswpa
+redis:
+  namespace: olswpa

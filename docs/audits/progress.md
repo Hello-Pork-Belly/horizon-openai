@@ -499,3 +499,34 @@
 - Next Action:
   - enable auto-merge with fixed prefix command and wait for required `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:19:16Z
+- Milestone/PR: Milestone 3 / PR #21 (merged)
+- Branch: `main`
+- PR Summary (`gh pr view 21 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - sync local `main` and continue PR4 for OLS+WP examples.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:19:16Z
+- Milestone/PR: Milestone 3 / PR #21 (post-merge main sync)
+- Branch: `main`
+- PR Summary (`gh pr view 21 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - create PR4 branch and add neutral OLS+WP inventory examples.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:19:16Z
+- Milestone/PR: Milestone 3 / PR4 (started) for OLS+WP examples
+- Branch: `codex/m3-ols-wp-examples`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add neutral example inventory files and field notes for OLS+WP recipe.
+- STOP Triggered: `NO`
