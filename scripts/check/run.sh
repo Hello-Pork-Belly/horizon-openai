@@ -37,6 +37,13 @@ else
   echo "[check] lomp-lite skipped (checker not present)"
 fi
 
+if [ -x "scripts/check/ols_wp_dryrun_check.sh" ]; then
+  echo "[check] ols-wp"
+  bash scripts/check/ols_wp_dryrun_check.sh
+else
+  echo "[check] ols-wp skipped (checker not present)"
+fi
+
 if command -v shfmt >/dev/null 2>&1; then
   echo "[check] shfmt"
   shfmt -d scripts

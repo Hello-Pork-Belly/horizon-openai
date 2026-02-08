@@ -399,3 +399,34 @@
 - Next Action:
   - enable auto-merge with fixed prefix command and wait for required `ci`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T07:14:09Z
+- Milestone/PR: Milestone 3 / PR #20 (merged)
+- Branch: `main`
+- PR Summary (`gh pr view 20 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - sync local `main` and start PR3 for OLS+WP check coverage.
+- STOP Triggered: `NO`
+
+## 2026-02-08T07:14:37Z
+- Milestone/PR: Milestone 3 / PR #20 (post-merge main sync)
+- Branch: `main`
+- PR Summary (`gh pr view 20 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - create PR3 branch and add OLS+WP check script wiring.
+- STOP Triggered: `NO`
+
+## 2026-02-08T07:14:37Z
+- Milestone/PR: Milestone 3 / PR3 (started) for OLS+WP check coverage
+- Branch: `codex/m3-ols-wp-check-coverage`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add `scripts/check/ols_wp_dryrun_check.sh` and wire into `scripts/check/run.sh`.
+- STOP Triggered: `NO`
