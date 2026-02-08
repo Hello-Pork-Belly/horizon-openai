@@ -572,3 +572,14 @@
 - Next Action:
   - add OLS+WP maintenance contract doc with dry-run checkable requirements.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:23:22Z
+- Milestone/PR: Four-track queue A / PR #23 (created)
+- Branch: `codex/m4-ols-wp-maintenance-contract`
+- PR Summary (`gh pr view 23 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
