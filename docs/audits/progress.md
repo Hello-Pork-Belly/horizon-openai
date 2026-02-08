@@ -488,3 +488,14 @@
 - Next Action:
   - create PR for `codex/m3-ols-wp-check-coverage` and continue required `ci` + auto-merge.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:18:08Z
+- Milestone/PR: Milestone 3 / PR #21 (created) for OLS+WP check coverage
+- Branch: `codex/m3-ols-wp-check-coverage`
+- PR Summary (`gh pr view 21 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
