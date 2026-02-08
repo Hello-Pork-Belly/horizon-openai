@@ -694,3 +694,38 @@
 - Next Action:
   - retry branch creation with required permission, then continue A/PR4 examples.
 - STOP Triggered: `YES`
+
+## 2026-02-08T08:40:36Z
+- Milestone/PR: Four-track queue A / PR #26 (created)
+- Branch: `codex/m4-a-pr4-ols-wp-maintenance-examples`
+- PR Summary (`gh pr view 26 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`
+- Next Action:
+  - enable auto-merge with fixed prefix command and wait for required `ci`.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:40:36Z
+- Milestone/PR: Four-track queue A / PR #26 (auto-merge enabled)
+- Branch: `codex/m4-a-pr4-ols-wp-maintenance-examples`
+- PR Summary (`gh pr view 26 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - wait for required `ci` to pass and auto-merge to complete.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:41:20Z
+- Milestone/PR: Lock recovery (index.lock handling)
+- Branch: `codex/m4-a-pr4-ols-wp-maintenance-examples`
+- Detection:
+  - `git status` executed before recovery.
+  - no stale `index.lock` file present.
+  - process inspection found no active git worker process requiring cleanup.
+- Recovery Action:
+  - safe retry of pending commit/push workflow without deleting lock files.
+- Next Action:
+  - continue PR #26 progress checkpoint commit and push.
+- STOP Triggered: `NO`
