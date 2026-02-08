@@ -645,3 +645,52 @@
 - Next Action:
   - add maintenance dry-run checker and wire into unified `make check`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:35:11Z
+- Milestone/PR: Four-track queue A / PR #25 (merged)
+- Branch: `main`
+- PR Summary (`gh pr view 25 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - sync local `main` and continue A/PR4 examples.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:35:11Z
+- Milestone/PR: Four-track queue A / PR #25 (post-merge main sync)
+- Branch: `main`
+- PR Summary (`gh pr view 25 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=MERGED`
+  - `mergeStateStatus=UNKNOWN`
+  - `statusCheckRollup`: `ci=SUCCESS`, `auto-merge=SKIPPED`
+- Next Action:
+  - create branch for A/PR4 maintenance examples.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:35:11Z
+- Milestone/PR: Four-track queue A / PR4 (started)
+- Branch: `codex/m4-a-pr4-ols-wp-maintenance-examples`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add maintenance-oriented neutral example inventory and notes.
+- STOP Triggered: `NO`
+
+## 2026-02-08T08:35:44Z
+- Milestone/PR: STOP (permission error)
+- Branch: `main`
+- Commit: `eefc4f6`
+- PR Summary:
+  - queue target: Four-track queue A / PR4
+  - PR not created yet
+- Stop Reason:
+  - permission error while creating branch ref lock:
+  - `fatal: cannot lock ref 'refs/heads/codex/m4-a-pr4-ols-wp-maintenance-examples': Unable to create '.git/refs/heads/...lock': Operation not permitted`
+- Recovery Commands:
+  - `git checkout -b codex/m4-a-pr4-ols-wp-maintenance-examples`
+  - `git add docs/audits/progress.md`
+  - `git commit -m "M4-A: record progress and stop state"`
+- Next Action:
+  - retry branch creation with required permission, then continue A/PR4 examples.
+- STOP Triggered: `YES`
