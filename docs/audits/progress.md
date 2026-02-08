@@ -252,6 +252,20 @@
   - enable auto-merge with fixed prefix command, then wait for `ci`.
 - STOP Triggered: `NO`
 
+## 2026-02-08T06:57:22Z
+- Milestone/PR: Milestone 2 / PR (pending create) for LOMP Lite check coverage
+- Branch: `codex/m2-lomp-lite-check-coverage`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Acceptance Commands:
+  - `make check`
+  - `bash scripts/check/lomp_lite_dryrun_check.sh`
+  - `bash scripts/check/vendor_neutral_gate.sh`
+  - strict secret-risk pattern scan
+- Next Action:
+  - add recipe dry-run check and wire into unified check pipeline.
+- STOP Triggered: `NO`
+
 ## 2026-02-08T06:44:02Z
 - Milestone/PR: Milestone 1 / PR #14
 - Branch: `codex/m1-interface-consistency-check`

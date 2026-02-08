@@ -30,6 +30,13 @@ else
   echo "[check] interface skipped (checker not present)"
 fi
 
+if [ -x "scripts/check/lomp_lite_dryrun_check.sh" ]; then
+  echo "[check] lomp-lite"
+  bash scripts/check/lomp_lite_dryrun_check.sh
+else
+  echo "[check] lomp-lite skipped (checker not present)"
+fi
+
 if command -v shfmt >/dev/null 2>&1; then
   echo "[check] shfmt"
   shfmt -d scripts
