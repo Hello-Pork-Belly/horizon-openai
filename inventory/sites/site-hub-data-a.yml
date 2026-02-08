@@ -1,0 +1,20 @@
+site_id: site-hub-data-a
+domain: hubdata-a.example.test
+slug: hubdataa
+stack: lomp
+topology: lite
+host_ref: host-ols-wp-a
+hub_ref: hub-ols-wp-a
+db:
+  name: wp_hubdataa
+  user: wp_hubdataa
+redis:
+  namespace: hubdataa
+hub_data:
+  bind_interface: tailscale0
+  allowed_hosts:
+    - host-ols-wp-a
+  db_port: 3306
+  redis_port: 6379
+  backup_target: cloud-drive-target
+  retention_count: 14

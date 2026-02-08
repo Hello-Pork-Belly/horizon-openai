@@ -787,3 +787,12 @@
 - Next Action:
   - add hub dry-run check script and wire into unified `make check`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T08:54:54Z
+- Milestone/PR: Queue B / PR4 (started)
+- Branch: `codex/m4-b-pr4-hub-examples`
+- PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
+  - `N/A` (PR not created yet)
+- Next Action:
+  - add neutral hub-focused example inventory and notes.
+- STOP Triggered: `NO`
