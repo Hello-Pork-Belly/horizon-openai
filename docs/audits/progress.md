@@ -151,3 +151,14 @@
 - Next Action:
   - add module/recipe contract manifests and enforce runtime contract in `bin/hz`.
 - STOP Triggered: `NO`
+
+## 2026-02-08T06:36:21Z
+- Milestone/PR: Milestone 1 / PR #12
+- Branch: `codex/m1-contract-runtime-baseline`
+- PR Summary (`gh pr view 12 --json state,mergeStateStatus,statusCheckRollup`):
+  - `state=OPEN`
+  - `mergeStateStatus=BLOCKED`
+  - `statusCheckRollup`: `ci=IN_PROGRESS`
+- Next Action:
+  - enable auto-merge with fixed prefix command, then wait for `ci`.
+- STOP Triggered: `NO`
