@@ -1,4 +1,6 @@
 # Changelog
+- docs: P3 pilot - link ABCS loop docs (RULES/PHASES/contracts) into project instructions.
+
 
 All notable user-facing or policy-facing changes are recorded here.
 For canonical history, see Git + PRs (per docs/VERSIONING.md).
