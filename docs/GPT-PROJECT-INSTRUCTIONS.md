@@ -101,3 +101,19 @@ Architecture Rules: docs/BASELINE.md (Strict Pure Bash enforcement)
 Migration Plan: docs/migration/oneclick-to-hlab.md
 
 Agent Skills: .codex/skills/*.md
+
+## ABCS Loop (A→B→C)
+
+This repo uses a strict A→B→C loop:
+- A = Planner (writes an execution spec)
+- B = Codex Executor (implements exactly the spec)
+- C = Independent Auditor (returns PASS/FAIL JSON + evidence)
+
+SSOT (must read first):
+- docs/RULES.yml (DEFAULT=DENY)
+- docs/PHASES.yml
+- docs/contracts/ABCS-PLANNER-CONTRACT.md
+- docs/audits/ABCS-AUDIT-CONTRACT.md
+
+Audit output MUST be strict JSON only (no markdown), per:
+- docs/audits/ABCS-AUDIT-CONTRACT.md
