@@ -1,0 +1,23 @@
+{
+  "decision": "PASS",
+  "summary": "证据已满足 P3（docs-only closed-loop pilot）的门禁要求：变更范围仅 docs/CHANGELOG.md，提供了可审阅的完整 PR diff，提供了等价 CI 运行（make ci）且退出码为 0，并提供了审计所需 SSOT（docs/RULES.yml、docs/AUDIT-CHECKLIST.md、docs/PHASES.yml、docs/GPT-PROJECT-INSTRUCTIONS.md）的可复核内容与无敏感信息扫描结果；因此按 DEFAULT=DENY 规则可放行。",
+  "violations": [
+    {
+      "id": "CHECKLIST",
+      "severity": "minor",
+      "file": null,
+      "evidence": "CI 等价运行输出包含“shellcheck skipped (not installed)”与“shfmt skipped (not installed)”，以及“smoke skipped (requires bash>=4 on Linux)”，虽整体 CI_EXIT_CODE=0，但静态检查/格式化在该环境未执行。",
+      "fix_guidance": "若要把“ci status green”证据做得更强：在可用环境安装 shellcheck/shfmt（以及在 Linux bash>=4 环境跑 smoke），或提供远端 CI（required_checks: ci）通过截图/链接。对本次 docs-only 变更不构成阻断。"
+    }
+  ],
+  "verification": {
+    "checks_run": [
+      "范围核验：git diff --name-only（运行前/后）均仅为 docs/CHANGELOG.md；git status --porcelain（运行前/后）均仅显示 M docs/CHANGELOG.md。",
+      "规则核验：docs/RULES.yml 显示 default_policy=deny；docs/** 属于 low_risk_allow；未触及 forbidden_paths；workflow.required_checks 包含 ci。",
+      "清单核验：docs/AUDIT-CHECKLIST.md 要求 PR diff 必须可审阅且完整；本次已提供 docs/CHANGELOG.md 的 reviewable diff；命令与输出为可选且不得伪造（已提供 make ci 输出）。",
+      "阶段门禁核验：docs/PHASES.yml P3 required_evidence 包含 PR diff、ci status green、Auditor JSON decision PASS；已提供 PR diff、make ci（CI_EXIT_CODE=0）与本审计 JSON 输出；P3 acceptance 的 docs-only 与单条 CHANGELOG 记录已满足。",
+      "机密核验：rg 扫描 docs/RULES.yml、docs/AUDIT-CHECKLIST.md、docs/PHASES.yml、docs/GPT-PROJECT-INSTRUCTIONS.md 输出为空。"
+    ],
+    "missing_evidence": []
+  }
+}
