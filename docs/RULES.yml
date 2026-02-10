@@ -1,0 +1,85 @@
+version: 1
+policy_name: "horizon-openai repo rules (SSOT + gates)"
+default_policy: "deny"
+
+# 这些文件被视为“唯一权威输入”（SSOT）。审计与规划都应优先引用它们。
+ssot_files:
+  - "README.md"
+  - "AGENTS.md"
+  - "docs/BASELINE.md"
+  - "docs/AUDIT-CHECKLIST.md"
+  - "docs/INVENTORY-SCHEMA.md"
+  - "docs/CHANGELOG.md"
+  - "docs/RELEASE-POLICY.md"
+  - "docs/VERSIONING.md"
+  - "docs/LOGGING-POLICY.md"
+  - "docs/LOMP-LITE-SCOPE.md"
+  - "docs/GPT-PROJECT-INSTRUCTIONS.md"
+
+# 仓库工作流硬规则（用于 A→B→C 的门禁）
+workflow:
+  require_pr: true
+  allow_direct_push_to_main: false
+  required_checks:
+    - "ci"
+  merge_policy:
+    auto_merge_allowed: false
+    human_merge_required: true
+
+# 绝对禁止改动/写入的路径（除非你未来手动放开）
+forbidden_paths:
+  - ".github/workflows/**"     # CI 稳定性禁区
+  - "upstream/**"              # 上游镜像/来源，避免被“顺手改”
+  - "**/*.pem"
+  - "**/*.key"
+  - "**/*.p12"
+  - "**/*.pfx"
+  - "**/*.kubeconfig"
+  - "**/.env"
+  - "**/.env.*"
+  - "**/id_rsa"
+  - "**/id_ed25519"
+  - "**/*token*"
+  - "**/*secret*"
+  - "**/*password*"
+
+# 路径分级：不是全部都禁止，但审计时要区别对待
+path_tiers:
+  # 低风险：文档/示例/清单类，通常允许变更
+  low_risk_allow:
+    - "docs/**"
+    - "inventory/**"
+
+  # 中风险：会影响功能与接口，允许，但必须附带 check/证据
+  medium_risk_allow:
+    - "bin/**"
+    - "modules/**"
+    - "recipes/**"
+    - "scripts/check/**"
+
+  # 高风险：可破坏/清空/重绑定/破坏门禁的操作。默认不允许自动化动这些，
+  # 若必须修改，必须在变更说明里显式列出，并给出强证据与回滚点。
+  high_risk_restricted:
+    - "scripts/clean_node.sh"
+    - "scripts/runner/**"
+    - "scripts/web/**"
+    - "Makefile"
+    - ".codex/**"
+    - "skills/**"
+
+# 机密与日志规则（和你“一键安装构思”一致：任何密码/Token 不入仓库）
+secrets_policy:
+  allow_secrets_in_repo: false
+  allow_secrets_in_inventory: false
+  enforcement_notes:
+    - "No secrets in git. Use env/secret store injection."
+    - "Inventory must not contain passwords/tokens/private keys."
+
+# 变更提交规则（给 A 项目写指令、给 C 项目审计用）
+change_rules:
+  atomicity: "one_logical_change_per_pr"
+  require_evidence_for_medium_and_high_risk: true
+  evidence_examples:
+    - "diff summary (files changed)"
+    - "check output (PASS/FAIL)"
+    - "commands run + outputs"
