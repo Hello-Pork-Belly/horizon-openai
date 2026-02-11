@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -24,12 +24,11 @@ else
   echo "[check] shellcheck skipped (not installed)"
 fi
 
-if [ -x "scripts/check/inventory_validate.sh" ]; then
-  echo "[check] inventory"
-  bash scripts/check/inventory_validate.sh
-else
-  echo "[check] inventory skipped (validator not present)"
-fi
+echo "== inventory check (tests) =="
+bash scripts/check/inventory_test.sh
+
+echo "== inventory check (repo) =="
+bash scripts/check/inventory.sh
 
 if [ -x "scripts/check/interface_consistency.sh" ]; then
   echo "[check] interface"
