@@ -33,7 +33,17 @@
 - If `topology: standard`, `hub_ref` may be omitted.
 
 ## Validation Command
-- `bash scripts/check/inventory_validate.sh`
+- `bash scripts/check/inventory.sh`
+- `bash scripts/check/inventory_test.sh`
+
+## Validation
+- check line format:
+  - `CHECK inventory.<hosts|sites>.<relative_path> PASS|FAIL <reason>`
+- result line format:
+  - `RESULT inventory PASS=<n> FAIL=<n>`
+- fatal error line format (unsupported yaml or inventory layout errors only):
+  - `ERROR|file=<relative_path>|code=<CODE>|message=<english_detail>`
+- inventory must not contain credential-like key names; use env/secret injection for sensitive data.
 
 ## Strict Value Rules
 - Host:
@@ -47,13 +57,9 @@
   - `topology`: `lite|standard`
 
 ## Error Output Format
-- All validation failures use this normalized format:
-  - `ERROR|file=<path>|code=<CODE>|message=<detail>`
-- Common codes:
-  - `MISSING_DIR`
-  - `MISSING_HOST_FILES`
-  - `MISSING_SITE_FILES`
-  - `MISSING_KEY`
-  - `EMPTY_VALUE`
-  - `INVALID_VALUE`
-  - `UNRESOLVED_REF`
+- Fatal/unsupported parse and layout failures use this normalized format:
+  - `ERROR|file=<relative_path>|code=<CODE>|message=<english_detail>`
+- Common fatal codes:
+  - `INVENTORY_LAYOUT_ERROR`
+  - `YAML_UNSUPPORTED_TAB`
+  - `YAML_UNSUPPORTED_FEATURE`
