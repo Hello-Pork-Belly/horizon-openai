@@ -74,8 +74,8 @@ append_reason() {
 
 normalize_value() {
   local value="$1"
-  value="${value#${value%%[![:space:]]*}}"
-  value="${value%${value##*[![:space:]]}}"
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
   if [[ "${value}" == \"*\" ]] && [ "${#value}" -ge 2 ]; then
     value="${value:1:${#value}-2}"
   elif [[ "${value}" == \'*\' ]] && [ "${#value}" -ge 2 ]; then
@@ -231,7 +231,7 @@ emit_credential_hits() {
   local line_no=0
   while IFS= read -r line || [ -n "${line}" ]; do
     line_no=$((line_no + 1))
-    local trimmed="${line#${line%%[![:space:]]*}}"
+    local trimmed="${line#"${line%%[![:space:]]*}"}"
     [ -n "${trimmed}" ] || continue
     [[ "${trimmed}" == \#* ]] && continue
 
@@ -282,7 +282,7 @@ scan_unsupported_constructs() {
 
   while IFS= read -r line || [ -n "${line}" ]; do
     line_no=$((line_no + 1))
-    local trimmed="${line#${line%%[![:space:]]*}}"
+    local trimmed="${line#"${line%%[![:space:]]*}"}"
     [ -n "${trimmed}" ] || continue
     [[ "${trimmed}" == \#* ]] && continue
 
