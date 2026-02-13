@@ -13,8 +13,10 @@ Owner: Pork-Belly
 - (YYYY-MM-DD) <item> (PR: #<n>)
 
 ## Next
-- <item>
-- <item>
+- T-001 Auto-merge Enabler (auto-enable auto-merge for eligible PRs)
+- T-002 Repo Hygiene Plan (identify useless dirs/files; propose target structure)
+- T-003 Repo Hygiene Execute (cleanup/archive/reorder per plan)
+- T-004 Baseline hardening for SSOT text (vendor-neutral scope + auto-merge policy + BASELINE checklist sync)
 
 ## Current Focus
 - Primary target: LOMP Lite v1 (hub + host)
