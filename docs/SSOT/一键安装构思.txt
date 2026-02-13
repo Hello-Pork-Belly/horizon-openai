@@ -1,0 +1,54 @@
+一键安装（OneClick）项目简报
+
+2. 现实环境与约束（必须考虑）
+- 机器来源：免费/低成本云 VPS（可在任意主机商/云上测试；但脚本/文档/日志/错误输出中禁止出现任何 VPS/基础设施云厂商名称）。
+- 厂商中立（硬约束，范围限定）：脚本、配置、注释、README、日志/错误输出中不得出现任何 VPS/基础设施云厂商/平台名称（IaaS/主机商）；允许出现第三方 SaaS/应用/开源项目名称（如 DNS/CDN/对象存储/邮件服务、WordPress、Tailscale 等），但仍需避免把实现绑死在某一家 provider 上（用可替换的 provider 配置/映射表表达）。
+
+2.1 范围、MVP 与非目标（v1 边界，避免一开始承诺过多）
+- v1 非目标：
+  - 不做跨发行版支持（仅 Ubuntu 22.04/24.04）。
+  - 不做复杂多云编排。
+
+v1 支持矩阵建议（可在 docs/BASELINE.md 写死）
+- topology：lite / standard / hub
+- web：OLS 优先；LNMP 进入 v1+
+- secrets 注入：env / secret store
+
+2.2 docs/BASELINE.md 必须写死的清单（硬要求）
+- 支持矩阵：Ubuntu 版本（22.04/24.04）、arch（x86_64/aarch64）、topology（lite/standard/hub）、web（OLS 优先，LNMP 何时进入 v1+）。
+- 默认工具链与来源：证书/续期工具链（默认选择与非交互方式）、Web/DB/Redis 安装来源（系统源/第三方源清单、签名/校验方式）。
+- 第三方二进制白名单：例如 rclone/cloudflared/其他必需组件（每项必须记录来源、版本策略、校验方式、缓存路径、更新频率）。
+- 备份口径：tar 压缩算法与 level（gzip/zstd）、可复现打包选项要求、manifest 字段最小集与 hash 算法（sha256）。
+- DB dump 口径：mysqldump 一致性选项（是否 `--single-transaction`、是否包含 routines/events/triggers 等）与跨版本恢复注意点。
+- Redis 隔离默认：namespace（key 前缀）为默认策略；DB index/ACL 是否/何时启用。
+- 防火墙与端口口径：默认 UFW；Hub 的 3306/6379 必须 tailscale0-only + allowlist；验证命令与 FAIL 判定。
+- 日志与可观测：统一日志格式（时间戳/LEVEL/module/run_id）、日志目录/轮转策略（logrotate/journald）与上限。
+- 版本与发布：版本号策略（SemVer）、何时 bump、tag 规范、CHANGELOG 维护口径。
+- 危险操作确认：哪些动作必须 `HZ_CONFIRM=YES`/`--force`，以及默认保护策略。
+
+3.2.6 备份产物的严格格式（补全 manifest 规范）
+- hash：默认 sha256；tar 包默认 gzip（或在 BASELINE.md 指定 zstd）；db dump 默认 `db.sql.gz`；站点文件默认 `files.tar.gz`。
+- 打包与可复现性（默认口径；如需调整必须在 docs/BASELINE.md 写死）：
+  - tar 默认开启“可复现打包”选项（固定排序、固定 mtime、去除随机性），避免同一份内容重复备份 hash 不一致；如系统 tar 版本不支持，则至少保证 `sha256` 计算基于备份文件本身并在 manifest 记录 tar 版本。
+  - 压缩级别与算法默认值需固定（gzip 或 zstd 的 level），并写入 manifest（例如 `compression: {algorithm: gzip, level: 6}`）。
+- DB dump 一致性（mysqldump 默认口径必须固定）：
+  - 默认启用一致性选项（例如 InnoDB 的 `--single-transaction`），并明确是否包含 routines/events/triggers；任何偏离必须在 docs/BASELINE.md 记录。
+  - dump 文件必须在 manifest 标注 `engine: mysqldump`、`mysql_version`、`mariadb_version`（如可得），便于跨版本恢复排障。
+- 备份加密（默认策略必须明确）：
+  - 默认不对本地备份包做二次加密，但必须支持“可选加密”路径（例如 rclone crypt 或外部加密），其密钥/配置一律走 env/secret store；不得写入 inventory/日志。
+  - 若启用加密，manifest 必须记录 `encryption: {enabled: true, method: <method_name>}`（不记录密钥）。
+- restore 目标选择与防覆盖（最小口径）：
+  - restore 必须支持恢复到“新目录”（文件）与“测试库”（db）两种模式；默认使用测试库避免覆盖生产库。
+  - 测试库命名默认：`<db_name>__restore_test`（若冲突则递增后缀），并在输出中明确打印最终目标。
+  - restore 后最小验证必须包含：能连接测试库 + 表数量>0（或存在站点表前缀匹配的表；`wp_` 仅作为 fallback）+ files 解包目录存在且非空；失败需指明步骤与退出码。
+- `artifacts` 结构补全（便于一包多对象）：
+  - 每个 artifact 除 `name/path/sha256/size` 外，建议增加 `type`（db|files|config|logs）与 `scope_id`（site_id/host_id），避免多站点/多主机备份混淆。
+
+6. 从 oneclick 到 horizon-lab：为什么需要 AI 流水线（方法论）
+- 输出门禁：
+  - PR 合并允许使用 auto-merge（squash/rebase 由仓库策略决定），以减少人工介入；但合并必须满足 required checks 全通过 + 审计门禁 PASS（高风险变更建议双审计 PASS）。
+  - 若 required checks 或审计未通过，则必须回炉（修复后重新跑 check/审计），不得以“手动合并”绕过门禁。
+- main 分支允许开启 auto-merge 的准入条件（必须写死并持续满足；任一条件不满足则应暂停 auto-merge）：
+  - `check` 已覆盖并作为 required checks：bash 语法检查、shellcheck、shfmt、inventory 校验、vendor-neutral gate。
+  - 至少一个核心方案（优先 LOMP Lite）具备可自动化的最小运行态验收：Tailscale 连通、Hub 端口仅 tailscale0 可达、服务存活、以及一次备份/恢复验证（可解包/可导入/可恢复到新目录）。
+  - 关键变更具备回滚点（版本锁定/配置备份/可逆操作说明），并在 docs/CHANGELOG.md 记录。
