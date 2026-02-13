@@ -1,15 +1,23 @@
 ## Summary
-- 
+- What does this PR change?
 
-## Validation Commands
-- `make check`
+## Linked SPEC
+- docs/SSOT/<spec or link> (required)
 
-## Check Evidence (No Secrets)
-- Local check result:
-- CI check result:
+## Evidence (required)
+- `make ci`:
+  - [paste output or link to checks]
+- Any additional verification commands:
+  - [paste outputs]
 
-## Required Confirmations
-- [ ] I ran the commands listed above and reviewed the outputs.
-- [ ] I did not include secrets, tokens, private keys, or credential-like values.
-- [ ] CI validation relies on GitHub-hosted execution only (no SSH/remote execution in check flow).
-- [ ] Vendor-neutral content gate passes for tracked repository files.
+## Risk Level
+- [ ] Low (docs/refactor only)
+- [ ] Medium (scripts/modules behavior change)
+- [ ] High (firewall, backup/restore, secrets handling, uninstall/cleanup)
+
+## SSOT Updates
+- [ ] STATE.md updated (Done/Doing/Next)
+- [ ] DECISIONS.md updated (if behavior/contract changed)
+
+## Auditor Notes
+- Any expected deviations / waivers (must be justified)
