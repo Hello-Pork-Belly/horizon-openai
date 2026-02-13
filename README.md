@@ -1,4 +1,4 @@
-# horizon-ai test
+# horizon- openai test
 
 Horizon-Hybrid lab repo for mixed-architecture nodes (ARM hub + x86 edge),
 operated via Tailscale mesh and GitHub-hosted CI checks.
