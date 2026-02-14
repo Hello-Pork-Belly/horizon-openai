@@ -33,8 +33,8 @@
 - If `topology: standard`, `hub_ref` may be omitted.
 
 ## Validation Command
-- `bash scripts/check/inventory.sh`
-- `bash scripts/check/inventory_test.sh`
+- `bash tools/check/inventory.sh`
+- `bash tools/check/inventory_test.sh`
 
 ## Validation
 - check line format:

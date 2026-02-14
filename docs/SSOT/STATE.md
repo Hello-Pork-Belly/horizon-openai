@@ -30,4 +30,4 @@ Owner: Pork-Belly
 - Idempotency / ownership boundaries
 
 ## Open Questions
-- Is `upstream/oneclick` still a production entrypoint or purely legacy snapshot?
+- Is `archive/upstream-20260215/oneclick` still a production entrypoint or purely legacy snapshot?

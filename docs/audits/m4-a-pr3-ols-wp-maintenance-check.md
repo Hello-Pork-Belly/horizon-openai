@@ -7,14 +7,14 @@
 - Ensure maintenance recipe sections are validated in local and CI check pipeline.
 
 ## Changes
-- Added `/Users/freeman/Documents/New project/scripts/check/ols_wp_maintenance_dryrun_check.sh`.
-- Updated `/Users/freeman/Documents/New project/scripts/check/run.sh` to execute the maintenance checker.
+- Added `/Users/freeman/Documents/New project/tools/check/ols_wp_maintenance_dryrun_check.sh`.
+- Updated `/Users/freeman/Documents/New project/tools/check/run.sh` to execute the maintenance checker.
 - Added this audit record.
 
 ## Acceptance Commands
 - `make check`
-- `bash scripts/check/ols_wp_maintenance_dryrun_check.sh`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/ols_wp_maintenance_dryrun_check.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan over tracked files
 
 ## Next Step

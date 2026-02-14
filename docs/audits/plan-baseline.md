@@ -5,7 +5,7 @@
 - Keep all changes repo-only and auditable.
 
 ## Current State Snapshot
-- Check entrypoint exists: `make check` -> `scripts/check/run.sh`.
+- Check entrypoint exists: `make check` -> `tools/check/run.sh`.
 - CI entrypoint exists: `.github/workflows/ci.yml` runs `make check`.
 - `bin/` and `inventory/` do not exist yet.
 - `LICENSE` and `VERSION` do not exist yet.
@@ -58,7 +58,7 @@
 
 ### PR-05: Check Gate Expansion (Static Baseline)
 - Scope:
-  - Extend `scripts/check/run.sh` to include:
+  - Extend `tools/check/run.sh` to include:
     - shell syntax checks
     - shellcheck checks
     - inventory validator

@@ -16,7 +16,7 @@ check_requirements() {
 }
 
 usage() {
-  echo "usage: scripts/check/inventory.sh [--inventory-root PATH] [--strict|--no-strict]" >&2
+  echo "usage: tools/check/inventory.sh [--inventory-root PATH] [--strict|--no-strict]" >&2
 }
 
 while [ "$#" -gt 0 ]; do

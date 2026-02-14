@@ -11,7 +11,7 @@
 
 ## Acceptance Commands
 - `make check`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan over tracked files
 
 ## Next Step

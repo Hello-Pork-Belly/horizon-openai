@@ -1,6 +1,6 @@
 {
   "decision": "FAIL",
-  "summary": "本次取证范围仅新增 docs/audits/ABCS-P4-AUDIT-2026-02-11.json；未包含任何 scripts/check/** 或 docs/INVENTORY-SCHEMA.md 的实现侧变更。且本次 make ci 输出仍走旧路径（[check] inventory / inventory validate: PASS），未出现两步 inventory gate 的新 header（== inventory check (tests) == / == inventory check (repo) ==）。因此无法证明 P4『inventory validation gate enforced in CI』已落地并生效，按默认拒绝规则不予放行。",
+  "summary": "本次取证范围仅新增 docs/audits/ABCS-P4-AUDIT-2026-02-11.json；未包含任何 tools/check/** 或 docs/INVENTORY-SCHEMA.md 的实现侧变更。且本次 make ci 输出仍走旧路径（[check] inventory / inventory validate: PASS），未出现两步 inventory gate 的新 header（== inventory check (tests) == / == inventory check (repo) ==）。因此无法证明 P4『inventory validation gate enforced in CI』已落地并生效，按默认拒绝规则不予放行。",
   "violations": [
     {
       "id": "EVIDENCE_MISMATCH",
@@ -17,7 +17,7 @@
       "CI 核验：make ci 退出码为 0，但输出仍为旧 inventory validate: PASS 路径。"
     ],
     "missing_evidence": [
-      "缺少 scripts/check/run.sh 已强制两步 inventory gate 的可审阅 diff 或 main 上内容证明。",
+      "缺少 tools/check/run.sh 已强制两步 inventory gate 的可审阅 diff 或 main 上内容证明。",
       "缺少 make ci 输出中出现 == inventory check (tests) == / == inventory check (repo) == 的原样日志。",
       "若 required_checks=ci 需要远端证明：缺少 gh pr checks 通过记录/链接。"
     ]

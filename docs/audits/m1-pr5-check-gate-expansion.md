@@ -4,8 +4,8 @@
 - Expand the unified check gate with inventory schema validation and optional formatter check.
 
 ## Changes
-- Updated `scripts/check/run.sh` to add:
-  - inventory validation step (`scripts/check/inventory_validate.sh`)
+- Updated `tools/check/run.sh` to add:
+  - inventory validation step (`tools/check/inventory_validate.sh`)
   - optional `shfmt -d` step when `shfmt` is available
 - Existing CI entrypoint remains `make check`.
 
@@ -20,7 +20,7 @@
 
 ## Acceptance Commands
 - `make check`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan over tracked files
 
 ## Rollback
