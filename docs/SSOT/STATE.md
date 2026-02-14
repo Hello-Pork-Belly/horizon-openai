@@ -8,15 +8,13 @@ Owner: Pork-Belly
 
 ## Done
 - (2026-02-13) SSOT bootstrap
-- (2026-02-13) Roles + Workflow solidification for SSOT execution
+- (2026-02-15) T-004 CLI Skeleton (hz) (PR: #63)
 
 ## Doing
-- (2026-02-15) T-004 CLI Skeleton (hz) (PR: #<TBD>)
+- (2026-02-15) T-005 Recipe Runner (hz install) (PR: #<TBD>)
 
 ## Next
-- T-001 Auto-merge Enabler (auto-enable auto-merge for eligible PRs)
-- T-002 Repo Hygiene Plan (identify useless dirs/files; propose target structure)
-- T-003 Repo Hygiene Execute (cleanup/archive/reorder per plan)
+- T-001 Auto-merge Enabler
 
 ## Current Focus
 - Primary target: One-click installation system (recipes/ + inventory/)
@@ -28,10 +26,3 @@ Owner: Pork-Belly
 - DB/Redis exposure (tailscale0-only)
 - Backup/restore validity and evidence
 - Idempotency / ownership boundaries
-
-## Open Questions
-codex/feature/T-004-cli-skeleton
-- None
-=======
-- Is `archive/upstream-20260215/oneclick` still a production entrypoint or purely legacy snapshot?
-main

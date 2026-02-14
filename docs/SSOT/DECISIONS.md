@@ -104,3 +104,26 @@ Assumptions:
 
 Links:
 - Task: T-004 CLI Skeleton (hz)
+
+## 2026-02-15 — D-005: Contract-First Execution
+
+Decision:
+- Implement `hz install <recipe>` as contract-first execution:
+  - Require `recipes/<name>/contract.yml` and `recipes/<name>/run.sh` to exist.
+  - Parse `required_env` from `contract.yml` (minimal YAML subset) and verify variables are set before running `run.sh`.
+  - If validation fails, abort with exit code 1 and DO NOT execute `run.sh`.
+
+Rationale:
+- `hz` must be a safety airbag: prevent blind execution on an unprepared environment.
+- Avoid complex dependencies; use pure-bash parsing for a strict, well-defined subset.
+
+Scope:
+- lib/recipe_loader.sh (new)
+- bin/hz (install path updated)
+
+Assumptions:
+- `contract.yml` expresses env requirements via `required_env` (inline list or block list), optionally under `inputs`.
+- Missing `contract.yml` is treated as a hard error (safer default).
+
+Links:
+- Task: T-005 Recipe Runner (hz install)

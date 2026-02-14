@@ -4,6 +4,8 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=lib/cli_core.sh
 . "${REPO_ROOT}/lib/cli_core.sh"
+# shellcheck source=lib/recipe_loader.sh
+. "${REPO_ROOT}/lib/recipe_loader.sh"
 
 main() {
   local cmd="${1:-}"
@@ -24,7 +26,7 @@ main() {
       ;;
     install)
       shift || true
-      hz_install_recipe "${1:-}"
+      hz_recipe_install "${1:-}"
       return $?
       ;;
     recipe)
