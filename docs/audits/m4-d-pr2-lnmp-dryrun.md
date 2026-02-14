@@ -14,7 +14,7 @@
 ## Acceptance Commands
 - `make check`
 - `HZ_DRY_RUN=1 bash bin/hz recipe lnmp-lite check`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan over tracked files
 
 ## Next Step

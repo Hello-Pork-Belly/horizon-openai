@@ -4,12 +4,12 @@
 - Add a deterministic interface consistency gate for module/recipe contracts under `make check`.
 
 ## Changes
-- Added `scripts/check/interface_consistency.sh`:
+- Added `tools/check/interface_consistency.sh`:
   - validates required contract keys
   - validates required subcommand set
   - validates runner path existence
   - emits normalized error format
-- Updated `scripts/check/run.sh` to execute the interface checker.
+- Updated `tools/check/run.sh` to execute the interface checker.
 
 ## Impact Scope
 - Check pipeline only.
@@ -19,9 +19,9 @@
 - `make check` executes interface consistency step and passes with current contracts.
 
 ## Acceptance Commands
-- `bash scripts/check/interface_consistency.sh`
+- `bash tools/check/interface_consistency.sh`
 - `make check`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan over tracked files
 
 ## Rollback

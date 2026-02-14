@@ -32,7 +32,7 @@ We are migrating from the legacy `oneclick` monolith to **Horizon CLI (v2.0)**.
 
 **Migration Strategy:**
 1.  **Phase 1 (Foundation)**: Establish `scripts/` structure, pure Bash standards, and basic CI.
-2.  **Phase 2 (Porting)**: Move high-value logic from `upstream/oneclick` to `scripts/`.
+2.  **Phase 2 (Porting)**: Move high-value logic from `archive/upstream-20260215/oneclick` to `scripts/`.
 3.  **Phase 3 (Integration)**: Wire up the UI.
 
 ---

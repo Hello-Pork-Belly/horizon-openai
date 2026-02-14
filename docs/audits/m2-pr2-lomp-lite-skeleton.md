@@ -15,7 +15,7 @@
 - `make check`
 - `HZ_DRY_RUN=1 bash bin/hz recipe lomp-lite install`
 - `HZ_DRY_RUN=2 bash bin/hz recipe lomp-lite diagnostics`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan
 
 ## Next Step

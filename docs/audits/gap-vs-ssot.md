@@ -17,14 +17,14 @@
 
 3. Inventory static baseline
 - `inventory/hosts/` and `inventory/sites/` examples exist.
-- `scripts/check/inventory_validate.sh` exists and runs local static checks.
+- `tools/check/inventory_validate.sh` exists and runs local static checks.
 
 4. Unified check gate baseline
 - `make check` is CI entrypoint.
-- `scripts/check/run.sh` includes shell syntax, shellcheck (if installed), inventory validation, optional `shfmt`, smoke (conditional), and neutral wording gate.
+- `tools/check/run.sh` includes shell syntax, shellcheck (if installed), inventory validation, optional `shfmt`, smoke (conditional), and neutral wording gate.
 
 5. Logging/masking baseline
-- `scripts/lib/logging.sh` added with log directory and masking helpers.
+- `lib/logging.sh` added with log directory and masking helpers.
 - `docs/LOGGING-POLICY.md` documents policy.
 
 ## Not Completed
@@ -52,7 +52,7 @@
 
 3. PR-C: Interface consistency checks in `make check`
 - Add checker to verify each module/recipe manifest declares required subcommands.
-- Add this checker to `scripts/check/run.sh`.
+- Add this checker to `tools/check/run.sh`.
 
 ## Acceptance for Next PRs
 - Local: `make check` must pass before push.

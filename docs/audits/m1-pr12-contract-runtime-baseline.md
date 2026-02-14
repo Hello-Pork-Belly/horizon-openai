@@ -36,7 +36,7 @@
 - `bash bin/hz module list`
 - `bash bin/hz module example check`
 - `HZ_DRY_RUN=2 bash bin/hz recipe example install`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan over tracked files
 
 ## Rollback

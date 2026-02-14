@@ -3,7 +3,7 @@
 ## Log Directory Strategy
 - Default log directory: `logs/` under repository root.
 - Override path: set `HZ_LOG_DIR`.
-- Scripts should call `hz_prepare_log_dir` from `scripts/lib/logging.sh`.
+- Scripts should call `hz_prepare_log_dir` from `lib/logging.sh`.
 
 ## Masking Rules
 - The following key patterns must be masked:

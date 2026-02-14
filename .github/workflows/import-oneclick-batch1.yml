@@ -28,7 +28,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          target_dir="${GITHUB_WORKSPACE}/upstream/oneclick"
+          target_dir="${GITHUB_WORKSPACE}/archive/upstream-20260215/oneclick"
           src_dir="${GITHUB_WORKSPACE}/upstream/_src/hz-oneclick"
 
           mkdir -p \
@@ -58,6 +58,6 @@ jobs:
           commit-message: "Import batch-1 from hz-oneclick"
           body: |
             ## Summary
-            - Import batch-1 files from hz-oneclick into upstream/oneclick.
+            - Import batch-1 files from hz-oneclick into archive/upstream-20260215/oneclick.
             - Record upstream commit SHA.
           labels: import

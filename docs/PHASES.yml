@@ -84,7 +84,7 @@ phases:
     allowed_paths:
       - "modules/**"
       - "recipes/**"
-      - "scripts/check/**"
+      - "tools/check/**"
       - "docs/**"
       - "inventory/**"
     forbidden_paths_ref: "docs/RULES.yml#forbidden_paths"

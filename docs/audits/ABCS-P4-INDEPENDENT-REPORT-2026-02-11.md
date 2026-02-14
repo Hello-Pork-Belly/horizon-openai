@@ -14,9 +14,9 @@
 
 ## 三、关键产物路径
 
-- `scripts/check/inventory.sh`
-- `scripts/check/inventory_test.sh`
-- `scripts/check/run.sh`
+- `tools/check/inventory.sh`
+- `tools/check/inventory_test.sh`
+- `tools/check/run.sh`
 - `docs/INVENTORY-SCHEMA.md`
 - `docs/CHANGELOG.md`
 - `docs/audits/ABCS-P4-PASS-2026-02-11.json`
