@@ -151,3 +151,27 @@ Scope:
 
 Links:
 - Task: T-006 Inventory Integration
+
+## 2026-02-15 — D-007: Logging Standard
+
+Decision:
+- Standardize logging via `lib/logging.sh` with levels: ERROR/WARN/INFO/DEBUG.
+- `LOG_LEVEL` controls verbosity (default INFO). `ERROR` logs must go to stderr.
+- `bin/hz` parses global flags anywhere in argv:
+  - `-v/--verbose` => LOG_LEVEL=DEBUG and HZ_DEBUG=1
+  - `-q/--quiet`   => LOG_LEVEL=ERROR
+- Default INFO logs must not print secret values. DEBUG logs may print masked values (via hz_mask_kv_line).
+
+Rationale:
+- Make failures obvious (stderr) and debugging discoverable without noisy defaults.
+- Keep secrets safe by default.
+
+Scope:
+- lib/logging.sh
+- bin/hz
+- lib/cli_core.sh
+- lib/inventory.sh
+- lib/recipe_loader.sh
+
+Links:
+- Task: T-007 Unified Logging & Verbosity

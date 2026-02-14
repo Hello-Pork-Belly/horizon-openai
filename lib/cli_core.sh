@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-# Shared CLI core for hz.
-# Pure bash; minimal dependencies; vendor-neutral.
+# shellcheck source=lib/logging.sh
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/logging.sh"
 
 hz_repo_root() {
   local root
@@ -15,22 +15,26 @@ hz_read_version() {
   root="$(hz_repo_root)"
   version_file="${root}/VERSION"
   if [[ -f "$version_file" ]]; then
-    # Trim trailing newline safely
     tr -d '\n' < "$version_file"
   else
     echo "0.0.0"
   fi
 }
 
-hz_ts_utc() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
-
+# Compatibility wrappers (legacy callers use hz_log/hz_die)
 hz_log() {
   local level="$1"; shift || true
-  echo "[$(hz_ts_utc)] [$level] $*"
+  case "$level" in
+    INFO)  log_info "$@" ;;
+    WARN)  log_warn "$@" ;;
+    ERROR) log_error "$@" ;;
+    DEBUG) log_debug "$@" ;;
+    *)     log_info "$level $*" ;;
+  esac
 }
 
 hz_die() {
-  hz_log "ERROR" "$*"
+  log_error "$*"
   return 1
 }
 
@@ -42,18 +46,22 @@ Usage:
   hz help
   hz version
   hz check
-  hz install <recipe>
+  hz install <recipe> [--host <hostname>]
   hz recipe list
   hz recipe <name> <subcommand>
   hz module list
   hz module <name> <subcommand>
 
+Global flags:
+  -v, --verbose   Enable DEBUG logs
+  -q, --quiet     Only ERROR logs
+
 Environment:
   HZ_DRY_RUN=0|1|2   (default: 0)
+  HZ_DEBUG=0|1       (DEBUG may print values)
 
 Notes:
   - hz check runs repository verification (CI-style).
-  - hz install <recipe> maps to: hz recipe <recipe> install
 EOF_USAGE
 }
 
@@ -74,7 +82,6 @@ hz_trim() {
 
 hz_get_contract_value() {
   local file="$1" key="$2"
-  # Minimal YAML-ish parsing for "key: value" lines (as used by current contracts).
   awk -F ':' -v k="$key" '
     $1 ~ "^[[:space:]]*" k "$" {
       sub(/^[[:space:]]+/, "", $2)
@@ -113,7 +120,7 @@ hz_list_targets() {
   done < <(find "$base" -mindepth 2 -maxdepth 2 -type f -name contract.yml | sort)
 
   if [[ "$found" -eq 0 ]]; then
-    hz_log "WARN" "no ${target_type} contracts found"
+    log_warn "no ${target_type} contracts found"
   fi
 }
 
@@ -139,14 +146,13 @@ hz_run_target() {
   runner_abs="${root}/${runner_rel}"
   [[ -f "$runner_abs" ]] || { hz_die "runner not found: ${runner_abs}"; return 2; }
 
-  hz_log "INFO" "target=${target_type}/${name} subcommand=${subcommand} dry_run=${HZ_DRY_RUN:-0}"
+  log_info "target=${target_type}/${name} subcommand=${subcommand} dry_run=${HZ_DRY_RUN:-0}"
 
   HZ_SUBCOMMAND="$subcommand" \
   HZ_TARGET_TYPE="$target_type" \
   HZ_TARGET_NAME="$name" \
   bash "$runner_abs" || {
     rc=$?
-    # Preserve known exit codes; normalize others to 2 (exec fail)
     case "$rc" in
       1|2|3) return "$rc" ;;
       *) return 2 ;;
@@ -158,7 +164,6 @@ hz_run_check() {
   local root check_script
   root="$(hz_repo_root)"
 
-  # T-003 may move scripts/ -> tools/. Prefer tools/ if present.
   if [[ -f "${root}/tools/check/run.sh" ]]; then
     check_script="${root}/tools/check/run.sh"
   else
@@ -167,12 +172,6 @@ hz_run_check() {
 
   [[ -f "$check_script" ]] || { hz_die "check runner not found: ${check_script}"; return 2; }
 
-  hz_log "INFO" "running checks via: ${check_script}"
+  log_info "running checks via: ${check_script}"
   bash "$check_script"
-}
-
-hz_install_recipe() {
-  local name="$1"
-  [[ -n "$name" ]] || { hz_usage; return 1; }
-  hz_run_target "recipes" "$name" "install"
 }
