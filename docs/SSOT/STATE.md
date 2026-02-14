@@ -30,4 +30,8 @@ Owner: Pork-Belly
 - Idempotency / ownership boundaries
 
 ## Open Questions
+codex/feature/T-004-cli-skeleton
 - None
+=======
+- Is `archive/upstream-20260215/oneclick` still a production entrypoint or purely legacy snapshot?
+main

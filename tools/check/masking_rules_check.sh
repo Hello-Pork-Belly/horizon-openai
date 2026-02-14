@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 # shellcheck source=/dev/null
-. "${ROOT_DIR}/scripts/lib/logging.sh"
+. "${ROOT_DIR}/lib/logging.sh"
 
 assert_masked() {
   local line="$1"

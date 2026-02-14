@@ -25,7 +25,7 @@ die() {
 
 require_root() {
   if [[ "${EUID}" -ne 0 ]]; then
-    die "This script must run as root. Example: sudo OLS_ADMIN_PASS=... bash scripts/web/setup_ols_native.sh"
+    die "This script must run as root. Example: sudo OLS_ADMIN_PASS=... bash tools/web/setup_ols_native.sh"
   fi
 }
 
