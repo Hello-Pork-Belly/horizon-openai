@@ -81,3 +81,26 @@ Risks:
 
 Links:
 - Task: T-002 Repo Hygiene Plan
+
+## 2026-02-15 — D-004: CLI Architecture
+
+Decision:
+- Standardize `bin/hz` as the single user-facing entry point (dispatcher only).
+- Move shared CLI behavior (logging, usage, repo root, version read, contract runner, check runner) into `lib/cli_core.sh`.
+- Keep operational logic in `tools/` or existing runners referenced by contracts; `hz` only dispatches.
+
+Rationale:
+- Ensure a single, stable interface for “one-click” operations without duplicating logic.
+- Improve maintainability by separating interface (bin) from implementation (lib/tools).
+- Preserve existing contract-based module/recipe execution while adding required top-level subcommands: help/version/check/install.
+
+Scope:
+- bin/hz
+- lib/cli_core.sh
+
+Assumptions:
+- `VERSION` remains the authoritative project version file.
+- Repository check runner exists at `tools/check/run.sh` after hygiene, or `scripts/check/run.sh` before hygiene; `hz check` will prefer tools/ when present.
+
+Links:
+- Task: T-004 CLI Skeleton (hz)
