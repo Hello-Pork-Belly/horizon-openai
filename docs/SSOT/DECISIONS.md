@@ -10,25 +10,40 @@ Rationale:
 - Prevent context drift in a medium-sized project.
 Scope:
 - Repository-wide process
-
-## 2026-02-13 — Roles + Workflow solidification for SSOT execution
-Decision:
-- Establish role contracts under docs/SSOT/ROLES/.
-- Enforce “Best Default, no ambiguity” as a mandatory Planner behavior.
-- Allow auto-merge only when required checks pass and audit is PASS; no manual bypass of gates.
-- Keep SSOT precedence and PR-only workflow as non-negotiable governance.
-Rationale:
-- Reduce execution ambiguity across Commander/Planner/Executor/Auditor handoffs.
-- Standardize merge safety and prevent gate circumvention.
-Scope:
-- docs/SSOT/ROLES/*.md
-- docs/SSOT/STATE.md
-- docs/SSOT/DECISIONS.md
 Links:
-- PR: docs(ssot): add role contracts and bootstrap process ledger
+- PR #<n>, Issue #<n>
+
+## 2026-02-15 — D-001 Auto-merge Strategy
+Decision:
+- Add a GitHub Actions workflow that enables GitHub Auto-merge only when a PR is labeled `automerge`.
+- Implementation uses `gh pr merge --auto --squash` to toggle auto-merge; it does not force-merge or bypass checks.
+- Enforce gatekeeping in workflow: allow only actors with repo permission `write|maintain|admin` to trigger enablement.
+
+Rationale:
+- Reduce manual toil (“Enable auto-merge” click) while keeping strict quality gates: Branch Protection + required checks still decide when/if merge happens.
+- Use `pull_request_target` on `labeled` to obtain write permissions safely without checking out or executing untrusted PR code.
+- Dual gating (sender association + API permission check) reduces risk of unintended enablement.
+
+Scope:
+- .github/workflows/auto-merge.yml
+- docs/SSOT/DECISIONS.md
+- docs/SSOT/STATE.md
+
+Assumptions:
+- Repository setting “Allow auto-merge” is enabled.
+- Branch Protection requires at least the `ci` check on the target branch.
+
+Risks / Notes:
+- SSOT rules currently list `.github/workflows/**` as forbidden and `auto_merge_allowed: false` in RULES.yml; this task is an explicitly approved exception via task allowlist. A follow-up task (T-001b) must reconcile RULES.yml to prevent audit ambiguity.
+
+Rollback:
+- Delete `.github/workflows/auto-merge.yml` and revert this decision entry.
+
+Links:
+- PR #<n>, Issue #<n>
 
 ## Template
-### YYYY-MM-DD — <title>
+### YYYY-MM-DD — <Decision Title>
 Decision:
 - <bullet>
 Rationale:
@@ -37,22 +52,3 @@ Scope:
 - <paths/modules affected>
 Links:
 - PR #<n>, Issue #<n>
-
-## T-001 Auto-merge Enabler (GitHub Actions)
-Decision: Use a GitHub Actions workflow to automatically enable GitHub Auto-merge when a PR is labeled `automerge`, by running `gh pr merge --auto --squash`.
-
-Rationale:
-- We want to remove manual UI clicks while preserving strict gatekeeping and not bypassing CI.
-- `gh pr merge --auto` does not force-merge; it only enables auto-merge. The actual merge still requires repository branch protection / required status checks.
-
-Implementation choices:
-- Trigger: `pull_request_target` on `types: [labeled]`.
-  - This provides the required permissions to update PR merge settings while avoiding executing untrusted PR code.
-  - The workflow performs API operations only and does NOT checkout or run PR code.
-- Gatekeeping: hard-check `github.event.sender.association` is one of `OWNER|MEMBER|COLLABORATOR` before enabling auto-merge.
-- Permissions: minimal `pull-requests: write`, `contents: read`, using `secrets.GITHUB_TOKEN`.
-
-Assumptions:
-- Repository branch protection rules and required status checks are configured so auto-merge cannot bypass CI.
-
-备注（重要但不阻塞）：如果仓库当前未在 GitHub 仓库设置里启用 “Allow auto-merge”，即使 workflow 运行成功也可能无法启用 auto-merge；这种情况需要在仓库 Settings 里开启该功能（属于仓库配置前提，不需要改代码）。
