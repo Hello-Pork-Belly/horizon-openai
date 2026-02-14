@@ -9,32 +9,61 @@ hz__parse_required_env() {
   local contract="$1"
   awk '
     function trim(s){ gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    function indent_of(s, t){
+      t = s
+      sub(/[^ \t].*$/, "", t)
+      return length(t)
+    }
     function emit(v){
       v = trim(v)
       if (v == "") return
-      if (v !~ /^[A-Z_][A-Z0-9_]*$/) next
+      if (v !~ /^[A-Z_][A-Z0-9_]*$/) return
       if (!seen[v]++) print v
     }
-    BEGIN { in_block=0; block_indent=-1 }
+    BEGIN { in_block=0; block_indent=-1; parse_error=0 }
     /^[ \t]*($|#)/ { next }
     {
       line=$0
       if (in_block) {
-        cur_indent = length(line) - length(trim(line))
+        cur_indent = indent_of(line)
         if (cur_indent <= block_indent) { in_block=0; block_indent=-1 }
-        else if (match(line, /^[ \t]*-[ \t]*([A-Za-z_][A-Za-z0-9_]*)[ \t]*$/, m)) { emit(m[1]); next }
-        else { next }
+        else {
+          item = trim(line)
+          if (item ~ /^-[ \t]*/) {
+            sub(/^-[ \t]*/, "", item)
+            emit(item)
+            next
+          }
+          parse_error=1
+          next
+        }
       }
-      if (match(line, /^[ \t]*required_env:[ \t]*\[(.*)\][ \t]*$/, m)) {
-        n = split(m[1], parts, ",")
-        for (i=1;i<=n;i++) emit(parts[i])
+
+      tl = trim(line)
+      if (tl ~ /^required_env:[ \t]*/) {
+        if (tl ~ /^required_env:[ \t]*\[/) {
+          inline = tl
+          sub(/^required_env:[ \t]*\[/, "", inline)
+          if (inline !~ /\][ \t]*$/) {
+            parse_error=1
+            next
+          }
+          sub(/\][ \t]*$/, "", inline)
+          n = split(inline, parts, ",")
+          for (i=1;i<=n;i++) emit(parts[i])
+          next
+        }
+        if (tl ~ /^required_env:[ \t]*$/) {
+          in_block=1
+          block_indent = indent_of(line)
+          next
+        }
+        parse_error=1
         next
       }
-      if (match(line, /^[ \t]*required_env:[ \t]*$/, m)) {
-        in_block=1
-        block_indent = length(line) - length(trim(line))
-        next
-      }
+    }
+    END {
+      if (parse_error) exit 2
     }
   ' "$contract"
 }
@@ -70,10 +99,17 @@ hz_recipe_install() {
     inventory_load_vars "${HZ_HOST:-}" || return 1
   fi
 
+  local required_vars_output=""
+  log_debug "parsing contract: ${contract}"
+  if ! required_vars_output="$(hz__parse_required_env "$contract")"; then
+    log_error "ABORT: failed to parse required_env from contract; run.sh was NOT executed"
+    return 1
+  fi
+
   while IFS= read -r line; do
     [[ -n "$line" ]] || continue
     required+=("$line")
-  done < <(hz__parse_required_env "$contract")
+  done <<< "$required_vars_output"
 
   if [[ "${#required[@]}" -gt 0 ]]; then
     log_debug "contract required_env: ${required[*]}"
