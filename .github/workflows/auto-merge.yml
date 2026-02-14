@@ -5,7 +5,7 @@ on:
     types: [labeled]
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 concurrency:
@@ -14,28 +14,51 @@ concurrency:
 
 jobs:
   enable-auto-merge:
-    if: ${{ github.event.label.name == 'automerge' }}
+    if: >-
+      ${{
+        github.event.label.name == 'automerge' &&
+        github.event.pull_request.state == 'open'
+      }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Gatekeeper: allow only repo members/collaborators to trigger
-        shell: bash
-        run: |
-          set -euo pipefail
-          case "${{ github.event.sender.association }}" in
-            OWNER|MEMBER|COLLABORATOR) ;;
-            *)
-              echo "SKIP: sender.association='${{ github.event.sender.association }}' is not allowed"
-              exit 0
-              ;;
-          esac
-
-      - name: Enable auto-merge (squash) via GitHub CLI
+      - name: Gatekeeper (association + write permission)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+
+          assoc="${{ github.event.sender.association }}"
+          actor="${{ github.actor }}"
+          repo="${{ github.repository }}"
+
+          case "${assoc}" in
+            OWNER|MEMBER|COLLABORATOR) ;;
+            *)
+              echo "DENY: sender.association='${assoc}' actor='${actor}'"
+              exit 1
+              ;;
+          esac
+
+          perm="$(gh api "repos/${repo}/collaborators/${actor}/permission" --jq .permission)"
+          case "${perm}" in
+            admin|maintain|write) ;;
+            *)
+              echo "DENY: actor='${actor}' permission='${perm}'"
+              exit 1
+              ;;
+          esac
+
+          echo "ALLOW: actor='${actor}' association='${assoc}' permission='${perm}'"
+
+      - name: Enable auto-merge (squash) via gh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
           pr_number="${{ github.event.pull_request.number }}"
           repo="${{ github.repository }}"
 
