@@ -6,6 +6,50 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 . "${REPO_ROOT}/lib/cli_core.sh"
 # shellcheck source=lib/recipe_loader.sh
 . "${REPO_ROOT}/lib/recipe_loader.sh"
+# shellcheck source=lib/inventory.sh
+. "${REPO_ROOT}/lib/inventory.sh"
+
+hz__parse_install_args() {
+  # hz install <recipe> [--host=NAME|--host NAME]
+  RECIPE_NAME=""
+  HZ_HOST=""
+
+  local a
+  while [[ $# -gt 0 ]]; do
+    a="$1"
+    case "$a" in
+      --host=*)
+        HZ_HOST="${a#--host=}"
+        shift
+        ;;
+      --host)
+        shift
+        HZ_HOST="${1:-}"
+        shift || true
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        hz_log "ERROR" "unknown flag for install: ${a}"
+        return 1
+        ;;
+      *)
+        if [[ -z "$RECIPE_NAME" ]]; then
+          RECIPE_NAME="$a"
+          shift
+        else
+          hz_log "ERROR" "unexpected extra arg for install: ${a}"
+          return 1
+        fi
+        ;;
+    esac
+  done
+
+  [[ -n "$RECIPE_NAME" ]] || return 1
+  return 0
+}
 
 main() {
   local cmd="${1:-}"
@@ -26,7 +70,12 @@ main() {
       ;;
     install)
       shift || true
-      hz_recipe_install "${1:-}"
+      if ! hz__parse_install_args "$@"; then
+        hz_usage
+        return 1
+      fi
+      export HZ_HOST
+      hz_recipe_install "${RECIPE_NAME}"
       return $?
       ;;
     recipe)

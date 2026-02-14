@@ -124,6 +124,12 @@ hz_recipe_install() {
   [[ -f "$run" ]] || { hz_die "missing run.sh: recipes/${name}/run.sh"; return 1; }
   [[ -f "$contract" ]] || { hz_die "missing contract.yml: recipes/${name}/contract.yml"; return 1; }
 
+  # Inventory integration (load BEFORE contract enforcement)
+  if command -v inventory_load_vars >/dev/null 2>&1; then
+    hz_log "INFO" "inventory load (host='${HZ_HOST:-}')"
+    inventory_load_vars "${HZ_HOST:-}" || return 1
+  fi
+
   # Load required_env from contract (hard-fail on parser errors)
   local parsed_required=""
   if ! parsed_required="$(hz__parse_required_env "$contract")"; then
@@ -147,5 +153,8 @@ hz_recipe_install() {
   fi
 
   hz_log "INFO" "executing: bash recipes/${name}/run.sh"
+  HZ_SUBCOMMAND="install" \
+  HZ_TARGET_TYPE="recipes" \
+  HZ_TARGET_NAME="$name" \
   bash "$run"
 }

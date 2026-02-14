@@ -127,3 +127,27 @@ Assumptions:
 
 Links:
 - Task: T-005 Recipe Runner (hz install)
+
+## 2026-02-15 — D-006: Inventory Loading Strategy
+
+Decision:
+- Add `lib/inventory.sh` providing `inventory_load_vars(hostname)` to export flat inventory YAML keys as environment variables.
+- Precedence:
+  - YAML merge: Global then Host (Host overrides Global).
+  - Shell environment overrides YAML (never overwrite an already-set env var).
+
+Parsing:
+- Prefer python3; use PyYAML when present, otherwise a strict flat-line parser.
+- Only accept flat uppercase keys (A-Z0-9_) and scalar values; ignore nested objects/lists.
+
+Security:
+- Default behavior logs keys only; values are printed only when `HZ_DEBUG=1`.
+- In `HZ_DRY_RUN!=0`, inventory loader prints what would be loaded and does not export.
+
+Scope:
+- lib/inventory.sh (new)
+- bin/hz (add --host flag parsing)
+- lib/recipe_loader.sh (load inventory before contract checks)
+
+Links:
+- Task: T-006 Inventory Integration
