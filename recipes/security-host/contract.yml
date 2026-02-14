@@ -1,3 +1,13 @@
 name: security-host
 runner: recipes/security-host/run.sh
 supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+inputs:
+  FAIL2BAN_ENABLED:
+    type: string
+    default: "true"
+    description: "Enable Fail2Ban installation (true/false). Default true."
+  RKHUNTER_ENABLED:
+    type: string
+    default: "true"
+    description: "Enable RKHunter installation (true/false). Default true."
