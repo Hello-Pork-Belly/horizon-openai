@@ -4,7 +4,7 @@
 - Provide a reusable masking helper and minimum log directory policy baseline.
 
 ## Changes
-- Added `scripts/lib/logging.sh`:
+- Added `lib/logging.sh`:
   - `hz_default_log_dir`
   - `hz_prepare_log_dir`
   - `hz_mask_value`
@@ -21,7 +21,7 @@
 
 ## Acceptance Commands
 - `make check`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan over tracked files
 
 ## Rollback

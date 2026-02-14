@@ -7,13 +7,13 @@
 - Ensure unified check pipeline validates LOMP Lite dry-run behavior.
 
 ## Changes
-- Added `scripts/check/lomp_lite_dryrun_check.sh`.
-- Updated `scripts/check/run.sh` to run LOMP Lite dry-run checker.
+- Added `tools/check/lomp_lite_dryrun_check.sh`.
+- Updated `tools/check/run.sh` to run LOMP Lite dry-run checker.
 
 ## Acceptance Commands
-- `bash scripts/check/lomp_lite_dryrun_check.sh`
+- `bash tools/check/lomp_lite_dryrun_check.sh`
 - `make check`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan
 
 ## Next Step

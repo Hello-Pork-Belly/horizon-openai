@@ -12,10 +12,10 @@
   ],
   "verification": {
     "checks_run": [
-      "make -n ci resolves to bash scripts/check/run.sh.",
-      "scripts/check/run.sh now prints == inventory check (tests) == and == inventory check (repo) == and runs bash scripts/check/inventory_test.sh then bash scripts/check/inventory.sh.",
-      "scripts/check/inventory_test.sh exits 0 and includes CHECK/RESULT lines plus fatal ERROR coverage.",
-      "scripts/check/inventory.sh exits 0 on repository inventory and emits sorted CHECK lines plus RESULT summary.",
+      "make -n ci resolves to bash tools/check/run.sh.",
+      "tools/check/run.sh now prints == inventory check (tests) == and == inventory check (repo) == and runs bash tools/check/inventory_test.sh then bash tools/check/inventory.sh.",
+      "tools/check/inventory_test.sh exits 0 and includes CHECK/RESULT lines plus fatal ERROR coverage.",
+      "tools/check/inventory.sh exits 0 on repository inventory and emits sorted CHECK lines plus RESULT summary.",
       "make ci exits 0 and includes the new inventory headers and CHECK/RESULT output; legacy inventory validate output is absent.",
       "docs/INVENTORY-SCHEMA.md now matches implementation output contract for CHECK/RESULT and fatal ERROR format.",
       "git diff --name-only -- inventory is empty (no inventory data changes)."

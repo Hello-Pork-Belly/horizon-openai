@@ -43,7 +43,7 @@ operated via Tailscale mesh and GitHub-hosted CI checks.
 ## Local/CI
 - `make check`
 - `make ci` (alias)
-- `sudo bash scripts/clean_node.sh --dry-run`
+- `sudo bash tools/clean_node.sh --dry-run`
 
 ## Security notes
 - NEVER commit secrets (tokens, keys, .env).

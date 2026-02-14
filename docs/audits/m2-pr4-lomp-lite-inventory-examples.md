@@ -13,9 +13,9 @@
   - `inventory/sites/site-lite-a.yml`
 
 ## Acceptance Commands
-- `bash scripts/check/inventory_validate.sh`
+- `bash tools/check/inventory_validate.sh`
 - `make check`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan
 
 ## Next Step

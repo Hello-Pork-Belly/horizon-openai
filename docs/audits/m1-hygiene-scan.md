@@ -6,7 +6,7 @@
 
 ## Commands Used
 - `find . -maxdepth 3 -type d | sort`
-- `for f in docs/acceptance/auto-merge-acceptance.md docs/acceptance/setup-ols-native.md scripts/runner/rebind_repo_runner.sh docs/CONTRIBUTING.md; do ... refs=...; done`
+- `for f in docs/acceptance/auto-merge-acceptance.md docs/acceptance/setup-ols-native.md tools/runner/rebind_repo_runner.sh docs/CONTRIBUTING.md; do ... refs=...; done`
 - `for w in .github/workflows/*.yml; do grep -nE 'scripts/|make ' \"$w\"; done`
 
 ## Findings
@@ -18,7 +18,7 @@
 - Evidence: repository reference count is `0`.
 - Risk: low (documentation-only, no workflow/Makefile entrypoint reference).
 
-3. Not selected in Milestone 1: `scripts/runner/rebind_repo_runner.sh`
+3. Not selected in Milestone 1: `tools/runner/rebind_repo_runner.sh`
 - Evidence: repository reference count is `0`.
 - Reason not selected now: script deletion can have out-of-repo operational impact; keep for separate focused PR.
 

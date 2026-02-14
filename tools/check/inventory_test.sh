@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-VALIDATOR="${ROOT_DIR}/scripts/check/inventory.sh"
+VALIDATOR="${ROOT_DIR}/tools/check/inventory.sh"
 TMP_ROOT="$(mktemp -d)"
 
 check_requirements() {

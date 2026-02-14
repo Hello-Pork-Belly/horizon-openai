@@ -11,7 +11,7 @@ Context
 
 Inputs (source of truth for this plan)
 - Current top-level structure observed in repository root:
-  - .codex/, .github/, bin/, docs/, inventory/, modules/, recipes/, scripts/, skills/, upstream/oneclick
+  - .codex/, .github/, bin/, docs/, inventory/, modules/, recipes/, scripts/, skills/, archive/upstream-20260215/oneclick
   - Root files: .gitignore, AGENTS.md, LICENSE, Makefile, README.md, VERSION
 - NOTE: Subdirectory file listings will be enumerated during T-003 execution via `git ls-tree -r --name-only HEAD`.
   This plan classifies at directory / pattern granularity and defines strict target state.
@@ -47,7 +47,7 @@ ARCHIVE (move into archive/ as read-only snapshots; no longer active path)
 - upstream/
   - ARCHIVE entire `upstream/` into `archive/upstream-YYYYMMDD/`
   - Rationale: keep provenance/history but remove from active working set.
-- Legacy oneclick snapshot inside upstream/oneclick
+- Legacy oneclick snapshot inside archive/upstream-20260215/oneclick
   - ARCHIVE by default unless verified as current production entry point.
 
 DELETE (safe to remove once confirmed unused; plan-only list)

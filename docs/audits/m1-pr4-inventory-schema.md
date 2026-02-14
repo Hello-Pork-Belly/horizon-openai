@@ -9,7 +9,7 @@
   - `inventory/hosts/hub-example.yml`
   - `inventory/sites/site-example.yml`
 - Added validator:
-  - `scripts/check/inventory_validate.sh`
+  - `tools/check/inventory_validate.sh`
 - Added schema documentation:
   - `docs/INVENTORY-SCHEMA.md`
 
@@ -22,9 +22,9 @@
 - `make check` passes with existing gate behavior unchanged.
 
 ## Acceptance Commands
-- `bash scripts/check/inventory_validate.sh`
+- `bash tools/check/inventory_validate.sh`
 - `make check`
-- `bash scripts/check/vendor_neutral_gate.sh`
+- `bash tools/check/vendor_neutral_gate.sh`
 - strict secret-risk pattern scan over tracked files
 
 ## Rollback

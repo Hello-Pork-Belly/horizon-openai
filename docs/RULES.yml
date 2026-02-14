@@ -55,12 +55,12 @@ path_tiers:
     - "bin/**"
     - "modules/**"
     - "recipes/**"
-    - "scripts/check/**"
+    - "tools/check/**"
 
   # 高风险：可破坏/清空/重绑定/破坏门禁的操作。默认不允许自动化动这些，
   # 若必须修改，必须在变更说明里显式列出，并给出强证据与回滚点。
   high_risk_restricted:
-    - "scripts/clean_node.sh"
+    - "tools/clean_node.sh"
     - "scripts/runner/**"
     - "scripts/web/**"
     - "Makefile"

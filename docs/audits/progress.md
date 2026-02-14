@@ -199,7 +199,7 @@
   - `N/A` (PR not created yet)
 - Acceptance Commands:
   - `make check`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - create PR for contract document, then start skeleton script PR.
@@ -214,7 +214,7 @@
   - `statusCheckRollup`: `ci=QUEUED`, `auto-merge=SKIPPED`
 - Acceptance Commands:
   - `make check`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
@@ -229,7 +229,7 @@
   - `make check`
   - `HZ_DRY_RUN=1 bash bin/hz recipe lomp-lite install`
   - `HZ_DRY_RUN=2 bash bin/hz recipe lomp-lite diagnostics`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - add LOMP Lite recipe contract + dry-run runner.
@@ -246,7 +246,7 @@
   - `make check`
   - `HZ_DRY_RUN=1 bash bin/hz recipe lomp-lite install`
   - `HZ_DRY_RUN=2 bash bin/hz recipe lomp-lite diagnostics`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
@@ -259,8 +259,8 @@
   - `N/A` (PR not created yet)
 - Acceptance Commands:
   - `make check`
-  - `bash scripts/check/lomp_lite_dryrun_check.sh`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/lomp_lite_dryrun_check.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - add recipe dry-run check and wire into unified check pipeline.
@@ -274,9 +274,9 @@
   - `mergeStateStatus=BLOCKED`
   - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
 - Acceptance Commands:
-  - `bash scripts/check/lomp_lite_dryrun_check.sh`
+  - `bash tools/check/lomp_lite_dryrun_check.sh`
   - `make check`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
@@ -288,9 +288,9 @@
 - PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
   - `N/A` (PR not created yet)
 - Acceptance Commands:
-  - `bash scripts/check/inventory_validate.sh`
+  - `bash tools/check/inventory_validate.sh`
   - `make check`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - add neutral-named LOMP Lite example inventory files.
@@ -304,9 +304,9 @@
   - `mergeStateStatus=BLOCKED`
   - `statusCheckRollup`: `ci=IN_PROGRESS`, `auto-merge=SKIPPED`
 - Acceptance Commands:
-  - `bash scripts/check/inventory_validate.sh`
+  - `bash tools/check/inventory_validate.sh`
   - `make check`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - enable auto-merge with fixed prefix command, then wait for `ci`.
@@ -330,7 +330,7 @@
   - `N/A` (PR not created yet)
 - Acceptance Commands:
   - `make check`
-  - `bash scripts/check/vendor_neutral_gate.sh`
+  - `bash tools/check/vendor_neutral_gate.sh`
   - strict secret-risk pattern scan
 - Next Action:
   - run local checks and scans, then create PR with this contract-only change.
@@ -428,7 +428,7 @@
 - PR Summary (`gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`):
   - `N/A` (PR not created yet)
 - Next Action:
-  - add `scripts/check/ols_wp_dryrun_check.sh` and wire into `scripts/check/run.sh`.
+  - add `tools/check/ols_wp_dryrun_check.sh` and wire into `tools/check/run.sh`.
 - STOP Triggered: `NO`
 
 ## 2026-02-08T07:16:56Z
