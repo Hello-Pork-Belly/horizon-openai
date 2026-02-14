@@ -52,3 +52,32 @@ Scope:
 - <paths/modules affected>
 Links:
 - PR #<n>, Issue #<n>
+
+## 2026-02-15 — D-002: Directory Structure Standard
+
+Decision:
+- Adopt a strict repository directory standard centered on the "one-click installation system":
+  - Active product spine: `recipes/` + `inventory/` (+ `modules/`)
+  - Stable operator entrypoints: `bin/`
+  - Shared bash libraries: `lib/`
+  - Repo maintenance utilities: `tools/`
+  - Quarantined legacy/provenance: `archive/` (including `upstream/`)
+  - Tests: `tests/`
+- Treat `upstream/` as legacy snapshot content and plan to move it under `archive/` during execution (T-003), unless proven to be current production entrypoint.
+
+Rationale:
+- Reduce ambiguity and prevent accidental use of legacy code by separating “active product” from “historical snapshot”.
+- Improve maintainability and CI/test ergonomics by separating entrypoints, libraries, and tools.
+
+Scope:
+- docs/SSOT/specs/T-002-hygiene-plan.md (plan)
+- Future execution task(s): T-003 (moves/deletes with evidence and rollback)
+
+Assumptions:
+- This plan classifies primarily at directory/pattern level; exact file-level mapping will be generated in T-003 using `git ls-tree -r --name-only HEAD`.
+
+Risks:
+- Misclassification risk exists until the full tree is enumerated; therefore DELETE actions are prohibited until T-003 provides evidence.
+
+Links:
+- Task: T-002 Repo Hygiene Plan
