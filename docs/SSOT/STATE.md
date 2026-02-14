@@ -8,15 +8,18 @@ Owner: Pork-Belly
 
 ## Done
 - (2026-02-13) SSOT bootstrap
+- (2026-02-13) Roles + Workflow solidification for SSOT execution
 
 ## Doing
-- (2026-02-15) T-001 Auto-merge Enabler (PR: #<TBD>)
+- (2026-02-15) T-002 Repo Hygiene Plan (PLAN-ONLY) (PR: #<TBD>)
 
 ## Next
-- T-001b Align RULES.yml merge_policy/forbidden_paths with approved auto-merge workflow exception
+- T-001 Auto-merge Enabler (auto-enable auto-merge for eligible PRs)
+- T-003 Repo Hygiene Execute (cleanup/archive/reorder per plan)
+- T-004 Baseline hardening for SSOT text (vendor-neutral scope + auto-merge policy + BASELINE checklist sync)
 
 ## Current Focus
-- Primary target: LOMP Lite v1 (hub + host)
+- Primary target: One-click installation system (recipes/ + inventory/)
 - Required gates: `make ci` + audit PASS
 
 ## Known Risks / Watchlist
@@ -27,4 +30,4 @@ Owner: Pork-Belly
 - Idempotency / ownership boundaries
 
 ## Open Questions
-- Should the `automerge` label be restricted further via repository label permissions/policy?
+- Is `upstream/oneclick` still a production entrypoint or purely legacy snapshot?
