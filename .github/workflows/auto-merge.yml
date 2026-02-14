@@ -1,0 +1,43 @@
+name: T-001 Auto-merge Enabler
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: auto-merge-${{ github.repository }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  enable-auto-merge:
+    if: ${{ github.event.label.name == 'automerge' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Gatekeeper: allow only repo members/collaborators to trigger
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${{ github.event.sender.association }}" in
+            OWNER|MEMBER|COLLABORATOR) ;;
+            *)
+              echo "SKIP: sender.association='${{ github.event.sender.association }}' is not allowed"
+              exit 0
+              ;;
+          esac
+
+      - name: Enable auto-merge (squash) via GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_number="${{ github.event.pull_request.number }}"
+          repo="${{ github.repository }}"
+
+          echo "Enabling auto-merge for PR #${pr_number} in ${repo} (squash)"
+          gh pr merge "${pr_number}" --repo "${repo}" --auto --squash
