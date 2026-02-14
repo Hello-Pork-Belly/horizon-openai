@@ -1,195 +1,72 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VERSION_FILE="${REPO_ROOT}/VERSION"
-
-RC_SUCCESS=0
-RC_EXPECTED_FAIL=1
-RC_EXEC_FAIL=2
-RC_PARTIAL=3
-
-if [ -f "${VERSION_FILE}" ]; then
-  HZ_VERSION="$(cat "${VERSION_FILE}")"
-else
-  HZ_VERSION="0.0.0"
-fi
-
-LOG_PREFIX_INFO="[INFO]"
-LOG_PREFIX_WARN="[WARN]"
-LOG_PREFIX_ERROR="[ERROR]"
-
-log_info() { echo "${LOG_PREFIX_INFO} $*"; }
-log_warn() { echo "${LOG_PREFIX_WARN} $*"; }
-log_error() { echo "${LOG_PREFIX_ERROR} $*" >&2; }
-
-usage() {
-  cat <<EOF
-Usage:
-  hz --version
-  hz module list
-  hz module <name> <subcommand>
-  hz recipe list
-  hz recipe <name> <subcommand>
-  hz menu
-
-Supported subcommands:
-  install status check upgrade backup restore uninstall diagnostics
-EOF
-}
-
-validate_dry_run() {
-  HZ_DRY_RUN="${HZ_DRY_RUN:-0}"
-  case "${HZ_DRY_RUN}" in
-    0|1|2) ;;
-    *)
-      log_error "invalid HZ_DRY_RUN value: ${HZ_DRY_RUN} (expected 0|1|2)"
-      return "${RC_EXPECTED_FAIL}"
-      ;;
-  esac
-}
-
-validate_subcommand() {
-  local subcommand="$1"
-  case "${subcommand}" in
-    install|status|check|upgrade|backup|restore|uninstall|diagnostics) return 0 ;;
-    *)
-      log_error "unsupported subcommand: ${subcommand}"
-      return "${RC_EXPECTED_FAIL}"
-      ;;
-  esac
-}
-
-list_targets() {
-  local target_type="$1"
-  local base="${REPO_ROOT}/${target_type}"
-  local found=0
-  if [ ! -d "${base}" ]; then
-    return "${RC_SUCCESS}"
-  fi
-  while IFS= read -r manifest; do
-    local name
-    name="$(basename "$(dirname "${manifest}")")"
-    echo "${name}"
-    found=1
-  done < <(find "${base}" -mindepth 2 -maxdepth 2 -type f -name contract.yml | sort)
-  if [ "${found}" -eq 0 ]; then
-    log_warn "no ${target_type} contracts found"
-  fi
-}
-
-get_contract_value() {
-  local file="$1"
-  local key="$2"
-  awk -F ':' -v k="${key}" '
-    $1 ~ "^[[:space:]]*" k "$" {
-      sub(/^[[:space:]]+/, "", $2)
-      sub(/[[:space:]]+$/, "", $2)
-      print $2
-      exit
-    }
-  ' "${file}"
-}
-
-supports_subcommand() {
-  local supported_csv="$1"
-  local target="$2"
-  local token
-  IFS=',' read -r -a arr <<< "${supported_csv}"
-  for token in "${arr[@]}"; do
-    token="${token#"${token%%[![:space:]]*}"}"
-    token="${token%"${token##*[![:space:]]}"}"
-    [ -n "${token}" ] || continue
-    if [ "${token}" = "${target}" ]; then
-      return 0
-    fi
-  done
-  return 1
-}
-
-run_target() {
-  local target_type="$1"
-  local name="$2"
-  local subcommand="$3"
-
-  validate_subcommand "${subcommand}" || return "${RC_EXPECTED_FAIL}"
-  validate_dry_run || return "${RC_EXPECTED_FAIL}"
-
-  local contract="${REPO_ROOT}/${target_type}/${name}/contract.yml"
-  if [ ! -f "${contract}" ]; then
-    log_error "missing contract file: ${contract}"
-    return "${RC_EXPECTED_FAIL}"
-  fi
-
-  local supported runner_rel runner_abs
-  supported="$(get_contract_value "${contract}" "supported_subcommands")"
-  runner_rel="$(get_contract_value "${contract}" "runner")"
-
-  if [ -z "${supported}" ] || [ -z "${runner_rel}" ]; then
-    log_error "invalid contract file: ${contract}"
-    return "${RC_EXPECTED_FAIL}"
-  fi
-
-  if ! supports_subcommand "${supported}" "${subcommand}"; then
-    log_error "${target_type}/${name} does not support subcommand ${subcommand}"
-    return "${RC_EXPECTED_FAIL}"
-  fi
-
-  runner_abs="${REPO_ROOT}/${runner_rel}"
-  if [ ! -f "${runner_abs}" ]; then
-    log_error "runner not found: ${runner_abs}"
-    return "${RC_EXEC_FAIL}"
-  fi
-
-  log_info "target=${target_type}/${name} subcommand=${subcommand} dry_run=${HZ_DRY_RUN}"
-  HZ_SUBCOMMAND="${subcommand}" HZ_TARGET_TYPE="${target_type}" HZ_TARGET_NAME="${name}" bash "${runner_abs}" || {
-    rc=$?
-    case "${rc}" in
-      1|2|3) return "${rc}" ;;
-      *) return "${RC_EXEC_FAIL}" ;;
-    esac
-  }
-}
+# shellcheck source=lib/cli_core.sh
+. "${REPO_ROOT}/lib/cli_core.sh"
 
 main() {
-  if [ "${#}" -lt 1 ]; then
-    usage
-    return "${RC_EXPECTED_FAIL}"
-  fi
+  local cmd="${1:-}"
 
-  case "$1" in
-    --version)
-      echo "${HZ_VERSION}"
+  case "${cmd}" in
+    ""|help|-h|--help)
+      hz_usage
+      return 0
       ;;
-    module)
-      [ "${#}" -ge 2 ] || { usage; return "${RC_EXPECTED_FAIL}"; }
-      if [ "$2" = "list" ]; then
-        list_targets "modules"
-      elif [ "${#}" -eq 3 ]; then
-        run_target "modules" "$2" "$3"
-      else
-        usage
-        return "${RC_EXPECTED_FAIL}"
-      fi
+    version|--version)
+      hz_read_version
+      return 0
+      ;;
+    check)
+      shift || true
+      hz_run_check
+      return $?
+      ;;
+    install)
+      shift || true
+      hz_install_recipe "${1:-}"
+      return $?
       ;;
     recipe)
-      [ "${#}" -ge 2 ] || { usage; return "${RC_EXPECTED_FAIL}"; }
-      if [ "$2" = "list" ]; then
-        list_targets "recipes"
-      elif [ "${#}" -eq 3 ]; then
-        run_target "recipes" "$2" "$3"
-      else
-        usage
-        return "${RC_EXPECTED_FAIL}"
-      fi
+      shift || true
+      case "${1:-}" in
+        list)
+          hz_list_targets "recipes"
+          return 0
+          ;;
+        "")
+          hz_usage
+          return 1
+          ;;
+        *)
+          [[ $# -ge 2 ]] || { hz_usage; return 1; }
+          hz_run_target "recipes" "$1" "$2"
+          return $?
+          ;;
+      esac
       ;;
-    menu)
-      validate_dry_run || return "${RC_EXPECTED_FAIL}"
-      log_info "menu placeholder; use non-interactive commands."
+    module)
+      shift || true
+      case "${1:-}" in
+        list)
+          hz_list_targets "modules"
+          return 0
+          ;;
+        "")
+          hz_usage
+          return 1
+          ;;
+        *)
+          [[ $# -ge 2 ]] || { hz_usage; return 1; }
+          hz_run_target "modules" "$1" "$2"
+          return $?
+          ;;
+      esac
       ;;
     *)
-      usage
-      return "${RC_EXPECTED_FAIL}"
+      hz_log "ERROR" "invalid subcommand: ${cmd}"
+      hz_usage
+      return 1
       ;;
   esac
 }
