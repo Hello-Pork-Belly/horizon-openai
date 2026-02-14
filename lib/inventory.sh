@@ -116,6 +116,7 @@ inventory_load_vars() {
   local -a files=()
   local dry="${HZ_DRY_RUN:-0}"
   local debug="${HZ_DEBUG:-0}"
+  local tracked_keys=" "
 
   root="$(inventory_repo_root)"
   all_file="$(inventory_path_all)"
@@ -137,8 +138,9 @@ inventory_load_vars() {
     return 0
   fi
 
-  # Merge order: all then host; later overwrites earlier within YAML,
-  # but existing shell env overrides YAML (never overwritten).
+  # Merge order: all then host.
+  # Precedence: Shell env > Host YAML > Global YAML.
+  # `tracked_keys` marks keys written by this loader so host can overwrite global.
   local f line k v
   for f in "${files[@]}"; do
     while IFS= read -r line; do
@@ -146,8 +148,9 @@ inventory_load_vars() {
       k="${line%%=*}"
       v="${line#*=}"
 
-      # shell env overrides: if already set and non-empty, do not override
-      if [[ -n "${!k-}" ]]; then
+      # Protect pre-existing shell env vars. If key is already set and was not
+      # written by this loader, treat it as a user override and keep it.
+      if [[ -n "${!k+x}" ]] && [[ "${tracked_keys}" != *" ${k} "* ]]; then
         if [[ "$dry" != "0" ]]; then
           hz_log "INFO" "inventory skip (env override): ${k}"
         fi
@@ -160,10 +163,16 @@ inventory_load_vars() {
         else
           hz_log "INFO" "inventory load: ${k} (from ${f})"
         fi
+        if [[ "${tracked_keys}" != *" ${k} "* ]]; then
+          tracked_keys="${tracked_keys}${k} "
+        fi
         continue
       fi
 
       export "${k}=${v}"
+      if [[ "${tracked_keys}" != *" ${k} "* ]]; then
+        tracked_keys="${tracked_keys}${k} "
+      fi
     done < <(inventory__dump_kv_from_yaml "$f" || true)
   done
 
