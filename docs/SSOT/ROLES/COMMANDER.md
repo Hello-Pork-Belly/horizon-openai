@@ -7,6 +7,7 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
 - SSOT precedence: repository SSOT files are the only source of truth. If anything conflicts, fix SSOT via PR.
 - No direct push to main. All changes must go through PR + required checks.
 - Gates cannot be bypassed: required checks must pass; audit must PASS; no manual merge to override gates.
+- Audit PASS is not equal to Task Done. Commander must still run DoD/closure checks.
 - Vendor-neutrality (scoped): DO NOT mention any VPS/IaaS/hosting provider names in scripts/docs/logs/errors. Third-party SaaS/app/open-source names are allowed, but must remain provider-agnostic via replaceable provider configuration/mappings.
 - Default output language is English (logs/errors/audit). Chinese may be used only as optional UI/help.
 
@@ -25,6 +26,39 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
    - Auto-merge is allowed, but only when required checks pass and audit is PASS. High-risk changes require stricter audit.
    - A dedicated Task (T-001) must implement a workflow/bot to auto-enable auto-merge for eligible PRs.
 
+## Closure State Machine (Hard Rules)
+- Required audit input format (from Auditor): `Decision (PASS/FAIL)` + `Reasons` + `Required Fixes` + `Evidence Referenced`.
+- If audit is `FAIL`:
+  - Keep Task status as `Doing`.
+  - Create a rework task sheet with exact file edits + missing evidence list.
+  - Route back to Executor; merge is forbidden until re-audit PASS.
+- If audit is `PASS`:
+  - Run Task DoD closure checks (required checks + runtime acceptance + workflow hygiene threshold).
+  - If any DoD item is unmet, Task is not Done. Create follow-up sub-task (for example `T-001b`) and write it to `docs/SSOT/STATE.md` Next.
+- Hard prohibition: never mark a Task Done only because audit is PASS.
+
+## Backlog Derivation From Master Outline (Hard Rules)
+- Before opening any new Task, Commander must read:
+  - `docs/SSOT/一键安装构思.txt`
+  - `docs/SSOT/STATE.md`
+  - `docs/SSOT/DECISIONS.md`
+- Convert items that are in the master outline but not marked Done in STATE into explicit Next tasks (`T-XXX`) to avoid omission.
+- After each merge, reconcile coverage:
+  - Map this PR to the backlog items it closed.
+  - Keep all uncovered items in STATE Next; do not silently drop them.
+
+## Done Gate (Hard Threshold)
+- A Task can be marked Done only when all are true:
+  - Required checks are green.
+  - Audit result is PASS.
+  - Runtime acceptance is PASS.
+- Runtime acceptance must include post-merge observation on `main`: no red failure noise introduced by this Task in Actions (especially `No jobs were run`).
+- If noise appears, do not mark Done; create follow-up task and put it in STATE Next.
+
+## Follow-up Split Principle
+- If core feature is delivered but noise/correctness defects remain, close via explicit follow-up chain (`T-XXX` + `T-XXXb`).
+- Verbal notes are not closure. Every remaining issue must exist as a tracked Next task in STATE.
+
 ## Outputs (every run)
 - Current Task ID
 - SPEC link/path
@@ -32,3 +66,4 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
 - DoD (commands + PASS/FAIL)
 - Risk level and rollback notes
 - Merge conditions (required checks + audit PASS)
+- Closure decision (`Done` or `Doing`) with any required follow-up Task IDs
