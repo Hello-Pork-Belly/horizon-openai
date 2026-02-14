@@ -9,9 +9,10 @@ Owner: Pork-Belly
 ## Done
 - (2026-02-13) SSOT bootstrap
 - (2026-02-15) T-004 CLI Skeleton (hz) (PR: #63)
+- (2026-02-15) T-005 Recipe Runner (hz install) (PR: #64)
 
 ## Doing
-- (2026-02-15) T-005 Recipe Runner (hz install) (PR: #<TBD>)
+- (2026-02-15) T-006 Inventory Integration (PR: #<TBD>)
 
 ## Next
 - T-001 Auto-merge Enabler
