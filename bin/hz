@@ -2,6 +2,8 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=lib/logging.sh
+. "${REPO_ROOT}/lib/logging.sh"
 # shellcheck source=lib/cli_core.sh
 . "${REPO_ROOT}/lib/cli_core.sh"
 # shellcheck source=lib/recipe_loader.sh
@@ -9,8 +11,31 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=lib/inventory.sh
 . "${REPO_ROOT}/lib/inventory.sh"
 
+hz__apply_global_flags() {
+  # Scan argv; remove -v/-q; keep others in ARGS_OUT.
+  # Verbose wins over quiet only if it appears later (last wins).
+  ARGS_OUT=()
+  local a
+  for a in "$@"; do
+    case "$a" in
+      -v|--verbose)
+        LOG_LEVEL="DEBUG"
+        HZ_DEBUG="1"
+        ;;
+      -q|--quiet)
+        LOG_LEVEL="ERROR"
+        ;;
+      *)
+        ARGS_OUT+=("$a")
+        ;;
+    esac
+  done
+
+  export LOG_LEVEL
+  export HZ_DEBUG="${HZ_DEBUG:-0}"
+}
+
 hz__parse_install_args() {
-  # hz install <recipe> [--host=NAME|--host NAME]
   RECIPE_NAME=""
   HZ_HOST=""
 
@@ -32,17 +57,17 @@ hz__parse_install_args() {
         break
         ;;
       -*)
-        hz_log "ERROR" "unknown flag for install: ${a}"
+        log_error "unknown flag for install: ${a}"
         return 1
         ;;
       *)
         if [[ -z "$RECIPE_NAME" ]]; then
           RECIPE_NAME="$a"
-          shift
         else
-          hz_log "ERROR" "unexpected extra arg for install: ${a}"
+          log_error "unexpected extra arg for install: ${a}"
           return 1
         fi
+        shift
         ;;
     esac
   done
@@ -52,6 +77,9 @@ hz__parse_install_args() {
 }
 
 main() {
+  hz__apply_global_flags "$@"
+  set -- "${ARGS_OUT[@]}"
+
   local cmd="${1:-}"
 
   case "${cmd}" in
@@ -115,7 +143,7 @@ main() {
       esac
       ;;
     *)
-      hz_log "ERROR" "invalid subcommand: ${cmd}"
+      log_error "invalid subcommand: ${cmd}"
       hz_usage
       return 1
       ;;
