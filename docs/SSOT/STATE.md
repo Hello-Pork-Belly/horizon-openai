@@ -15,9 +15,10 @@ Owner: Pork-Belly
 - (2026-02-15) T-008 Port security-host Recipe (PR: #67)
 - (2026-02-15) T-009 Port ols-wp Stack (PR: #68)
 - (2026-02-15) T-010 Port ols-wp-maintenance Recipe (PR: #69)
+- (2026-02-15) T-011 Port Lite Stacks (PR: #70)
 
 ## Doing
-- (2026-02-15) T-011 Port Lite Stacks (lomp-lite & lnmp-lite) (PR: #<TBD>)
+- (2026-02-15) T-012 Port hub-data Recipe (PR: #<TBD>)
 
 ## Next
 - T-001 Auto-merge Enabler
