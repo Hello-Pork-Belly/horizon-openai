@@ -6,7 +6,7 @@ set -euo pipefail
 # Idempotent package installs with dry-run support.
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-# shellcheck source=lib/logging.sh
+# shellcheck source=../../lib/logging.sh
 . "${REPO_ROOT}/lib/logging.sh"
 
 RC_SUCCESS=0
