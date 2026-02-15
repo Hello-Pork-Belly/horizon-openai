@@ -1,0 +1,36 @@
+name: hub-main
+runner: recipes/hub-main/run.sh
+supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+required_env: [HUB_DOMAIN, HUB_ADMIN_EMAIL]
+
+inputs:
+  HUB_DOMAIN:
+    type: string
+    description: "Hub main domain (e.g., hub.example.com). Required."
+  HUB_ADMIN_EMAIL:
+    type: string
+    description: "Admin email for hub alerts/ops. Required."
+
+  HUB_DB_HOST:
+    type: string
+    default: "127.0.0.1"
+    description: "MariaDB host for hub-data. Default localhost."
+  HUB_DB_PORT:
+    type: string
+    default: "3306"
+    description: "MariaDB port. Default 3306."
+
+  HUB_REDIS_HOST:
+    type: string
+    default: "127.0.0.1"
+    description: "Redis host for hub-data. Default localhost."
+  HUB_REDIS_PORT:
+    type: string
+    default: "6379"
+    description: "Redis port. Default 6379."
+
+  HUB_DATA_STRICT:
+    type: string
+    default: "true"
+    description: "If true, fail install when hub-data is unreachable (true/false). Default true."
