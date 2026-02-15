@@ -12,9 +12,10 @@ Owner: Pork-Belly
 - (2026-02-15) T-005 Recipe Runner (hz install) (PR: #64)
 - (2026-02-15) T-006 Inventory Integration (PR: #65)
 - (2026-02-15) T-007 Unified Logging & Verbosity (PR: #66)
+- (2026-02-15) T-008 Port security-host Recipe (PR: #67)
 
 ## Doing
-- (2026-02-15) T-008 Port security-host Recipe (PR: #<TBD>)
+- (2026-02-15) T-009 Port ols-wp Stack (PR: #<TBD>)
 
 ## Next
 - T-001 Auto-merge Enabler
