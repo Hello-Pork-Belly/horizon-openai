@@ -24,7 +24,6 @@ lint:
 	@set -euo pipefail; \
 	bash -n "$(HZ)"; \
 	if command -v shellcheck >/dev/null 2>&1; then \
-	  shellcheck lib/baseline/loader.sh lib/baseline/baseline_system.sh lib/baseline/baseline_services.sh lib/baseline/baseline_network.sh; \
 	  while IFS= read -r f; do \
 	    shellcheck "$$f"; \
 	  done < <(find bin lib tools recipes -type f -name "*.sh" ! -path "lib/baseline/baseline*.sh" | sort); \
