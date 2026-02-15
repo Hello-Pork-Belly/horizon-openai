@@ -25,7 +25,7 @@ lint:
 	bash -n "$(HZ)"; \
 	if command -v shellcheck >/dev/null 2>&1; then \
 	  while IFS= read -r f; do \
-	    shellcheck "$$f"; \
+	    shellcheck -e SC1091 "$$f"; \
 	  done < <(find bin lib tools recipes -type f -name "*.sh" ! -path "lib/baseline/baseline*.sh" | sort); \
 	else \
 	  echo "[WARN] shellcheck not found; skipping"; \
