@@ -21,13 +21,14 @@ Owner: Pork-Belly
 - (2026-02-15) T-014 Port mail-gateway Recipe (PR: #73)
 - (2026-02-15) T-015 Port backup-rclone Recipe (PR: #74)
 - (2026-02-15) T-016 Diagnostics & Baseline Engine (PR: #75)
+- (2026-02-15) T-017 System Unification & Release v0.2.0 (PR: #76)
 
 ## Doing
-- (2026-02-15) T-017 System Unification & Release v0.2.0 (PR: #<TBD>)
+- (2026-02-15) Phase 2 Kickoff: Remote Execution & Hub-and-Spoke (PR: #<TBD>)
 
 ## Next
 - T-001 Auto-merge Enabler
 
 ## Current Focus
-- Primary target: One-click installation system (recipes/ + inventory/)
+- Phase 2: multi-node management (remote run, inventory targeting, hub control plane)
 - Required gates: `make ci` + audit PASS
