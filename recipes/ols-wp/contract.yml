@@ -1,3 +1,49 @@
 name: ols-wp
 runner: recipes/ols-wp/run.sh
 supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+required_env: [WP_DOMAIN, WP_EMAIL, DB_PASSWORD]
+
+inputs:
+  WP_DOMAIN:
+    type: string
+    description: "Primary domain for WordPress site (e.g., example.com). Required."
+  WP_EMAIL:
+    type: string
+    description: "Admin email for WordPress/Let's Encrypt. Required."
+  DB_PASSWORD:
+    type: string
+    description: "Database password used by the stack. Required (secret)."
+
+  # Optional (recommended)
+  WP_TITLE:
+    type: string
+    default: "WordPress Site"
+    description: "Site title."
+  WP_ADMIN_USER:
+    type: string
+    default: "admin"
+    description: "WP admin username."
+  WP_ADMIN_PASSWORD:
+    type: string
+    default: ""
+    description: "WP admin password (secret). If empty, legacy installer may generate or prompt."
+
+  PHP_VERSION:
+    type: string
+    default: "8.2"
+    description: "PHP version for the stack if supported by installer."
+  OLS_ADMIN_USER:
+    type: string
+    default: "admin"
+    description: "OpenLiteSpeed admin user."
+  OLS_ADMIN_PASSWORD:
+    type: string
+    default: ""
+    description: "OpenLiteSpeed admin password (secret)."
+
+  # Optional controls
+  OLS_WP_FORCE:
+    type: string
+    default: "false"
+    description: "Force re-run installer even if OLS appears installed (true/false)."
