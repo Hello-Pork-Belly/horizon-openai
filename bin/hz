@@ -96,6 +96,10 @@ main() {
       hz_run_check
       return $?
       ;;
+    diagnose|doctor)
+      shift || true
+      exec bash "${REPO_ROOT}/tools/diagnostics/run.sh" "$@"
+      ;;
     install)
       shift || true
       if ! hz__parse_install_args "$@"; then
