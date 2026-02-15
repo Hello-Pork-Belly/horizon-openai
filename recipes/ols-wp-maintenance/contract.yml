@@ -1,3 +1,25 @@
 name: ols-wp-maintenance
 runner: recipes/ols-wp-maintenance/run.sh
 supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+required_env: [WP_DOMAIN, MAINTENANCE_ACTION]
+
+inputs:
+  WP_DOMAIN:
+    type: string
+    description: "Target WordPress domain (e.g., example.com). Required."
+
+  MAINTENANCE_ACTION:
+    type: string
+    description: "Required action selector. Supported: backup, restore_pre, ssl_renew, cron"
+
+  # Optional (pass-through for legacy tools when available)
+  BACKUP_DIR:
+    type: string
+    default: ""
+    description: "Backup target directory (optional; used by backup tools if supported)."
+
+  RESTORE_SRC:
+    type: string
+    default: ""
+    description: "Restore source path (optional; used by restore tools if supported)."
