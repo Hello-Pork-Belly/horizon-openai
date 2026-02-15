@@ -1,50 +1,34 @@
-# horizon- openai test
+# horizon-openai
 
-Horizon-Hybrid lab repo for mixed-architecture nodes (ARM hub + x86 edge),
-operated via Tailscale mesh and GitHub-hosted CI checks.
+Horizon is a `./bin/hz`-first one-click installation and operations toolkit for mixed architecture nodes (ARM hub + x86 edge), validated through non-destructive CI gates.
 
-## Roles
-- **Rules Authority:** You (owner of rules & approvals)
-- **Commander:** Gemini (tasking & orchestration)
-- **Executor:** Codex (strict execution, atomic commits)
-- **Lead DevOps Engineer:** ChatGPT (design/spec/scripts under Rules)
+## Quick Start
 
-## Core rules (non-negotiable)
-1. **Anti-Explosion (Resource Control)**
-   - Every systemd service MUST set `MemoryHigh` and `CPUQuota`.
-   - Low-spec x86 nodes must cap services to ~200–400MB each (unless explicitly approved).
-2. **Network Security**
-   - Public ports allowed: **80, 443, 4433 (UDP/TCP)** only.
-   - SSH/DB ports MUST accept traffic from **Tailscale interface (tailscale0) only**.
-3. **Execution Protocol**
-   - CI checks run on **GitHub-hosted runners** only.
-   - No SSH/remote execution in CI check workflows.
-   - One logical change per commit (atomicity). Default = deny.
+1) Check version (must match `VERSION`):
+- `./bin/hz --version`
 
-## Repository structure (baseline)
-- `docs/`               Baseline rules, audit checklists, release policy
-- `skills/`             Planner/executor/auditor skill pack
-- `scripts/`            Idempotent shell scripts (safe defaults)
-- `.github/workflows/`  CI + manual_dispatch ops workflows
+2) List available recipes:
+- `./bin/hz recipe list`
 
-## Docs
-- [GPT Project Instructions](docs/GPT-PROJECT-INSTRUCTIONS.md)
-- [Baseline](docs/BASELINE.md)
-- [Audit Checklist](docs/AUDIT-CHECKLIST.md)
-- [Release Policy](docs/RELEASE-POLICY.md)
-- [LOMP Lite Scope](docs/LOMP-LITE-SCOPE.md)
-- [1-click → HLab Migration Plan](docs/migration/oneclick-to-hlab.md)
+3) Dry-run (safe mode used by CI):
+- `HZ_DRY_RUN=1 ./bin/hz recipe <recipe_name> install`
 
-## Quick start
-1. Add your nodes to Tailscale (mesh only; no public SSH).
-2. Run local validation with `make check`.
-3. Open a PR and rely on `.github/workflows/ci.yml` for hosted checks.
+4) Real execution (run on target node, usually with root/sudo; never in CI):
+- `./bin/hz recipe <recipe_name> install`
 
-## Local/CI
-- `make check`
-- `make ci` (alias)
-- `sudo bash tools/clean_node.sh --dry-run`
+## Inventory (configuration injection)
 
-## Security notes
-- NEVER commit secrets (tokens, keys, .env).
-- Use GitHub Actions secrets + per-node secret separation when applicable.
+The inventory directory maps YAML values into environment variables used by recipe execution (priority: Global < Host < Shell).
+
+Typical usage:
+- `./bin/hz recipe <recipe_name> install` (use current shell environment overrides)
+- If your hz version supports host selection (e.g. `--host web01`), pass it per repository convention.
+
+## CI / Local Validation
+
+- `make check`: unified checks via hz (version consistency + shellcheck + all-recipe dry-run install)
+- `make ci`: alias used by CI
+
+## Recipes
+
+See `docs/RECIPES.md`.
