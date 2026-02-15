@@ -111,14 +111,30 @@ log_info "recipe=ols-wp subcommand=${HZ_SUBCOMMAND} dry_run=${HZ_DRY_RUN}"
 # Non-destructive modes
 if [[ "${HZ_SUBCOMMAND}" == "check" ]]; then
   log_info "check: basic contract vars are present (already enforced by hz)"
-  is_ols_installed && log_info "check: OLS appears installed" || log_warn "check: OLS not detected"
-  is_ols_running && log_info "check: OLS appears running" || log_warn "check: OLS not running"
+  if is_ols_installed; then
+    log_info "check: OLS appears installed"
+  else
+    log_warn "check: OLS not detected"
+  fi
+  if is_ols_running; then
+    log_info "check: OLS appears running"
+  else
+    log_warn "check: OLS not running"
+  fi
   exit "${RC_SUCCESS}"
 fi
 
 if [[ "${HZ_SUBCOMMAND}" == "status" ]]; then
-  is_ols_installed && log_info "status: OLS installed=yes" || log_info "status: OLS installed=no"
-  is_ols_running && log_info "status: OLS running=yes" || log_info "status: OLS running=no"
+  if is_ols_installed; then
+    log_info "status: OLS installed=yes"
+  else
+    log_info "status: OLS installed=no"
+  fi
+  if is_ols_running; then
+    log_info "status: OLS running=yes"
+  else
+    log_info "status: OLS running=no"
+  fi
   exit "${RC_SUCCESS}"
 fi
 
