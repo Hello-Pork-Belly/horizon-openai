@@ -1,3 +1,18 @@
 name: lomp-lite
 runner: recipes/lomp-lite/run.sh
 supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+required_env: [OLS_ADMIN_PASSWORD, DB_ROOT_PASSWORD]
+
+inputs:
+  OLS_ADMIN_PASSWORD:
+    type: string
+    description: "OpenLiteSpeed WebAdmin password (secret). Required."
+  DB_ROOT_PASSWORD:
+    type: string
+    description: "MariaDB root password (secret). Required."
+
+  PHP_VERSION:
+    type: string
+    default: "8.2"
+    description: "PHP version hint (best-effort; may be ignored on minimal install)."

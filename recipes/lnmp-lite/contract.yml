@@ -1,3 +1,15 @@
 name: lnmp-lite
 runner: recipes/lnmp-lite/run.sh
 supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+required_env: [DB_ROOT_PASSWORD]
+
+inputs:
+  DB_ROOT_PASSWORD:
+    type: string
+    description: "MariaDB root password (secret). Required."
+
+  PHP_VERSION:
+    type: string
+    default: "8.2"
+    description: "PHP version hint (best-effort; may be ignored on minimal install)."
