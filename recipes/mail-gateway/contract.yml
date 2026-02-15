@@ -1,0 +1,36 @@
+name: mail-gateway
+runner: recipes/mail-gateway/run.sh
+supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+required_env: [MAIL_RELAY_HOST, MAIL_RELAY_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_FROM_ADDRESS]
+
+inputs:
+  MAIL_MODE:
+    type: string
+    default: "msmtp"
+    description: "Mode selector: msmtp (default) or postfix."
+
+  MAIL_RELAY_HOST:
+    type: string
+    description: "SMTP relay host (e.g., smtp-relay.brevo.com). Required."
+  MAIL_RELAY_PORT:
+    type: string
+    description: "SMTP relay port (e.g., 587). Required."
+  MAIL_USERNAME:
+    type: string
+    description: "SMTP username. Required."
+  MAIL_PASSWORD:
+    type: string
+    description: "SMTP password (secret). Required."
+  MAIL_FROM_ADDRESS:
+    type: string
+    description: "Default From address (e.g., alert@example.com). Required."
+
+  MAIL_ADMIN_EMAIL:
+    type: string
+    default: ""
+    description: "Optional. If provided, send a test email to this address."
+  MAIL_USE_TLS:
+    type: string
+    default: "true"
+    description: "Use STARTTLS/TLS when available (true/false). Default true."
