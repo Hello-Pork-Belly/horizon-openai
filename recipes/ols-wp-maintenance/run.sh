@@ -21,14 +21,6 @@ MAINTENANCE_ACTION="${MAINTENANCE_ACTION:-}"
 BACKUP_DIR="${BACKUP_DIR:-}"
 RESTORE_SRC="${RESTORE_SRC:-}"
 
-as_bool() {
-  case "${1:-}" in
-    1|true|TRUE|yes|YES|on|ON) echo "true" ;;
-    0|false|FALSE|no|NO|off|OFF|"") echo "false" ;;
-    *) echo "false" ;;
-  esac
-}
-
 find_tool() {
   # Args: list of basenames
   # Search priority:
