@@ -1,3 +1,27 @@
 name: hub-data
 runner: recipes/hub-data/run.sh
 supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+required_env: [HUB_DB_ROOT_PASSWORD, HUB_REDIS_PASSWORD]
+
+inputs:
+  HUB_DB_ROOT_PASSWORD:
+    type: string
+    description: "MariaDB root password (secret). Required (contract gate)."
+  HUB_REDIS_PASSWORD:
+    type: string
+    description: "Redis requirepass password (secret). Required (contract gate)."
+
+  REDIS_ENABLED:
+    type: string
+    default: "true"
+    description: "Install/configure redis-server (true/false). Default true."
+  MARIADB_ENABLED:
+    type: string
+    default: "true"
+    description: "Install/configure mariadb-server (true/false). Default true."
+
+  HUB_BIND_ADDR:
+    type: string
+    default: "127.0.0.1"
+    description: "Bind address for services (default localhost). This recipe will not open 0.0.0.0."
