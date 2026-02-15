@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck disable=SC1091
 # shellcheck source=lib/cli_core.sh
 . "${REPO_ROOT}/lib/cli_core.sh"
 
@@ -137,8 +138,16 @@ if [[ "${HZ_SUBCOMMAND}" == "check" ]]; then
 fi
 
 if [[ "${HZ_SUBCOMMAND}" == "status" ]]; then
-  pkg_installed mariadb-server && log_info "status: mariadb installed=yes" || log_info "status: mariadb installed=no"
-  pkg_installed openlitespeed && log_info "status: openlitespeed installed=yes" || log_info "status: openlitespeed installed=no"
+  if pkg_installed mariadb-server; then
+    log_info "status: mariadb installed=yes"
+  else
+    log_info "status: mariadb installed=no"
+  fi
+  if pkg_installed openlitespeed; then
+    log_info "status: openlitespeed installed=yes"
+  else
+    log_info "status: openlitespeed installed=no"
+  fi
   exit "${RC_SUCCESS}"
 fi
 

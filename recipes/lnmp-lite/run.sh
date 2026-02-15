@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck disable=SC1091
 # shellcheck source=lib/cli_core.sh
 . "${REPO_ROOT}/lib/cli_core.sh"
 
@@ -96,8 +97,16 @@ if [[ "${HZ_SUBCOMMAND}" == "check" ]]; then
 fi
 
 if [[ "${HZ_SUBCOMMAND}" == "status" ]]; then
-  pkg_installed nginx && log_info "status: nginx installed=yes" || log_info "status: nginx installed=no"
-  pkg_installed mariadb-server && log_info "status: mariadb installed=yes" || log_info "status: mariadb installed=no"
+  if pkg_installed nginx; then
+    log_info "status: nginx installed=yes"
+  else
+    log_info "status: nginx installed=no"
+  fi
+  if pkg_installed mariadb-server; then
+    log_info "status: mariadb installed=yes"
+  else
+    log_info "status: mariadb installed=no"
+  fi
   exit "${RC_SUCCESS}"
 fi
 
