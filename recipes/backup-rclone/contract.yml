@@ -1,0 +1,39 @@
+name: backup-rclone
+runner: recipes/backup-rclone/run.sh
+supported_subcommands: install,status,check,upgrade,backup,restore,uninstall,diagnostics
+
+required_env: [BACKUP_ENDPOINT, BACKUP_ACCESS_KEY_ID, BACKUP_SECRET_ACCESS_KEY, BACKUP_BUCKET]
+
+inputs:
+  BACKUP_PROVIDER:
+    type: string
+    default: "s3"
+    description: "Backup provider type. Default s3."
+
+  BACKUP_ENDPOINT:
+    type: string
+    description: "S3 endpoint URL (e.g., https://<account>.r2.cloudflarestorage.com). Required."
+  BACKUP_ACCESS_KEY_ID:
+    type: string
+    description: "S3 access key id (secret). Required."
+  BACKUP_SECRET_ACCESS_KEY:
+    type: string
+    description: "S3 secret access key (secret). Required."
+  BACKUP_BUCKET:
+    type: string
+    description: "Target bucket name. Required."
+
+  BACKUP_REMOTE_NAME:
+    type: string
+    default: "remote"
+    description: "Rclone remote name. Default remote."
+
+  BACKUP_SOURCE:
+    type: string
+    default: "/var/www"
+    description: "Optional source directory to sync (for cron). Default /var/www."
+
+  BACKUP_SCHEDULE:
+    type: string
+    default: ""
+    description: "Optional cron schedule (e.g., '0 3 * * *'). If set, create /etc/cron.d/horizon-backup-rclone."
