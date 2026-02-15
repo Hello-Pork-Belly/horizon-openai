@@ -20,9 +20,10 @@ Owner: Pork-Belly
 - (2026-02-15) T-013 Port hub-main Recipe (PR: #72)
 - (2026-02-15) T-014 Port mail-gateway Recipe (PR: #73)
 - (2026-02-15) T-015 Port backup-rclone Recipe (PR: #74)
+- (2026-02-15) T-016 Diagnostics & Baseline Engine (PR: #75)
 
 ## Doing
-- (2026-02-15) T-016 Port Diagnostics & Baseline Engine (PR: #<TBD>)
+- (2026-02-15) T-017 System Unification & Release v0.2.0 (PR: #<TBD>)
 
 ## Next
 - T-001 Auto-merge Enabler
