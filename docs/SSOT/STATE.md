@@ -22,11 +22,11 @@ Owner: Pork-Belly
 - (2026-02-15) T-015 Port backup-rclone Recipe (PR: #74)
 - (2026-02-15) T-016 Diagnostics & Baseline Engine (PR: #75)
 - (2026-02-15) T-017 System Unification & Release v0.2.0 (PR: #76)
+- (2026-02-16) T-018 Phase 2 Detailed Plan (Remote Horizon) (PR: #78)
 
 ## Doing
-- (2026-02-16) T-018 Phase 2 Detailed Plan (Remote Horizon) (PR: #<TBD>)
+- (2026-02-16) T-019 SSH Transport Layer (PR: #<TBD>)
 
 ## Next
-- T-019 SSH Transport Layer (hz run --target)
 - T-020 Remote Inventory & Target Selection
 - T-021 Remote Logging & Run Records

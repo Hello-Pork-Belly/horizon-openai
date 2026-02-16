@@ -175,3 +175,9 @@ hz_run_check() {
   log_info "running checks via: ${check_script}"
   bash "$check_script"
 }
+
+# Optional: Phase 2 transport layer (do not hard-fail if absent)
+if [[ -f "$(hz_repo_root)/lib/transport/ssh.sh" ]]; then
+  # shellcheck source=lib/transport/ssh.sh
+  . "$(hz_repo_root)/lib/transport/ssh.sh"
+fi
