@@ -65,8 +65,8 @@ ssh_exec() {
   common="$(_ssh_common_args)"
   key="$(_ssh_key_args)"
 
-  # Preserve remote exit code.
-  # shellcheck disable=SC2086
+  # Preserve remote exit code. Command expansion is intentionally local.
+  # shellcheck disable=SC2086,SC2029
   ssh ${common} ${key} "${target}" "${cmd}"
 }
 
