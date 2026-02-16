@@ -2,10 +2,35 @@
 # lib/orchestrator.sh
 # Parallel execution helper (Bash 3.2+ compatible)
 
-orchestrate__log_info() { command -v log_info >/dev/null 2>&1 && log_info "$@" || echo "INFO: $*"; }
-orchestrate__log_warn() { command -v log_warn >/dev/null 2>&1 && log_warn "$@" || echo "WARN: $*" >&2; }
-orchestrate__log_error() { command -v log_error >/dev/null 2>&1 && log_error "$@" || echo "ERROR: $*" >&2; }
-orchestrate__log_debug() { command -v log_debug >/dev/null 2>&1 && log_debug "$@" || true; }
+orchestrate__log_info() {
+  if command -v log_info >/dev/null 2>&1; then
+    log_info "$@"
+  else
+    echo "INFO: $*"
+  fi
+}
+
+orchestrate__log_warn() {
+  if command -v log_warn >/dev/null 2>&1; then
+    log_warn "$@"
+  else
+    echo "WARN: $*" >&2
+  fi
+}
+
+orchestrate__log_error() {
+  if command -v log_error >/dev/null 2>&1; then
+    log_error "$@"
+  else
+    echo "ERROR: $*" >&2
+  fi
+}
+
+orchestrate__log_debug() {
+  if command -v log_debug >/dev/null 2>&1; then
+    log_debug "$@"
+  fi
+}
 
 orchestrate__is_int() {
   [[ "${1:-}" =~ ^[0-9]+$ ]]
