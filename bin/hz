@@ -58,6 +58,10 @@ hz__parse_install_args() {
       --target) shift; HZ_TARGET_INPUT="${1:-}"; shift || true ;;
       --local-mode) HZ_LOCAL_MODE="1"; shift ;;
       --headless) HZ_HEADLESS="1"; shift ;;
+      --rolling) shift; : "${1:-}"; shift || true ;;
+      --rolling=*) shift ;;
+      --pause) shift; : "${1:-}"; shift || true ;;
+      --pause=*) shift ;;
       --) shift; break ;;
       -*) log_error "unknown flag for install: ${a}"; return 1 ;;
       *)
@@ -214,6 +218,7 @@ hz__maybe_orchestrate_install_group() {
   # Args: <recipe> [install_args...]
   local recipe="${1:-}"
   shift || true
+  HZ_GROUP_HANDLED=0
 
   local target_input=""
   local host_override=""
@@ -237,6 +242,20 @@ hz__maybe_orchestrate_install_group() {
       --host=*)
         host_override="${arg#--host=}"
         ;;
+      --rolling)
+        shift
+        export HZ_ROLLING_BATCH="${1:-}"
+        ;;
+      --rolling=*)
+        export HZ_ROLLING_BATCH="${arg#--rolling=}"
+        ;;
+      --pause)
+        shift
+        export HZ_ROLLING_PAUSE="${1:-}"
+        ;;
+      --pause=*)
+        export HZ_ROLLING_PAUSE="${arg#--pause=}"
+        ;;
       *)
         rest+=("${arg}")
         ;;
@@ -246,6 +265,7 @@ hz__maybe_orchestrate_install_group() {
 
   # Only handle @group
   [[ "${target_input}" == @* ]] || return 1
+  HZ_GROUP_HANDLED=1
 
   if ! command -v inventory_resolve_group >/dev/null 2>&1; then
     log_error "Group target provided (${target_input}) but inventory_resolve_group() is missing (T-025 not merged?)"
@@ -288,11 +308,7 @@ hz__maybe_orchestrate_install_group() {
   fi
 
   orchestrate_execute "${targets}" hz__orch_worker_install "${orch_args[@]}"
-  local rc=$?
-  [[ "${rc}" -eq 0 ]] && return 0
-
-  # Distinguish from "not group target" sentinel (1).
-  return 2
+  return $?
 }
 
 hz__dispatch_install() {
@@ -360,10 +376,12 @@ main() {
 
       # T-026: group target parallel orchestrator
       local rc=0
+      HZ_GROUP_HANDLED=0
       hz__maybe_orchestrate_install_group "$@" || rc=$?
-      if [[ "${rc}" -eq 0 ]]; then
-        return 0
-      elif [[ "${rc}" -ne 1 ]]; then
+      if [[ "${HZ_GROUP_HANDLED:-0}" == "1" ]]; then
+        return "${rc}"
+      fi
+      if [[ "${rc}" -ne 1 ]]; then
         return "${rc}"
       fi
 
