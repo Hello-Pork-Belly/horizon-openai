@@ -62,6 +62,8 @@ hz__parse_install_args() {
       --rolling=*) shift ;;
       --pause) shift; : "${1:-}"; shift || true ;;
       --pause=*) shift ;;
+      --timeout) shift; : "${1:-}"; shift || true ;;
+      --timeout=*) shift ;;
       --) shift; break ;;
       -*) log_error "unknown flag for install: ${a}"; return 1 ;;
       *)
@@ -255,6 +257,13 @@ hz__maybe_orchestrate_install_group() {
         ;;
       --pause=*)
         export HZ_ROLLING_PAUSE="${arg#--pause=}"
+        ;;
+      --timeout)
+        shift
+        export HZ_TIMEOUT="${1:-}"
+        ;;
+      --timeout=*)
+        export HZ_TIMEOUT="${arg#--timeout=}"
         ;;
       *)
         rest+=("${arg}")
