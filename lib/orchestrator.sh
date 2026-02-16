@@ -67,7 +67,6 @@ orchestrate__wait_any() {
 
         printf '%s\n' "${rc}" > "${tmpdir}/${prefix}.${pid}.rc"
 
-        ORCH_LAST_PID="${pid}"
         ORCH_LAST_TARGET="${target}"
         ORCH_LAST_RC="${rc}"
 
@@ -218,6 +217,19 @@ orchestrate__execute_parallel_once() {
   return "${agg}"
 }
 
+orchestrate__kill_children() {
+  local p
+  if declare -p ORCH_PIDS >/dev/null 2>&1; then
+    for p in "${ORCH_PIDS[@]}"; do
+      kill -TERM "${p}" 2>/dev/null || true
+    done
+    sleep 0.2
+    for p in "${ORCH_PIDS[@]}"; do
+      kill -KILL "${p}" 2>/dev/null || true
+    done
+  fi
+}
+
 orchestrate_execute() {
   local targets="${1:-}"
   shift || true
@@ -238,10 +250,8 @@ orchestrate_execute() {
   fi
 
   # Global progress counters
-  ORCH_TOTAL_TARGETS=0
+  ORCH_TOTAL_TARGETS="$(echo "${targets}" | wc -w | tr -d ' ')"
   ORCH_DONE_TARGETS=0
-  local x
-  for x in ${targets}; do ORCH_TOTAL_TARGETS=$((ORCH_TOTAL_TARGETS+1)); done
 
   # Reporting session init (only when enabled)
   if [[ "${HZ_REPORT:-0}" == "1" ]] && command -v report_session_init >/dev/null 2>&1; then
@@ -251,27 +261,12 @@ orchestrate_execute() {
   fi
 
   ORCH_SIGNALLED=0
-  ORCH_SIGNAL=""
-
   local old_int old_term
   old_int="$(trap -p INT || true)"
   old_term="$(trap -p TERM || true)"
 
-  orchestrate__kill_children() {
-    local p
-    if declare -p ORCH_PIDS >/dev/null 2>&1; then
-      for p in "${ORCH_PIDS[@]}"; do
-        kill -TERM "${p}" 2>/dev/null || true
-      done
-      sleep 0.2
-      for p in "${ORCH_PIDS[@]}"; do
-        kill -KILL "${p}" 2>/dev/null || true
-      done
-    fi
-  }
-
-  trap 'ORCH_SIGNALLED=1; ORCH_SIGNAL="INT"; orchestrate__log_warn "Received INT (Ctrl+C): stopping workers..."; orchestrate__kill_children' INT
-  trap 'ORCH_SIGNALLED=1; ORCH_SIGNAL="TERM"; orchestrate__log_warn "Received TERM: stopping workers..."; orchestrate__kill_children' TERM
+  trap 'ORCH_SIGNALLED=1; orchestrate__log_warn "Received INT (Ctrl+C): stopping workers..."; orchestrate__kill_children' INT
+  trap 'ORCH_SIGNALLED=1; orchestrate__log_warn "Received TERM: stopping workers..."; orchestrate__kill_children' TERM
 
   local batch pause force
   batch="$(orchestrate__int_or_default "${HZ_ROLLING_BATCH:-0}" "0")"
@@ -344,7 +339,9 @@ orchestrate_execute() {
   # Always merge + print summary if reporting enabled (partial report on interrupt)
   if [[ "${HZ_REPORT:-0}" == "1" ]] && command -v report_merge >/dev/null 2>&1; then
     report_merge || true
-    command -v report_print_summary >/dev/null 2>&1 && report_print_summary "${HZ_REPORT_FILE:-}" || true
+    if command -v report_print_summary >/dev/null 2>&1; then
+      report_print_summary "${HZ_REPORT_FILE:-}" || true
+    fi
   fi
 
   # Restore traps
