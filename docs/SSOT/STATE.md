@@ -39,7 +39,7 @@ Owner: Pork-Belly
 - (2026-02-17) T-027 Rolling Updates (PR: #88)
 - (2026-02-18) T-028 Aggregated Reporting Engine (PR: #91)
 - (2026-02-18) T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C) (PR: #93)
-- (2026-02-18) T-030 Phase 3 Closure Gate (DoD consolidation + workflow hygiene closure) (PR: #<TBD>)
+- (2026-02-18) T-030 Phase 3 Closure Gate (DoD consolidation + workflow hygiene closure) (PR: #94)
 
 ## Doing
 Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
