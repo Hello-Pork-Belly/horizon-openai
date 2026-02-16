@@ -25,11 +25,11 @@ hz_read_version() {
 hz_log() {
   local level="$1"; shift || true
   case "$level" in
-    INFO)  log_info "$@" ;;
-    WARN)  log_warn "$@" ;;
+    INFO) log_info "$@" ;;
+    WARN) log_warn "$@" ;;
     ERROR) log_error "$@" ;;
     DEBUG) log_debug "$@" ;;
-    *)     log_info "$level $*" ;;
+    *) log_info "$level $*" ;;
   esac
 }
 
@@ -47,6 +47,7 @@ Usage:
   hz version
   hz check
   hz install <recipe> [--host <hostname>]
+  hz ping --target <user@host|alias>
   hz recipe list
   hz recipe <name> <subcommand>
   hz module list
@@ -57,8 +58,9 @@ Global flags:
   -q, --quiet     Only ERROR logs
 
 Environment:
-  HZ_DRY_RUN=0|1|2   (default: 0)
-  HZ_DEBUG=0|1       (DEBUG may print values)
+  HZ_DRY_RUN=0|1|2 (default: 0)
+  HZ_DEBUG=0|1     (DEBUG may print values)
+  HZ_NO_RECORD=1   Disable session recording
 
 Notes:
   - hz check runs repository verification (CI-style).
@@ -109,16 +111,13 @@ hz_list_targets() {
   local root base found manifest name
   root="$(hz_repo_root)"
   base="${root}/${target_type}"
-
   found=0
   [[ -d "$base" ]] || return 0
-
   while IFS= read -r manifest; do
     name="$(basename "$(dirname "$manifest")")"
     echo "$name"
     found=1
   done < <(find "$base" -mindepth 2 -maxdepth 2 -type f -name contract.yml | sort)
-
   if [[ "$found" -eq 0 ]]; then
     log_warn "no ${target_type} contracts found"
   fi
@@ -127,27 +126,20 @@ hz_list_targets() {
 hz_run_target() {
   local target_type="$1" name="$2" subcommand="$3"
   local root contract supported runner_rel runner_abs rc
-
   hz_validate_dry_run || return 1
-
   root="$(hz_repo_root)"
   contract="${root}/${target_type}/${name}/contract.yml"
   [[ -f "$contract" ]] || { hz_die "missing contract file: ${contract}"; return 1; }
-
   supported="$(hz_get_contract_value "$contract" "supported_subcommands")"
   runner_rel="$(hz_get_contract_value "$contract" "runner")"
   [[ -n "$supported" && -n "$runner_rel" ]] || { hz_die "invalid contract file: ${contract}"; return 1; }
-
   if ! hz_supports_subcommand "$supported" "$subcommand"; then
     hz_die "${target_type}/${name} does not support subcommand ${subcommand}"
     return 1
   fi
-
   runner_abs="${root}/${runner_rel}"
   [[ -f "$runner_abs" ]] || { hz_die "runner not found: ${runner_abs}"; return 2; }
-
   log_info "target=${target_type}/${name} subcommand=${subcommand} dry_run=${HZ_DRY_RUN:-0}"
-
   HZ_SUBCOMMAND="$subcommand" \
   HZ_TARGET_TYPE="$target_type" \
   HZ_TARGET_NAME="$name" \
@@ -163,17 +155,50 @@ hz_run_target() {
 hz_run_check() {
   local root check_script
   root="$(hz_repo_root)"
-
   if [[ -f "${root}/tools/check/run.sh" ]]; then
     check_script="${root}/tools/check/run.sh"
   else
     check_script="${root}/scripts/check/run.sh"
   fi
-
   [[ -f "$check_script" ]] || { hz_die "check runner not found: ${check_script}"; return 2; }
-
   log_info "running checks via: ${check_script}"
   bash "$check_script"
+}
+
+# --- Session Recording (T-021) ---
+hz_record_sanitize_token() {
+  # allow only safe filename chars
+  local s="${1:-}"
+  printf '%s' "$s" | tr -c 'A-Za-z0-9._-' '_' | sed 's/^_//;s/_$//'
+}
+
+hz_record_dir_today() {
+  local root y m d
+  root="$(hz_repo_root)"
+  y="$(date +%Y)"
+  m="$(date +%m)"
+  d="$(date +%d)"
+  printf '%s/records/%s/%s/%s\n' "$root" "$y" "$m" "$d"
+}
+
+hz_record_file_path() {
+  local target="$1" cmd="$2"
+  local dir ts_date ts_time safe_target safe_cmd
+  dir="$(hz_record_dir_today)"
+  ts_date="$(date +%Y-%m-%d)"
+  ts_time="$(date +%H%M%S)"
+  safe_target="$(hz_record_sanitize_token "$target")"
+  safe_cmd="$(hz_record_sanitize_token "$cmd")"
+  printf '%s/%s_%s_%s_%s.log\n' "$dir" "$ts_date" "$ts_time" "$safe_target" "$safe_cmd"
+}
+
+hz_record_prepare() {
+  local target="$1" cmd="$2"
+  local dir file
+  dir="$(hz_record_dir_today)"
+  mkdir -p "$dir"
+  file="$(hz_record_file_path "$target" "$cmd")"
+  printf '%s\n' "$file"
 }
 
 # Optional: Phase 2 transport layer (do not hard-fail if absent)
