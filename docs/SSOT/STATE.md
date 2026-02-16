@@ -3,10 +3,15 @@
 This file is the single source of truth for project progress.
 Update this file via PR whenever work starts/finishes.
 
-Last updated: 2026-02-17
+Last updated: 2026-02-18
 Owner: Pork-Belly
 
-## Done
+## Phase Position
+- Current Phase: Phase 3 (Fleet Orchestration)
+- Phase reference: `docs/SSOT/PHASES.md`
+- Progress rule: all status claims must match `PHASES.md` + this file.
+
+## Done (merged tasks)
 - (2026-02-13) SSOT bootstrap
 - (2026-02-15) T-004 CLI Skeleton (hz) (PR: #63)
 - (2026-02-15) T-005 Recipe Runner (hz install) (PR: #64)
@@ -34,7 +39,12 @@ Owner: Pork-Belly
 - (2026-02-17) T-027 Rolling Updates (PR: #88)
 
 ## Doing
-- (2026-02-17) T-028 Aggregated Reporting (report.jsonl + report.txt) (PR: #<TBD>)
+Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
+- (2026-02-18) T-028 Aggregated Reporting (report.jsonl + report.txt) (PR: #<TBD>)
 
-## Next
-- T-029 UX Hardening (timeouts, interrupt handling, partial reports)
+## Next (Phase 3 aligned roadmap)
+- T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C)
+- T-030 Phase 3 Closure Gate (DoD consolidation + workflow hygiene closure)
+- T-031 Fleet Reporting Schema Freeze (stabilize report.jsonl/report.txt fields and compatibility notes)
+- T-032 Fleet Failure Taxonomy (standardize noise_classification and failure buckets in orchestration outputs)
+- T-033 Fleet Operator Runbook (group/parallel/rolling/report troubleshooting and acceptance checklist)
