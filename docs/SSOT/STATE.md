@@ -28,15 +28,13 @@ Owner: Pork-Belly
 - (2026-02-16) T-021 Session Recording (Run Records) (PR: #81)
 - (2026-02-17) T-022 Remote Runner Implementation (PR: #82)
 - (2026-02-17) T-023 Phase 2 Closure & Release v0.3.0 (PR: #83)
+- (2026-02-17) T-024 Phase 3 Detailed Plan (Fleet Orchestration) (PR: #85)
+- (2026-02-17) T-025 Group Inventory System (PR: #86)
 - (2026-02-17) T-026 Parallel Orchestrator (PR: #87)
 - (2026-02-17) T-027 Rolling Updates (PR: #88)
 
 ## Doing
-- (2026-02-17) T-024 Phase 3 Detailed Plan (Fleet Orchestration) (PR: #<TBD>)
-- (2026-02-17) T-025 Group Inventory System (PR: #<TBD>)
+- (2026-02-17) T-028 Aggregated Reporting (report.jsonl + report.txt) (PR: #<TBD>)
 
 ## Next
-- T-025 Group Inventory (groups + ping --group)
-- T-026 Parallel Orchestrator (install --group --parallel)
-- T-027 Rolling Updates (rolling + pause + fail-fast)
-- T-028 Aggregated Reporting (report.jsonl + report.txt)
+- T-029 UX Hardening (timeouts, interrupt handling, partial reports)
