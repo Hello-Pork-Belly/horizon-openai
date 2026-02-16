@@ -31,6 +31,7 @@ Owner: Pork-Belly
 
 ## Doing
 - (2026-02-17) T-024 Phase 3 Detailed Plan (Fleet Orchestration) (PR: #<TBD>)
+- (2026-02-17) T-026 Parallel Orchestrator (branch: codex/feature/T-026-parallel-orchestrator)
 - (2026-02-17) T-025 Group Inventory System (PR: #<TBD>)
 
 ## Next
