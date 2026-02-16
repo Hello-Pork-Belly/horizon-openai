@@ -38,14 +38,14 @@ Owner: Pork-Belly
 - (2026-02-17) T-026 Parallel Orchestrator (PR: #87)
 - (2026-02-17) T-027 Rolling Updates (PR: #88)
 - (2026-02-18) T-028 Aggregated Reporting Engine (PR: #91)
+- (2026-02-18) T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C) (PR: #93)
+- (2026-02-18) T-030 Phase 3 Closure Gate (DoD consolidation + workflow hygiene closure) (PR: #<TBD>)
 
 ## Doing
 Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
-- (2026-02-18) T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C) (PR: #<TBD>)
+- Phase 3 complete. Waiting for next phase kickoff.
 
 ## Next (Phase 3 aligned roadmap)
-- T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C)
-- T-030 Phase 3 Closure Gate (DoD consolidation + workflow hygiene closure)
 - T-031 Fleet Reporting Schema Freeze (stabilize report.jsonl/report.txt fields and compatibility notes)
 - T-032 Fleet Failure Taxonomy (standardize noise_classification and failure buckets in orchestration outputs)
 - T-033 Fleet Operator Runbook (group/parallel/rolling/report troubleshooting and acceptance checklist)
