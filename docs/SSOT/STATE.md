@@ -28,7 +28,7 @@ Owner: Pork-Belly
 - (2026-02-16) T-021 Session Recording (Run Records) (PR: #81)
 
 ## Doing
-- (2026-02-16) T-022 Remote Runner Implementation (PR: #<TBD>)
+- (2026-02-16) T-022 Remote Runner Implementation (PR: #82)
 
 ## Next
-- T-023 Hardening (hostkey policy, secrets hygiene, retries/timeouts)
+- T-023 Remote Logging & Structured Records (controller-side aggregation)

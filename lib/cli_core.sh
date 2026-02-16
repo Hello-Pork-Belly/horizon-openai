@@ -46,7 +46,7 @@ Usage:
   hz help
   hz version
   hz check
-  hz install <recipe> [--host <hostname>]
+  hz install <recipe> [--host <hostname>] [--target <alias|user@host>] [--dry-run[=0|1|2]]
   hz ping --target <user@host|alias>
   hz recipe list
   hz recipe <name> <subcommand>
@@ -205,4 +205,10 @@ hz_record_prepare() {
 if [[ -f "$(hz_repo_root)/lib/transport/ssh.sh" ]]; then
   # shellcheck source=lib/transport/ssh.sh
   . "$(hz_repo_root)/lib/transport/ssh.sh"
+fi
+
+# Optional: Phase 2 remote runner
+if [[ -f "$(hz_repo_root)/lib/remote_runner.sh" ]]; then
+  # shellcheck source=lib/remote_runner.sh
+  . "$(hz_repo_root)/lib/remote_runner.sh"
 fi
