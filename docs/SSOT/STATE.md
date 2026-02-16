@@ -25,10 +25,10 @@ Owner: Pork-Belly
 - (2026-02-16) T-018 Phase 2 Detailed Plan (Remote Horizon) (PR: #78)
 - (2026-02-16) T-019 SSH Transport Layer (PR: #79)
 - (2026-02-16) T-020 Remote Inventory & Target Selection (PR: #80)
+- (2026-02-16) T-021 Session Recording (Run Records) (PR: #81)
 
 ## Doing
-- (2026-02-16) T-021 Session Recording (Run Records) (PR: #<TBD>)
+- (2026-02-16) T-022 Remote Runner Implementation (PR: #<TBD>)
 
 ## Next
-- T-022 Remote Runner (hz run --target / --host)
 - T-023 Hardening (hostkey policy, secrets hygiene, retries/timeouts)
