@@ -27,9 +27,9 @@ Owner: Pork-Belly
 - (2026-02-16) T-020 Remote Inventory & Target Selection (PR: #80)
 - (2026-02-16) T-021 Session Recording (Run Records) (PR: #81)
 - (2026-02-17) T-022 Remote Runner Implementation (PR: #82)
+- (2026-02-17) T-023 Phase 2 Closure & Release v0.3.0 (PR: #83)
 
 ## Doing
-- (2026-02-17) T-023 Phase 2 Closure & Release v0.3.0 (PR: #<TBD>)
 
 ## Next
 - Phase 3 (proposal): Orchestration / Fleet Ops / Secrets Management
