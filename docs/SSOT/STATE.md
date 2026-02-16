@@ -34,7 +34,7 @@ Owner: Pork-Belly
 - (2026-02-17) T-027 Rolling Updates (PR: #88)
 
 ## Doing
-- (2026-02-17) T-028 Aggregated Reporting (report.jsonl + report.txt) (PR: #<TBD>)
+- (2026-02-17) T-028 Full Stack Reporting Engine (PR: #<TBD>)
 
 ## Next
 - T-029 UX Hardening (timeouts, interrupt handling, partial reports)

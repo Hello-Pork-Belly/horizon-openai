@@ -76,7 +76,7 @@ orchestrate__int_or_default() {
 }
 
 orchestrate__execute_parallel_once() {
-  # Internal: run one batch in parallel using the existing T-026 logic.
+  # Internal: run one batch in parallel (records per-target status when enabled).
   # Args: <targets> <worker_fn> [worker_args...]
   local targets="${1:-}"
   shift || true
@@ -112,7 +112,28 @@ orchestrate__execute_parallel_once() {
     done
 
     (
-      "${worker}" "${target}" "$@"
+      # Worker wrapper: measure duration and optionally emit one JSONL record.
+      local start end dur rc status msg
+      start="$(date +%s)"
+      rc=0
+
+      "${worker}" "${target}" "$@" || rc=$?
+
+      end="$(date +%s)"
+      dur=$(( end - start ))
+      if [[ "${rc}" -eq 0 ]]; then
+        status="SUCCESS"
+      else
+        status="FAILURE"
+      fi
+
+      msg="${HZ_REPORT_CMD:-cmd} rc=${rc}"
+
+      if [[ "${HZ_REPORT:-0}" == "1" ]] && command -v report_record_status >/dev/null 2>&1; then
+        report_record_status "${target}" "${status}" "${dur}" "${msg}" || true
+      fi
+
+      exit "${rc}"
     ) &
     pid=$!
     ORCH_PIDS+=("${pid}")
@@ -162,10 +183,18 @@ orchestrate_execute() {
     return 2
   fi
 
-  local batch pause force fail_fast_label
+  # Reporting session init (enabled by caller)
+  if [[ "${HZ_REPORT:-0}" == "1" ]] && command -v report_session_init >/dev/null 2>&1; then
+    if [[ -z "${HZ_REPORT_SESSION_DIR:-}" || -z "${HZ_REPORT_FILE:-}" ]]; then
+      report_session_init "${HZ_REPORT_LABEL:-orchestrator}" || true
+    fi
+  fi
+
+  local batch pause force fail_fast_label overall_rc
   batch="$(orchestrate__int_or_default "${HZ_ROLLING_BATCH:-0}" "0")"
   pause="$(orchestrate__int_or_default "${HZ_ROLLING_PAUSE:-0}" "0")"
   force="${HZ_FORCE:-0}"
+  overall_rc=0
   if [[ "${force}" == "1" ]]; then
     fail_fast_label="no"
   else
@@ -175,66 +204,73 @@ orchestrate_execute() {
   if [[ "${batch}" -le 0 ]]; then
     # T-026 behavior (full parallel)
     orchestrate__log_info "Orchestrator mode: full-parallel"
-    orchestrate__execute_parallel_once "${targets}" "${worker}" "$@"
-    local rc=$?
-    if [[ "${rc}" -eq 0 ]]; then
-      orchestrate__log_info "Parallel orchestrator: all targets succeeded"
-    else
-      orchestrate__log_warn "Parallel orchestrator: one or more targets failed"
-    fi
-    return "${rc}"
-  fi
+    orchestrate__execute_parallel_once "${targets}" "${worker}" "$@" || overall_rc=$?
+  else
+    orchestrate__log_info "Orchestrator mode: rolling batch=${batch} pause=${pause}s fail_fast=${fail_fast_label}"
 
-  orchestrate__log_info "Orchestrator mode: rolling batch=${batch} pause=${pause}s fail_fast=${fail_fast_label}"
-
-  # Rolling batches
-  local -a all=()
-  local t
-  for t in ${targets}; do
-    all+=("${t}")
-  done
-
-  local total="${#all[@]}"
-  local i=0
-  local overall_rc=0
-
-  while [[ "${i}" -lt "${total}" ]]; do
-    local end=$(( i + batch ))
-    if [[ "${end}" -gt "${total}" ]]; then
-      end="${total}"
-    fi
-
-    local chunk=""
-    local j
-    for (( j=i; j<end; j++ )); do
-      chunk+="${chunk:+ }${all[$j]}"
+    # Rolling batches
+    local -a all=()
+    local t
+    for t in ${targets}; do
+      all+=("${t}")
     done
 
-    orchestrate__log_info "Rolling batch: $((i+1))..${end}/${total} -> ${chunk}"
+    local total="${#all[@]}"
+    local i=0
 
-    orchestrate__execute_parallel_once "${chunk}" "${worker}" "$@"
-    local rc=$?
-    if [[ "${rc}" -ne 0 ]]; then
-      overall_rc=1
-      if [[ "${force}" == "1" ]]; then
-        orchestrate__log_warn "Batch failed (rc=${rc}) but HZ_FORCE=1, continuing..."
-      else
-        orchestrate__log_error "Batch failed (rc=${rc}); stopping (fail-fast). Set HZ_FORCE=1 to continue."
-        return 1
+    while [[ "${i}" -lt "${total}" ]]; do
+      local end=$(( i + batch ))
+      if [[ "${end}" -gt "${total}" ]]; then
+        end="${total}"
       fi
-    fi
 
-    i="${end}"
-    if [[ "${i}" -lt "${total}" && "${pause}" -gt 0 ]]; then
-      orchestrate__log_info "Pausing for ${pause}s before next batch..."
-      sleep "${pause}"
+      local chunk=""
+      local j
+      for (( j=i; j<end; j++ )); do
+        chunk+="${chunk:+ }${all[$j]}"
+      done
+
+      orchestrate__log_info "Rolling batch: $((i+1))..${end}/${total} -> ${chunk}"
+
+      local rc=0
+      orchestrate__execute_parallel_once "${chunk}" "${worker}" "$@" || rc=$?
+      if [[ "${rc}" -ne 0 ]]; then
+        overall_rc=1
+        if [[ "${force}" == "1" ]]; then
+          orchestrate__log_warn "Batch failed (rc=${rc}) but HZ_FORCE=1, continuing..."
+        else
+          orchestrate__log_error "Batch failed (rc=${rc}); stopping (fail-fast). Set HZ_FORCE=1 to continue."
+          break
+        fi
+      fi
+
+      i="${end}"
+      if [[ "${i}" -lt "${total}" && "${pause}" -gt 0 ]]; then
+        orchestrate__log_info "Pausing for ${pause}s before next batch..."
+        sleep "${pause}"
+      fi
+    done
+  fi
+
+  if [[ "${HZ_REPORT:-0}" == "1" ]] && command -v report_merge >/dev/null 2>&1; then
+    report_merge || true
+    if command -v report_print_summary >/dev/null 2>&1; then
+      report_print_summary "${HZ_REPORT_FILE:-}" || true
     fi
-  done
+  fi
 
   if [[ "${overall_rc}" -eq 0 ]]; then
-    orchestrate__log_info "Rolling orchestrator: all targets succeeded"
+    if [[ "${batch}" -le 0 ]]; then
+      orchestrate__log_info "Parallel orchestrator: all targets succeeded"
+    else
+      orchestrate__log_info "Rolling orchestrator: all targets succeeded"
+    fi
   else
-    orchestrate__log_warn "Rolling orchestrator: one or more targets failed"
+    if [[ "${batch}" -le 0 ]]; then
+      orchestrate__log_warn "Parallel orchestrator: one or more targets failed"
+    else
+      orchestrate__log_warn "Rolling orchestrator: one or more targets failed"
+    fi
   fi
   return "${overall_rc}"
 }

@@ -218,3 +218,9 @@ if [[ -f "$(hz_repo_root)/lib/orchestrator.sh" ]]; then
   # shellcheck source=lib/orchestrator.sh
   . "$(hz_repo_root)/lib/orchestrator.sh"
 fi
+
+# Optional: Phase 3 reporting
+if [[ -f "$(hz_repo_root)/lib/reporting.sh" ]]; then
+  # shellcheck source=lib/reporting.sh
+  . "$(hz_repo_root)/lib/reporting.sh"
+fi
