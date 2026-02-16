@@ -9,6 +9,7 @@ phases:
       - "Inventory injection"
       - "Unified logging"
       - "Core recipes ported + diagnostics"
+
   phase_2:
     name: "Remote Horizon"
     release: "v0.3.0"
@@ -18,11 +19,13 @@ phases:
       - "Inventory target resolution (alias -> user@host)"
       - "Session recording (records/YYYY/MM/DD)"
       - "Transient Runner (pack-ship-exec-clean), agentless remote install"
+
   phase_3:
-    name: "Orchestration / Fleet Ops"
-    status: "planned"
-    ideas:
-      - "group execution (run across many hosts)"
-      - "structured run records + index"
-      - "secrets management integration (e.g., SOPS/age)"
-      - "UI/API control plane"
+    name: "Fleet Orchestration"
+    status: "in_progress"
+    release: ""
+    highlights:
+      - "Group inventory and target selection"
+      - "Parallel execution with bounded concurrency"
+      - "Rolling updates (batch + pause + fail-fast)"
+      - "Aggregated reporting (JSONL + human summary)"
