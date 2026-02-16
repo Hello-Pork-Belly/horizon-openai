@@ -4,13 +4,16 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+.DS_Store?
 
 # Logs / Temp
 *.log
 *.tmp
 tmp/
 .cache/
-.DS_Store?
+
+# Horizon session records (T-021)
+records/
 
 # Secrets / Env
 .env

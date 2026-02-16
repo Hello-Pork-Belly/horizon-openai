@@ -13,8 +13,11 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 . "${REPO_ROOT}/lib/inventory.sh"
 
 hz__apply_global_flags() {
+codex/feature/T-022-remote-runner
   # Scan argv; remove global flags; keep others in ARGS_OUT.
   # Last wins when flags conflict.
+=======
+main
   ARGS_OUT=()
   local a v
   for a in "$@"; do
@@ -104,6 +107,7 @@ hz__parse_install_args() {
   return 0
 }
 
+codex/feature/T-022-remote-runner
 hz__cmd_ping() {
   # Usage: hz ping --target user@host|alias
   local target=""
@@ -181,6 +185,50 @@ hz__cmd_install() {
 
   hz_recipe_install "${RECIPE_NAME}"
   return $?
+=======
+hz__should_record() {
+  local cmd="${1:-}"
+  [[ "${HZ_NO_RECORD:-0}" == "1" ]] && return 1
+  case "$cmd" in
+    install|diagnose|doctor|run) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+hz__record_target_label() {
+  # Prefer explicit host label for install; otherwise local hostname.
+  local fallback
+  fallback="$(hostname -s 2>/dev/null || echo localhost)"
+  if [[ -n "${HZ_HOST:-}" ]]; then
+    echo "${HZ_HOST}"
+  else
+    echo "${fallback}"
+  fi
+}
+
+hz__run_with_recording() {
+  local target_label="$1"
+  local cmd_label="$2"
+  shift 2
+
+  local logfile
+  logfile="$(hz_record_prepare "$target_label" "$cmd_label")"
+
+  log_info "recording: ${logfile}"
+
+  local had_errexit=0
+  [[ $- == *e* ]] && had_errexit=1
+  set +e
+
+  # Record both streams; keep stderr on stderr for console.
+  "$@" \
+    > >(tee -a "$logfile") \
+    2> >(tee -a "$logfile" >&2)
+  local rc=$?
+
+  (( had_errexit == 1 )) && set -e
+  return "$rc"
+main
 }
 
 main() {
@@ -206,16 +254,88 @@ main() {
       ;;
     diagnose|doctor)
       shift || true
-      exec bash "${REPO_ROOT}/tools/diagnostics/run.sh" "$@"
+      if hz__should_record "diagnose"; then
+        hz__run_with_recording "$(hostname -s 2>/dev/null || echo localhost)" "diagnose" \
+          bash "${REPO_ROOT}/tools/diagnostics/run.sh" "$@"
+        return $?
+      fi
+      bash "${REPO_ROOT}/tools/diagnostics/run.sh" "$@"
+      return $?
       ;;
     ping)
       shift || true
+codex/feature/T-022-remote-runner
       hz__cmd_ping "$@"
       return $?
       ;;
     install)
       shift || true
       hz__cmd_install "$@"
+=======
+      local target=""
+      while [[ $# -gt 0 ]]; do
+        case "$1" in
+          --target) target="${2:-}"; shift 2 ;;
+          --target=*) target="${1#*=}"; shift ;;
+          -h|--help)
+            echo "Usage: hz ping --target user@host|alias"
+            exit 0
+            ;;
+          *)
+            echo "Unknown argument for ping: $1" >&2
+            echo "Usage: hz ping --target user@host|alias" >&2
+            exit 1
+            ;;
+        esac
+      done
+
+      if [[ -z "${target}" ]]; then
+        echo "ping: missing --target" >&2
+        echo "Usage: hz ping --target user@host|alias" >&2
+        exit 1
+      fi
+
+      # If T-020 is present, resolve alias via inventory.
+      if declare -F inventory_resolve_target >/dev/null 2>&1; then
+        inventory_resolve_target "${target}" || exit 1
+        target="${HZ_RESOLVED_TARGET:-$target}"
+      fi
+
+      if ! command -v ssh_test >/dev/null 2>&1; then
+        echo "ping: ssh transport not available (ssh_test not found)" >&2
+        exit 1
+      fi
+
+      log_info "ping: testing ssh connectivity to target=${target}"
+      if ssh_test "${target}"; then
+        log_info "ping: ok"
+        exit 0
+      else
+        rc=$?
+        log_error "ping: failed (rc=${rc})"
+        exit "${rc}"
+      fi
+      ;;
+    install)
+      shift || true
+      if ! hz__parse_install_args "$@"; then
+        hz_usage
+        return 1
+      fi
+      export HZ_HOST
+
+      local record_target record_cmd
+      record_target="$(hz__record_target_label)"
+      record_cmd="install-${RECIPE_NAME}"
+
+      if hz__should_record "install"; then
+        hz__run_with_recording "${record_target}" "${record_cmd}" \
+          hz_recipe_install "${RECIPE_NAME}"
+        return $?
+      fi
+
+      hz_recipe_install "${RECIPE_NAME}"
+main
       return $?
       ;;
     recipe)
