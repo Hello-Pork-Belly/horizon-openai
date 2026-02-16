@@ -1,9 +1,8 @@
 # Project State Ledger (SSOT)
 
-This file is the single source of truth for project progress.
-Update this file via PR whenever work starts/finishes.
+This file is the single source of truth for project progress. Update this file via PR whenever work starts/finishes.
 
-Last updated: 2026-02-16
+Last updated: 2026-02-16  
 Owner: Pork-Belly
 
 ## Done
@@ -24,9 +23,11 @@ Owner: Pork-Belly
 - (2026-02-15) T-017 System Unification & Release v0.2.0 (PR: #76)
 - (2026-02-16) T-018 Phase 2 Detailed Plan (Remote Horizon) (PR: #78)
 - (2026-02-16) T-019 SSH Transport Layer (PR: #79)
+- (2026-02-16) T-020 Remote Inventory & Target Selection (PR: #80)
+- (2026-02-16) T-021 Session Recording (Run Records) (PR: #81)
 
 ## Doing
-- (2026-02-16) T-020 Remote Inventory & Target Selection (PR: #<TBD>)
+- (2026-02-16) T-022 Remote Runner Implementation (PR: #)
 
 ## Next
-- T-021 Remote Logging & Run Records
+- T-023 Remote Logging & Structured Records (controller-side aggregation)

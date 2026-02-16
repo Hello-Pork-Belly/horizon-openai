@@ -46,22 +46,30 @@ Usage:
   hz help
   hz version
   hz check
-  hz install <recipe> [--host <hostname>]
+  hz ping --target <alias|user@host>
+  hz install <recipe> [--host <host_alias>] [--target <alias|user@host>] [--dry-run[=0|1|2]]
+
   hz recipe list
   hz recipe <name> <subcommand>
+
   hz module list
   hz module <name> <subcommand>
 
 Global flags:
-  -v, --verbose   Enable DEBUG logs
-  -q, --quiet     Only ERROR logs
+  -v, --verbose         Enable DEBUG logs
+  -q, --quiet           Only ERROR logs
+  --dry-run[=0|1|2]      Set HZ_DRY_RUN (default: 0)
 
 Environment:
-  HZ_DRY_RUN=0|1|2   (default: 0)
-  HZ_DEBUG=0|1       (DEBUG may print values)
+  HZ_DRY_RUN=0|1|2 (default: 0)
+  HZ_DEBUG=0|1 (DEBUG may print values)
+  HZ_SSH_KEY=/path/to/key
+  HZ_SSH_ARGS="... ssh/scp flags ..."
+  HZ_SSH_STRICT_HOST_KEY_CHECKING=accept-new|yes|no
 
 Notes:
   - hz check runs repository verification (CI-style).
+  - install --target triggers Phase 2 transient runner when target is remote.
 EOF_USAGE
 }
 
@@ -109,8 +117,8 @@ hz_list_targets() {
   local root base found manifest name
   root="$(hz_repo_root)"
   base="${root}/${target_type}"
-
   found=0
+
   [[ -d "$base" ]] || return 0
 
   while IFS= read -r manifest; do
@@ -180,4 +188,10 @@ hz_run_check() {
 if [[ -f "$(hz_repo_root)/lib/transport/ssh.sh" ]]; then
   # shellcheck source=lib/transport/ssh.sh
   . "$(hz_repo_root)/lib/transport/ssh.sh"
+fi
+
+# Optional: Phase 2 remote runner
+if [[ -f "$(hz_repo_root)/lib/remote_runner.sh" ]]; then
+  # shellcheck source=lib/remote_runner.sh
+  . "$(hz_repo_root)/lib/remote_runner.sh"
 fi
