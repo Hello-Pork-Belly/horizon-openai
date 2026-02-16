@@ -22,8 +22,8 @@ phases:
 
   phase_3:
     name: "Fleet Orchestration"
-    status: "in_progress"
-    release: ""
+    status: "Completed"
+    release: "v0.4.0"
     highlights:
       - "Group inventory and target selection"
       - "Parallel execution with bounded concurrency"
