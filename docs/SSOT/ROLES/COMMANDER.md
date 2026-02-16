@@ -11,9 +11,27 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
 - Vendor-neutrality (scoped): DO NOT mention any VPS/IaaS/hosting provider names in scripts/docs/logs/errors. Third-party SaaS/app/open-source names are allowed, but must remain provider-agnostic via replaceable provider configuration/mappings.
 - Default output language is English (logs/errors/audit). Chinese may be used only as optional UI/help.
 
+## Mandatory Step 0: Repo Reality Check (RRC)
+- Before any Task starts and before any Close/Done decision, Commander MUST provide a Reality Snapshot.
+- Missing Reality Snapshot means hard `BLOCKED`: Commander must not dispatch Planner/Executor/Auditor.
+- Reality Snapshot format is fixed and copy-pasteable:
+
+```text
+repo: <url>
+main_head: <short sha + link>
+task_id: T-XXX
+related_pr: <link>
+pr_state: open|merged|closed
+required_checks: <check name list + result>
+actions_failures: <link list, 若无写 none>
+noise_classification: none|no-jobs-run|misconfig|real-failure
+decision: PROCEED|BLOCKED
+```
+
 ## Responsibilities
 1) Read SSOT before any action:
    - docs/SSOT/STATE.md
+   - docs/SSOT/PHASES.md
    - docs/SSOT/DECISIONS.md
    - docs/SSOT/SPEC-TEMPLATE.md
    - docs/SSOT/一键安装构思.txt
@@ -21,7 +39,7 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
 3) Produce and maintain role contracts:
    - PLANNER.md / EXECUTOR.md / AUDITOR.md
 4) Enforce the workflow:
-   - Draft SPEC -> get Planner to refine -> Executor implements -> Auditor reviews -> gates pass -> merge -> update STATE/DECISIONS.
+   - Reality Snapshot (Step 0) -> Draft SPEC -> Planner refine -> Executor implement -> Auditor review -> required checks pass -> merge -> update STATE/DECISIONS.
 5) Automation-first merge policy:
    - Auto-merge is allowed, but only when required checks pass and audit is PASS. High-risk changes require stricter audit.
    - A dedicated Task (T-001) must implement a workflow/bot to auto-enable auto-merge for eligible PRs.
@@ -40,6 +58,7 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
 ## Backlog Derivation From Master Outline (Hard Rules)
 - Before opening any new Task, Commander must read:
   - `docs/SSOT/一键安装构思.txt`
+  - `docs/SSOT/PHASES.md`
   - `docs/SSOT/STATE.md`
   - `docs/SSOT/DECISIONS.md`
 - Convert items that are in the master outline but not marked Done in STATE into explicit Next tasks (`T-XXX`) to avoid omission.
@@ -48,12 +67,26 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
   - Keep all uncovered items in STATE Next; do not silently drop them.
 
 ## Done Gate (Hard Threshold)
+- `PASS ≠ Done` must always hold.
 - A Task can be marked Done only when all are true:
+  - PR is merged (or auto-merge is enabled and all merge conditions are met).
   - Required checks are green.
   - Audit result is PASS.
   - Runtime acceptance is PASS.
-- Runtime acceptance must include post-merge observation on `main`: no red failure noise introduced by this Task in Actions (especially `No jobs were run`).
+  - No red Actions noise remains (including `No jobs were run`).
+- Runtime acceptance must include post-merge observation on `main`: no red failure noise introduced by this Task in Actions.
 - If noise appears, do not mark Done; create follow-up task and put it in STATE Next.
+
+## Epic Task Policy (Controlled Velocity)
+- One PR still equals one theme; acceleration must not mix unrelated themes.
+- Epic Task is allowed only when all conditions hold:
+  - Same theme domain (e.g., workflow hygiene only / inventory only / remote execution only).
+  - Same files allowlist set.
+  - Same rollback strategy.
+  - SPEC DoD is split into sub-item checklist (each item has command/evidence/PASS-FAIL).
+- Closure rule:
+  - Commander treats Epic completion as `Done` only if all sub-items are PASS.
+  - Any sub-item FAIL => total FAIL/Doing with follow-up list.
 
 ## Follow-up Split Principle
 - If core feature is delivered but noise/correctness defects remain, close via explicit follow-up chain (`T-XXX` + `T-XXXb`).
@@ -61,6 +94,7 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
 
 ## Outputs (every run)
 - Current Task ID
+- Reality Snapshot (Step 0)
 - SPEC link/path
 - Files whitelist for the task
 - DoD (commands + PASS/FAIL)

@@ -13,8 +13,18 @@ Purpose: Convert requirements into an executable SPEC with minimal ambiguity.
   - Make reasonable assumptions
   - Record assumptions + risk + rollback in DECISIONS.md (via Commander)
 
+## Repo Reality Check (RRC) Gate
+- Planner MUST reference a Reality Snapshot before producing SPEC.
+- Acceptable evidence sources:
+  - Commander-provided Reality Snapshot block, or
+  - Planner independently checks repo/main/PR/checks and includes key links with equivalent fields.
+- Missing snapshot/evidence is a hard failure:
+  - Output exactly `FAIL: NEED_SNAPSHOT`
+  - Stop; do not provide hypothetical implementation plans.
+
 ## SPEC requirements (must include)
 - Goal and explicit non-goals
+- Reality Snapshot block (fixed schema)
 - Constraints and security notes
 - Inputs (inventory/env) and sensitivity rules
 - Outputs (logs/artifacts) and exit codes
@@ -22,6 +32,7 @@ Purpose: Convert requirements into an executable SPEC with minimal ambiguity.
 - Step-by-step plan
 - Verification (DoD): copy-paste runnable commands + PASS/FAIL expectations
 - Rollback plan
+- If Epic Task is used: sub-item DoD checklist (each with command + evidence + PASS/FAIL)
 
 ## Prohibited
 - Expanding scope beyond the requested task
