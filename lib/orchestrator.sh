@@ -64,7 +64,81 @@ orchestrate__wait_any() {
   done
 }
 
-# Execute in parallel with a callback worker.
+# --- T-027: Rolling execution wrapper -------------------------------------
+
+orchestrate__int_or_default() {
+  local v="${1:-}" d="${2:-}"
+  if [[ "${v}" =~ ^[0-9]+$ ]]; then
+    printf '%s\n' "${v}"
+  else
+    printf '%s\n' "${d}"
+  fi
+}
+
+orchestrate__execute_parallel_once() {
+  # Internal: run one batch in parallel using the existing T-026 logic.
+  # Args: <targets> <worker_fn> [worker_args...]
+  local targets="${1:-}"
+  shift || true
+  local worker="${1:-}"
+  shift || true
+
+  if [[ -z "${targets}" ]]; then
+    orchestrate__log_error "orchestrate: empty targets (batch)"
+    return 2
+  fi
+
+  local max_jobs="${HZ_MAX_JOBS:-5}"
+  max_jobs="$(orchestrate__int_or_default "${max_jobs}" "5")"
+  if [[ "${max_jobs}" -lt 1 ]]; then
+    max_jobs=5
+  fi
+
+  local tmpdir
+  tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t hz_orch)"
+  chmod 700 "${tmpdir}" 2>/dev/null || true
+
+  ORCH_PIDS=()
+  ORCH_TARGETS=()
+
+  orchestrate__log_info "Parallel batch: targets=$(echo "${targets}" | wc -w | tr -d ' ') max_jobs=${max_jobs}"
+
+  local running=0
+  local target pid
+  for target in ${targets}; do
+    while [[ "${running}" -ge "${max_jobs}" ]]; do
+      orchestrate__wait_any "${tmpdir}" "orch" || true
+      running="${#ORCH_PIDS[@]}"
+    done
+
+    (
+      "${worker}" "${target}" "$@"
+    ) &
+    pid=$!
+    ORCH_PIDS+=("${pid}")
+    ORCH_TARGETS+=("${target}")
+    running="${#ORCH_PIDS[@]}"
+  done
+
+  while [[ "${#ORCH_PIDS[@]}" -gt 0 ]]; do
+    orchestrate__wait_any "${tmpdir}" "orch" || true
+  done
+
+  local agg=0
+  local f rc
+  for f in "${tmpdir}"/orch.*.rc; do
+    [[ -f "${f}" ]] || continue
+    rc="$(cat "${f}" 2>/dev/null || echo 1)"
+    if [[ "${rc}" != "0" ]]; then
+      agg=1
+    fi
+  done
+
+  rm -rf "${tmpdir}" 2>/dev/null || true
+  return "${agg}"
+}
+
+# Execute in parallel or rolling batches with a callback worker.
 # Usage:
 #   orchestrate_execute "<targets space-separated>" <worker_fn> [worker_args...]
 # Worker signature:
@@ -88,59 +162,79 @@ orchestrate_execute() {
     return 2
   fi
 
-  local max_jobs="${HZ_MAX_JOBS:-5}"
-  if ! orchestrate__is_int "${max_jobs}" || [[ "${max_jobs}" -lt 1 ]]; then
-    max_jobs=5
+  local batch pause force fail_fast_label
+  batch="$(orchestrate__int_or_default "${HZ_ROLLING_BATCH:-0}" "0")"
+  pause="$(orchestrate__int_or_default "${HZ_ROLLING_PAUSE:-0}" "0")"
+  force="${HZ_FORCE:-0}"
+  if [[ "${force}" == "1" ]]; then
+    fail_fast_label="no"
+  else
+    fail_fast_label="yes"
   fi
 
-  local tmpdir
-  tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t hz_orch)"
-  chmod 700 "${tmpdir}" 2>/dev/null || true
+  if [[ "${batch}" -le 0 ]]; then
+    # T-026 behavior (full parallel)
+    orchestrate__log_info "Orchestrator mode: full-parallel"
+    orchestrate__execute_parallel_once "${targets}" "${worker}" "$@"
+    local rc=$?
+    if [[ "${rc}" -eq 0 ]]; then
+      orchestrate__log_info "Parallel orchestrator: all targets succeeded"
+    else
+      orchestrate__log_warn "Parallel orchestrator: one or more targets failed"
+    fi
+    return "${rc}"
+  fi
 
-  ORCH_PIDS=()
-  ORCH_TARGETS=()
+  orchestrate__log_info "Orchestrator mode: rolling batch=${batch} pause=${pause}s fail_fast=${fail_fast_label}"
 
-  orchestrate__log_info "Parallel orchestrator: targets=$(echo "${targets}" | wc -w | tr -d ' ') max_jobs=${max_jobs}"
+  # Rolling batches
+  local -a all=()
+  local t
+  for t in ${targets}; do
+    all+=("${t}")
+  done
 
-  local running=0
-  local target pid
-  for target in ${targets}; do
-    while [[ "${running}" -ge "${max_jobs}" ]]; do
-      orchestrate__wait_any "${tmpdir}" "orch" || true
-      running="${#ORCH_PIDS[@]}"
+  local total="${#all[@]}"
+  local i=0
+  local overall_rc=0
+
+  while [[ "${i}" -lt "${total}" ]]; do
+    local end=$(( i + batch ))
+    if [[ "${end}" -gt "${total}" ]]; then
+      end="${total}"
+    fi
+
+    local chunk=""
+    local j
+    for (( j=i; j<end; j++ )); do
+      chunk+="${chunk:+ }${all[$j]}"
     done
 
-    (
-      "${worker}" "${target}" "$@"
-    ) &
-    pid=$!
-    ORCH_PIDS+=("${pid}")
-    ORCH_TARGETS+=("${target}")
-    running="${#ORCH_PIDS[@]}"
-    orchestrate__log_debug "job started target=${target} pid=${pid}"
-  done
+    orchestrate__log_info "Rolling batch: $((i+1))..${end}/${total} -> ${chunk}"
 
-  while [[ "${#ORCH_PIDS[@]}" -gt 0 ]]; do
-    orchestrate__wait_any "${tmpdir}" "orch" || true
-  done
+    orchestrate__execute_parallel_once "${chunk}" "${worker}" "$@"
+    local rc=$?
+    if [[ "${rc}" -ne 0 ]]; then
+      overall_rc=1
+      if [[ "${force}" == "1" ]]; then
+        orchestrate__log_warn "Batch failed (rc=${rc}) but HZ_FORCE=1, continuing..."
+      else
+        orchestrate__log_error "Batch failed (rc=${rc}); stopping (fail-fast). Set HZ_FORCE=1 to continue."
+        return 1
+      fi
+    fi
 
-  local agg=0
-  local f rc
-  for f in "${tmpdir}"/orch.*.rc; do
-    [[ -f "${f}" ]] || continue
-    rc="$(cat "${f}" 2>/dev/null || echo 1)"
-    if [[ "${rc}" != "0" ]]; then
-      agg=1
+    i="${end}"
+    if [[ "${i}" -lt "${total}" && "${pause}" -gt 0 ]]; then
+      orchestrate__log_info "Pausing for ${pause}s before next batch..."
+      sleep "${pause}"
     fi
   done
 
-  rm -rf "${tmpdir}" 2>/dev/null || true
-
-  if [[ "${agg}" -eq 0 ]]; then
-    orchestrate__log_info "Parallel orchestrator: all targets succeeded"
+  if [[ "${overall_rc}" -eq 0 ]]; then
+    orchestrate__log_info "Rolling orchestrator: all targets succeeded"
   else
-    orchestrate__log_warn "Parallel orchestrator: one or more targets failed"
+    orchestrate__log_warn "Rolling orchestrator: one or more targets failed"
   fi
-
-  return "${agg}"
+  return "${overall_rc}"
 }
