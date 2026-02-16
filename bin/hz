@@ -13,11 +13,6 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 . "${REPO_ROOT}/lib/inventory.sh"
 
 hz__apply_global_flags() {
-codex/feature/T-022-remote-runner
-  # Scan argv; remove global flags; keep others in ARGS_OUT.
-  # Last wins when flags conflict.
-=======
-main
   ARGS_OUT=()
   local a v
   for a in "$@"; do
@@ -57,40 +52,14 @@ hz__parse_install_args() {
   while [[ $# -gt 0 ]]; do
     a="$1"
     case "$a" in
-      --host=*)
-        HZ_HOST="${a#--host=}"
-        shift
-        ;;
-      --host)
-        shift
-        HZ_HOST="${1:-}"
-        shift || true
-        ;;
-      --target=*)
-        HZ_TARGET_INPUT="${a#--target=}"
-        shift
-        ;;
-      --target)
-        shift
-        HZ_TARGET_INPUT="${1:-}"
-        shift || true
-        ;;
-      --local-mode)
-        HZ_LOCAL_MODE="1"
-        shift
-        ;;
-      --headless)
-        HZ_HEADLESS="1"
-        shift
-        ;;
-      --)
-        shift
-        break
-        ;;
-      -*)
-        log_error "unknown flag for install: ${a}"
-        return 1
-        ;;
+      --host=*) HZ_HOST="${a#--host=}"; shift ;;
+      --host) shift; HZ_HOST="${1:-}"; shift || true ;;
+      --target=*) HZ_TARGET_INPUT="${a#--target=}"; shift ;;
+      --target) shift; HZ_TARGET_INPUT="${1:-}"; shift || true ;;
+      --local-mode) HZ_LOCAL_MODE="1"; shift ;;
+      --headless) HZ_HEADLESS="1"; shift ;;
+      --) shift; break ;;
+      -*) log_error "unknown flag for install: ${a}"; return 1 ;;
       *)
         if [[ -z "$RECIPE_NAME" ]]; then
           RECIPE_NAME="$a"
@@ -107,85 +76,6 @@ hz__parse_install_args() {
   return 0
 }
 
-codex/feature/T-022-remote-runner
-hz__cmd_ping() {
-  # Usage: hz ping --target user@host|alias
-  local target=""
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      --target)
-        target="${2:-}"
-        shift 2
-        ;;
-      --target=*)
-        target="${1#*=}"
-        shift
-        ;;
-      -h|--help)
-        echo "Usage: hz ping --target user@host|alias"
-        return 0
-        ;;
-      *)
-        echo "Unknown argument for ping: $1" >&2
-        echo "Usage: hz ping --target user@host|alias" >&2
-        return 1
-        ;;
-    esac
-  done
-
-  if [[ -z "${target}" ]]; then
-    echo "ping: missing --target" >&2
-    echo "Usage: hz ping --target user@host|alias" >&2
-    return 1
-  fi
-
-  # Resolve alias via inventory (if exists)
-  if declare -F inventory_resolve_target >/dev/null 2>&1; then
-    if ! inventory_resolve_target "${target}"; then
-      return 1
-    fi
-    target="${HZ_RESOLVED_TARGET:-$target}"
-  fi
-
-  if ! command -v ssh_test >/dev/null 2>&1; then
-    echo "ping: ssh transport not available (ssh_test not found)" >&2
-    return 1
-  fi
-
-  log_info "ping: testing ssh connectivity to target=${target}"
-  if ssh_test "${target}"; then
-    log_info "ping: ok"
-    return 0
-  else
-    local rc=$?
-    log_error "ping: failed (rc=${rc})"
-    return "${rc}"
-  fi
-}
-
-hz__cmd_install() {
-  if ! hz__parse_install_args "$@"; then
-    hz_usage
-    return 1
-  fi
-
-  export HZ_HOST
-  export HZ_LOCAL_MODE
-  export HZ_HEADLESS
-
-  # If --target is set and not forced local-mode, delegate to remote runner.
-  if [[ -n "${HZ_TARGET_INPUT:-}" && "${HZ_LOCAL_MODE:-0}" != "1" ]]; then
-    if ! declare -F remote_execute_recipe >/dev/null 2>&1; then
-      log_error "install: remote runner not available (missing lib/remote_runner.sh)"
-      return 2
-    fi
-    remote_execute_recipe "${RECIPE_NAME}" "${HZ_TARGET_INPUT}" "${HZ_HOST:-}"
-    return $?
-  fi
-
-  hz_recipe_install "${RECIPE_NAME}"
-  return $?
-=======
 hz__should_record() {
   local cmd="${1:-}"
   [[ "${HZ_NO_RECORD:-0}" == "1" ]] && return 1
@@ -196,10 +86,11 @@ hz__should_record() {
 }
 
 hz__record_target_label() {
-  # Prefer explicit host label for install; otherwise local hostname.
   local fallback
   fallback="$(hostname -s 2>/dev/null || echo localhost)"
-  if [[ -n "${HZ_HOST:-}" ]]; then
+  if [[ -n "${HZ_TARGET_INPUT:-}" ]]; then
+    echo "${HZ_TARGET_INPUT}"
+  elif [[ -n "${HZ_HOST:-}" ]]; then
     echo "${HZ_HOST}"
   else
     echo "${fallback}"
@@ -220,7 +111,6 @@ hz__run_with_recording() {
   [[ $- == *e* ]] && had_errexit=1
   set +e
 
-  # Record both streams; keep stderr on stderr for console.
   "$@" \
     > >(tee -a "$logfile") \
     2> >(tee -a "$logfile" >&2)
@@ -228,7 +118,70 @@ hz__run_with_recording() {
 
   (( had_errexit == 1 )) && set -e
   return "$rc"
-main
+}
+
+hz__cmd_ping() {
+  local target=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --target) target="${2:-}"; shift 2 ;;
+      --target=*) target="${1#*=}"; shift ;;
+      -h|--help)
+        echo "Usage: hz ping --target user@host|alias"
+        return 0
+        ;;
+      *)
+        echo "Unknown argument for ping: $1" >&2
+        echo "Usage: hz ping --target user@host|alias" >&2
+        return 1
+        ;;
+    esac
+  done
+
+  if [[ -z "${target}" ]]; then
+    echo "ping: missing --target" >&2
+    echo "Usage: hz ping --target user@host|alias" >&2
+    return 1
+  fi
+
+  if declare -F inventory_resolve_target >/dev/null 2>&1; then
+    inventory_resolve_target "${target}" || return 1
+    target="${HZ_RESOLVED_TARGET:-$target}"
+  fi
+
+  if ! command -v ssh_test >/dev/null 2>&1; then
+    echo "ping: ssh transport not available (ssh_test not found)" >&2
+    return 1
+  fi
+
+  log_info "ping: testing ssh connectivity to target=${target}"
+  if ssh_test "${target}"; then
+    log_info "ping: ok"
+    return 0
+  else
+    local rc=$?
+    log_error "ping: failed (rc=${rc})"
+    return "${rc}"
+  fi
+}
+
+hz__dispatch_install() {
+  export HZ_HOST
+  export HZ_LOCAL_MODE
+  export HZ_HEADLESS
+
+  # Remote dispatch sits inside recording wrapper when enabled.
+  if [[ -n "${HZ_TARGET_INPUT:-}" && "${HZ_LOCAL_MODE:-0}" != "1" ]]; then
+    if ! declare -F remote_execute_recipe >/dev/null 2>&1; then
+      log_error "install: remote runner not available (missing lib/remote_runner.sh)"
+      return 2
+    fi
+    remote_execute_recipe "${RECIPE_NAME}" "${HZ_TARGET_INPUT}" "${HZ_HOST:-}"
+    return $?
+  fi
+
+  hz_recipe_install "${RECIPE_NAME}"
+  return $?
 }
 
 main() {
@@ -264,57 +217,8 @@ main() {
       ;;
     ping)
       shift || true
-codex/feature/T-022-remote-runner
       hz__cmd_ping "$@"
       return $?
-      ;;
-    install)
-      shift || true
-      hz__cmd_install "$@"
-=======
-      local target=""
-      while [[ $# -gt 0 ]]; do
-        case "$1" in
-          --target) target="${2:-}"; shift 2 ;;
-          --target=*) target="${1#*=}"; shift ;;
-          -h|--help)
-            echo "Usage: hz ping --target user@host|alias"
-            exit 0
-            ;;
-          *)
-            echo "Unknown argument for ping: $1" >&2
-            echo "Usage: hz ping --target user@host|alias" >&2
-            exit 1
-            ;;
-        esac
-      done
-
-      if [[ -z "${target}" ]]; then
-        echo "ping: missing --target" >&2
-        echo "Usage: hz ping --target user@host|alias" >&2
-        exit 1
-      fi
-
-      # If T-020 is present, resolve alias via inventory.
-      if declare -F inventory_resolve_target >/dev/null 2>&1; then
-        inventory_resolve_target "${target}" || exit 1
-        target="${HZ_RESOLVED_TARGET:-$target}"
-      fi
-
-      if ! command -v ssh_test >/dev/null 2>&1; then
-        echo "ping: ssh transport not available (ssh_test not found)" >&2
-        exit 1
-      fi
-
-      log_info "ping: testing ssh connectivity to target=${target}"
-      if ssh_test "${target}"; then
-        log_info "ping: ok"
-        exit 0
-      else
-        rc=$?
-        log_error "ping: failed (rc=${rc})"
-        exit "${rc}"
-      fi
       ;;
     install)
       shift || true
@@ -322,33 +226,24 @@ codex/feature/T-022-remote-runner
         hz_usage
         return 1
       fi
-      export HZ_HOST
 
       local record_target record_cmd
       record_target="$(hz__record_target_label)"
       record_cmd="install-${RECIPE_NAME}"
 
       if hz__should_record "install"; then
-        hz__run_with_recording "${record_target}" "${record_cmd}" \
-          hz_recipe_install "${RECIPE_NAME}"
+        hz__run_with_recording "${record_target}" "${record_cmd}" hz__dispatch_install
         return $?
       fi
 
-      hz_recipe_install "${RECIPE_NAME}"
-main
+      hz__dispatch_install
       return $?
       ;;
     recipe)
       shift || true
       case "${1:-}" in
-        list)
-          hz_list_targets "recipes"
-          return 0
-          ;;
-        "")
-          hz_usage
-          return 1
-          ;;
+        list) hz_list_targets "recipes"; return 0 ;;
+        "") hz_usage; return 1 ;;
         *)
           [[ $# -ge 2 ]] || { hz_usage; return 1; }
           hz_run_target "recipes" "$1" "$2"
@@ -359,14 +254,8 @@ main
     module)
       shift || true
       case "${1:-}" in
-        list)
-          hz_list_targets "modules"
-          return 0
-          ;;
-        "")
-          hz_usage
-          return 1
-          ;;
+        list) hz_list_targets "modules"; return 0 ;;
+        "") hz_usage; return 1 ;;
         *)
           [[ $# -ge 2 ]] || { hz_usage; return 1; }
           hz_run_target "modules" "$1" "$2"
