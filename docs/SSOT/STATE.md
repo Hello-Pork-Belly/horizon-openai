@@ -37,10 +37,11 @@ Owner: Pork-Belly
 - (2026-02-17) T-025 Group Inventory System (PR: #86)
 - (2026-02-17) T-026 Parallel Orchestrator (PR: #87)
 - (2026-02-17) T-027 Rolling Updates (PR: #88)
+- (2026-02-18) T-028 Aggregated Reporting Engine (PR: #91)
 
 ## Doing
 Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
-- (2026-02-18) T-028 Aggregated Reporting (report.jsonl + report.txt) (PR: #91)
+- (2026-02-18) T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C) (PR: #<TBD>)
 
 ## Next (Phase 3 aligned roadmap)
 - T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C)
