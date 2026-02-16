@@ -212,3 +212,9 @@ if [[ -f "$(hz_repo_root)/lib/remote_runner.sh" ]]; then
   # shellcheck source=lib/remote_runner.sh
   . "$(hz_repo_root)/lib/remote_runner.sh"
 fi
+
+# Optional: Phase 3 orchestrator
+if [[ -f "$(hz_repo_root)/lib/orchestrator.sh" ]]; then
+  # shellcheck source=lib/orchestrator.sh
+  . "$(hz_repo_root)/lib/orchestrator.sh"
+fi

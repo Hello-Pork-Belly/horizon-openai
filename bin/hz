@@ -210,6 +210,91 @@ EOF
   esac
 }
 
+hz__maybe_orchestrate_install_group() {
+  # Args: <recipe> [install_args...]
+  local recipe="${1:-}"
+  shift || true
+
+  local target_input=""
+  local host_override=""
+  local -a rest=()
+  local arg
+
+  while [[ $# -gt 0 ]]; do
+    arg="$1"
+    case "${arg}" in
+      --target)
+        shift
+        target_input="${1:-}"
+        ;;
+      --target=*)
+        target_input="${arg#--target=}"
+        ;;
+      --host)
+        shift
+        host_override="${1:-}"
+        ;;
+      --host=*)
+        host_override="${arg#--host=}"
+        ;;
+      *)
+        rest+=("${arg}")
+        ;;
+    esac
+    shift || true
+  done
+
+  # Only handle @group
+  [[ "${target_input}" == @* ]] || return 1
+
+  if ! command -v inventory_resolve_group >/dev/null 2>&1; then
+    log_error "Group target provided (${target_input}) but inventory_resolve_group() is missing (T-025 not merged?)"
+    return 2
+  fi
+
+  local targets
+  targets="$(inventory_resolve_group "${target_input}")" || return $?
+  if [[ -z "${targets}" ]]; then
+    log_error "Group ${target_input} resolved to empty host list"
+    return 2
+  fi
+
+  if ! command -v orchestrate_execute >/dev/null 2>&1; then
+    log_error "Group target provided (${target_input}) but orchestrator is unavailable (missing lib/orchestrator.sh)"
+    return 2
+  fi
+
+  log_info "Detected group target ${target_input}; spawning parallel installs (HZ_MAX_JOBS=${HZ_MAX_JOBS:-5})"
+  log_debug "Resolved ${target_input} -> ${targets}"
+
+  hz__orch_worker_install() {
+    local member="${1:?missing target}"
+    shift || true
+    local recipe_inner="${1:?missing recipe}"
+    shift || true
+    local host_override_inner="${1:-}"
+    shift || true
+
+    local host_for_member="${host_override_inner:-${member}}"
+
+    # Child process: run a single-target install. --target is concrete host, so
+    # group orchestration is not re-entered.
+    "${0}" install "${recipe_inner}" "$@" --target "${member}" --host "${host_for_member}"
+  }
+
+  local -a orch_args=("${recipe}" "${host_override}")
+  if [[ "${#rest[@]}" -gt 0 ]]; then
+    orch_args+=("${rest[@]}")
+  fi
+
+  orchestrate_execute "${targets}" hz__orch_worker_install "${orch_args[@]}"
+  local rc=$?
+  [[ "${rc}" -eq 0 ]] && return 0
+
+  # Distinguish from "not group target" sentinel (1).
+  return 2
+}
+
 hz__dispatch_install() {
   export HZ_HOST
   export HZ_LOCAL_MODE
@@ -272,6 +357,16 @@ main() {
       ;;
     install)
       shift || true
+
+      # T-026: group target parallel orchestrator
+      local rc=0
+      hz__maybe_orchestrate_install_group "$@" || rc=$?
+      if [[ "${rc}" -eq 0 ]]; then
+        return 0
+      elif [[ "${rc}" -ne 1 ]]; then
+        return "${rc}"
+      fi
+
       if ! hz__parse_install_args "$@"; then
         hz_usage
         return 1
