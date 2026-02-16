@@ -231,3 +231,82 @@ inventory_resolve_target() {
   log_debug "inventory: resolved target '${input}' -> '${HZ_RESOLVED_TARGET}' (port=${port} key=${key_state})"
   return 0
 }
+
+# --- T-025: Group Inventory -----------------------------------------------
+
+inv__repo_root() {
+  if [[ -n "${REPO_ROOT:-}" ]]; then
+    printf '%s\n' "$REPO_ROOT"
+    return 0
+  fi
+  if declare -F hz_repo_root >/dev/null 2>&1; then
+    hz_repo_root
+    return 0
+  fi
+  # Fallback: lib/ is one level under repo root
+  printf '%s\n' "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+}
+
+inv__err() {
+  if declare -F log_error >/dev/null 2>&1; then
+    log_error "$@"
+  else
+    printf 'ERROR: %s\n' "$*" >&2
+  fi
+}
+
+inv__dbg() {
+  if declare -F log_debug >/dev/null 2>&1; then
+    log_debug "$@"
+  fi
+}
+
+inv__parse_group_hosts() {
+  # Parse:
+  # hosts:
+  #   - a
+  #   - b
+  # Stop when next top-level key appears (e.g., vars:)
+  local file="$1"
+  awk '
+    BEGIN { in_hosts=0 }
+    /^[[:space:]]*hosts:[[:space:]]*$/ { in_hosts=1; next }
+    in_hosts==1 && /^[[:space:]]*-[[:space:]]*/ {
+      v=$0
+      sub(/^[[:space:]]*-[[:space:]]*/, "", v)
+      sub(/[[:space:]]*#.*/, "", v)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", v)
+      if (v ~ /^".*"$/ || v ~ /^'\''.*'\''$/) { v=substr(v,2,length(v)-2) }
+      if (v != "") print v
+      next
+    }
+    in_hosts==1 && /^[[:space:]]*[A-Za-z0-9_]+:[[:space:]]*/ { exit }
+  ' "$file"
+}
+
+inventory_resolve_group() {
+  # Usage: inventory_resolve_group @groupname
+  local group_alias="${1:-}"
+  [[ -n "$group_alias" ]] || { inv__err "inventory_resolve_group: missing group alias"; return 1; }
+  [[ "$group_alias" == @* ]] || { inv__err "inventory_resolve_group: group must start with @ (got: $group_alias)"; return 1; }
+
+  local name="${group_alias#@}"
+  [[ -n "$name" ]] || { inv__err "inventory_resolve_group: invalid group alias: $group_alias"; return 1; }
+
+  local root file out=""
+  root="$(inv__repo_root)"
+  file="${root}/inventory/groups/${name}.yml"
+
+  [[ -f "$file" ]] || { inv__err "group not found: inventory/groups/${name}.yml"; return 1; }
+
+  inv__dbg "inventory: resolving group ${group_alias} via ${file}"
+
+  while IFS= read -r h; do
+    [[ -n "$h" ]] || continue
+    out+="${out:+ }${h}"
+  done < <(inv__parse_group_hosts "$file")
+
+  [[ -n "$out" ]] || { inv__err "group has no hosts: ${group_alias}"; return 1; }
+
+  printf '%s\n' "$out"
+}
