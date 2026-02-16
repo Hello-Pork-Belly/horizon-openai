@@ -100,6 +100,54 @@ main() {
       shift || true
       exec bash "${REPO_ROOT}/tools/diagnostics/run.sh" "$@"
       ;;
+    ping)
+      # Usage: hz ping --target user@host
+      shift || true
+      target=""
+      while [[ $# -gt 0 ]]; do
+        case "$1" in
+          --target)
+            target="${2:-}"
+            shift 2
+            ;;
+          --target=*)
+            target="${1#*=}"
+            shift
+            ;;
+          -h|--help)
+            echo "Usage: hz ping --target user@host"
+            exit 0
+            ;;
+          *)
+            echo "Unknown argument for ping: $1" >&2
+            echo "Usage: hz ping --target user@host" >&2
+            exit 1
+            ;;
+        esac
+      done
+
+      if [[ -z "${target}" ]]; then
+        echo "ping: missing --target" >&2
+        echo "Usage: hz ping --target user@host" >&2
+        exit 1
+      fi
+
+      # Ensure transport is loaded (cli_core should have sourced it)
+      if ! command -v ssh_test >/dev/null 2>&1; then
+        echo "ping: ssh transport not available (ssh_test not found)" >&2
+        exit 1
+      fi
+
+      log_info "ping: testing ssh connectivity to target=${target}"
+      if ssh_test "${target}"; then
+        log_info "ping: ok"
+        exit 0
+      else
+        rc=$?
+        log_error "ping: failed (rc=${rc})"
+        exit "${rc}"
+      fi
+      ;;
     install)
       shift || true
       if ! hz__parse_install_args "$@"; then
