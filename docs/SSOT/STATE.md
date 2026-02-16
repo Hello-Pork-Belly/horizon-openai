@@ -3,7 +3,7 @@
 This file is the single source of truth for project progress.
 Update this file via PR whenever work starts/finishes.
 
-Last updated: 2026-02-15
+Last updated: 2026-02-16
 Owner: Pork-Belly
 
 ## Done
@@ -24,11 +24,9 @@ Owner: Pork-Belly
 - (2026-02-15) T-017 System Unification & Release v0.2.0 (PR: #76)
 
 ## Doing
-- (2026-02-15) Phase 2 Kickoff: Remote Execution & Hub-and-Spoke (PR: #<TBD>)
+- (2026-02-16) T-018 Phase 2 Detailed Plan (Remote Horizon) (PR: #<TBD>)
 
 ## Next
-- T-001 Auto-merge Enabler
-
-## Current Focus
-- Phase 2: multi-node management (remote run, inventory targeting, hub control plane)
-- Required gates: `make ci` + audit PASS
+- T-019 SSH Transport Layer (hz run --target)
+- T-020 Remote Inventory & Target Selection
+- T-021 Remote Logging & Run Records
