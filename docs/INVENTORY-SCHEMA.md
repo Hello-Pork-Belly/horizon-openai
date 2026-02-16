@@ -1,38 +1,63 @@
-# Inventory Schema Baseline
+# Inventory Schema
 
-## Paths
-- `inventory/group_vars/all.yml`
-- `inventory/hosts/*.yml`
-- `inventory/sites/*.yml`
+Inventory 用于向 recipes 注入配置，并在 Phase 2/3 中承担目标解析与编排输入。
 
-## Phase 1: Env Injection (flat keys)
-Horizon 的 Inventory Loader 目前支持“扁平 key: value”并导出为环境变量（KEY 必须为大写+下划线）。
+## 1) Host Files
+
+路径：`inventory/hosts/<alias>.yml`
+
+约束：Phase 1/2/3 MVP 仅保证“扁平 KEY: VALUE”映射（KEY 推荐全大写下划线）。
+
+### 1.1 连接字段（Phase 2）
+
+以下字段用于远程连接解析（alias -> user@host + ssh 参数）：
+
+- `HZ_CONNECTION_HOST` (required): IP / DNS
+- `HZ_CONNECTION_USER` (optional): default current user
+- `HZ_CONNECTION_PORT` (optional): default 22
+- `HZ_CONNECTION_KEY` (optional): private key path (controller-side)
+
 示例：
-- `WP_DOMAIN: example.com`
-- `DB_PASSWORD: "..."`（注意：敏感值建议通过外部 secret 注入而不是写入 inventory）
+```yaml
+HZ_CONNECTION_HOST: "10.0.0.10"
+HZ_CONNECTION_USER: "ubuntu"
+HZ_CONNECTION_PORT: "22"
+HZ_CONNECTION_KEY: "/Users/you/.ssh/id_ed25519"
+```
 
-## Phase 2: Remote Connection Keys (Target Selection)
+### 1.2 业务变量（Recipes）
 
-为支持 `hz ping --target <alias>` / 后续 `hz run --host <alias>`，允许在 `inventory/hosts/<alias>.yml` 中声明以下连接字段（同样要求扁平大写 key）。
+同一 host 文件也可放置 recipes 所需环境变量（例如 WP_DOMAIN 等）。注意：避免把明文 secret 长期写入仓库；推荐通过环境变量注入或后续引入加密方案（Phase 3+）。
 
-Required:
-- `HZ_CONNECTION_HOST`: 目标主机名或 IP（必填）
+## 2) Global Defaults
 
-Optional:
-- `HZ_CONNECTION_USER`: SSH 用户（默认：当前用户）
-- `HZ_CONNECTION_PORT`: SSH 端口（默认：22）
-- `HZ_CONNECTION_KEY`: 私钥路径（可选；仅路径，不是密钥内容）
+路径：`inventory/group_vars/all.yml`
 
-兼容旧命名（若存在会被读取）：
-- `HZ_HOST_ADDR` / `HZ_HOST_USER` / `HZ_HOST_PORT` / `HZ_HOST_KEY_PATH`
+用于全局默认值（所有 host 共享）。
 
-解析规则：
-1. 若存在 `inventory/hosts/<alias>.yml`：解析上述字段，构造 `user@host`，并导出：
-   - `HZ_RESOLVED_TARGET`
-   - `HZ_SSH_KEY`（来自 key 字段，且仅在 shell 未显式设置时）
-   - `HZ_SSH_ARGS`（补齐 `-p <port>`，且仅在未显式提供 `-p` 时）
-2. 若 hosts 文件不存在：认为输入已是 `user@host` 或 `host`，直接透传。
+## 3) 优先级（Last Wins）
 
-安全约束：
-- Inventory 不应保存密码/token/secret 等敏感信息。
-- `HZ_CONNECTION_KEY` 仅允许保存“路径”，不得把私钥内容写入 inventory。
+最终注入到 recipe 的变量优先级（高 -> 低）：
+
+1. Shell 环境变量（用户临时覆盖）
+2. Host YAML：`inventory/hosts/<alias>.yml`
+3. Global YAML：`inventory/group_vars/all.yml`
+
+## 4) Groups (Phase 3 / T-025)
+
+路径：`inventory/groups/<group>.yml`
+
+MVP 结构（T-025）：
+
+```yaml
+hosts:
+  - host-a
+  - host-b
+vars:
+  SOME_VAR: value   # 预留（T-025 暂不使用）
+```
+
+说明：
+
+* `hosts`：必须为 host alias 列表，对应 `inventory/hosts/<alias>.yml`
+* `vars`：预留给后续（T-026+）作为 group-level vars（尚未启用）

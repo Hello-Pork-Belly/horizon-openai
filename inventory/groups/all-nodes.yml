@@ -1,0 +1,10 @@
+# Sample group for Phase 3 (Fleet Orchestration)
+# MVP: only "hosts" is used by T-025. "vars" reserved for future.
+
+hosts:
+  - host-example
+  - host-ols-wp-a
+
+vars:
+  # Reserved (future use)
+  # SOME_VAR: "value"
