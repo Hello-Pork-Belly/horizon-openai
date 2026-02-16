@@ -40,7 +40,7 @@ Owner: Pork-Belly
 
 ## Doing
 Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
-- (2026-02-18) T-028 Aggregated Reporting (report.jsonl + report.txt) (PR: #<TBD>)
+- (2026-02-18) T-028 Aggregated Reporting (report.jsonl + report.txt) (PR: #91)
 
 ## Next (Phase 3 aligned roadmap)
 - T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C)

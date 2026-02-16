@@ -307,6 +307,11 @@ hz__maybe_orchestrate_install_group() {
     orch_args+=("${rest[@]}")
   fi
 
+  # T-028: aggregated reporting for group operations.
+  export HZ_REPORT=1
+  export HZ_REPORT_LABEL="group_${target_input#@}_install_${recipe}"
+  export HZ_REPORT_CMD="install:${recipe}"
+
   orchestrate_execute "${targets}" hz__orch_worker_install "${orch_args[@]}"
   return $?
 }
