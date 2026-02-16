@@ -1,96 +1,28 @@
-version: 1
-plan_name: "ABCs adoption phases (A=Planner, B=Codex, C=Auditor)"
-default_policy: "deny"
-rules_source: "docs/RULES.yml"
-
-principles:
-  - "One logical change per PR"
-  - "SSOT-first: prefer docs/* SSOT sources over ad-hoc instructions"
-  - "Audit gate required: C must output PASS/FAIL with evidence before proceeding"
-  - "No secrets in repo or inventory"
-
-ssot_inputs:
-  - "AGENTS.md"
-  - "docs/BASELINE.md"
-  - "docs/AUDIT-CHECKLIST.md"
-  - "docs/INVENTORY-SCHEMA.md"
-  - "docs/CHANGELOG.md"
-  - "docs/RULES.yml"
-
 phases:
-  - id: "P0"
-    name: "Gate bootstrapping"
-    goal: "Ensure machine-readable gate rules and phase plan exist and are referenced by SSOT."
-    allowed_paths:
-      - "docs/**"
-      - "inventory/**"
-    forbidden_paths_ref: "docs/RULES.yml#forbidden_paths"
-    outputs:
-      - "docs/RULES.yml"
-      - "docs/PHASES.yml"
-    acceptance:
-      - "docs/RULES.yml exists on main and is valid YAML"
-      - "docs/PHASES.yml exists on main and is valid YAML"
-      - "No changes outside docs/** and inventory/**"
-
-  - id: "P1"
-    name: "Auditor contract (Project C) materialization"
-    goal: "Freeze the audit output contract (PASS/FAIL JSON schema) and required evidence list."
-    allowed_paths:
-      - "docs/**"
-    forbidden_paths_ref: "docs/RULES.yml#forbidden_paths"
-    outputs:
-      - "docs/audits/ABCS-AUDIT-CONTRACT.md"
-    acceptance:
-      - "Audit contract defines strict JSON output fields: decision, violations, evidence, missing_evidence"
-      - "Audit contract explicitly states DEFAULT=DENY and references docs/RULES.yml"
-      - "No functional code changes"
-
-  - id: "P2"
-    name: "Planner contract (Project A) materialization"
-    goal: "Freeze the planner output contract (Codex execution spec template) and atomicity rule."
-    allowed_paths:
-      - "docs/**"
-    forbidden_paths_ref: "docs/RULES.yml#forbidden_paths"
-    outputs:
-      - "docs/contracts/ABCS-PLANNER-CONTRACT.md"
-    acceptance:
-      - "Planner contract defines strict sections: GOAL/SCOPE/CHANGES/COMMANDS/ACCEPTANCE/ARTIFACTS"
-      - "Planner contract enforces one logical change per PR"
-      - "Planner contract references docs/AUDIT-CHECKLIST.md and docs/RULES.yml"
-
-  - id: "P3"
-    name: "First closed-loop pilot (docs-only)"
-    goal: "Run one small, deterministic change through A→B→C to prove the loop is stable."
-    allowed_paths:
-      - "docs/**"
-    forbidden_paths_ref: "docs/RULES.yml#forbidden_paths"
-    candidate_changes:
-      - "Small docs alignment only (e.g. add missing cross-links between SSOT files)"
-    required_evidence:
-      - "PR diff"
-      - "ci status green"
-      - "Auditor JSON decision PASS"
-    acceptance:
-      - "Auditor outputs PASS with concrete evidence"
-      - "No scope expansion beyond docs/**"
-      - "CHANGELOG updated with a single entry for the pilot"
-
-  - id: "P4"
-    name: "Start refactor work (scoped code paths)"
-    goal: "Begin code optimization work only after the loop is proven stable (P3 PASS)."
-    preconditions:
-      - "P3 must be PASS"
-    allowed_paths:
-      - "modules/**"
-      - "recipes/**"
-      - "tools/check/**"
-      - "docs/**"
-      - "inventory/**"
-    forbidden_paths_ref: "docs/RULES.yml#forbidden_paths"
-    required_evidence:
-      - "Command outputs from checks/lint/tests if present"
-      - "Auditor JSON decision (PASS/FAIL) with file-level evidence"
-    acceptance:
-      - "Changes are atomic and auditable"
-      - "No forbidden paths modified"
+  phase_1:
+    name: "Horizon Lab Foundation"
+    release: "v0.2.0"
+    status: "complete"
+    highlights:
+      - "Unified CLI: bin/hz"
+      - "Contract-First recipe runner"
+      - "Inventory injection"
+      - "Unified logging"
+      - "Core recipes ported + diagnostics"
+  phase_2:
+    name: "Remote Horizon"
+    release: "v0.3.0"
+    status: "complete"
+    highlights:
+      - "SSH transport layer (ping, exec, copy)"
+      - "Inventory target resolution (alias -> user@host)"
+      - "Session recording (records/YYYY/MM/DD)"
+      - "Transient Runner (pack-ship-exec-clean), agentless remote install"
+  phase_3:
+    name: "Orchestration / Fleet Ops"
+    status: "planned"
+    ideas:
+      - "group execution (run across many hosts)"
+      - "structured run records + index"
+      - "secrets management integration (e.g., SOPS/age)"
+      - "UI/API control plane"
