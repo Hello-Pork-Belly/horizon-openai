@@ -3,7 +3,7 @@
 This file is the single source of truth for project progress.
 Update this file via PR whenever work starts/finishes.
 
-Last updated: 2026-02-16
+Last updated: 2026-02-17
 Owner: Pork-Belly
 
 ## Done
@@ -26,9 +26,10 @@ Owner: Pork-Belly
 - (2026-02-16) T-019 SSH Transport Layer (PR: #79)
 - (2026-02-16) T-020 Remote Inventory & Target Selection (PR: #80)
 - (2026-02-16) T-021 Session Recording (Run Records) (PR: #81)
+- (2026-02-17) T-022 Remote Runner Implementation (PR: #82)
 
 ## Doing
-- (2026-02-16) T-022 Remote Runner Implementation (PR: #82)
+- (2026-02-17) T-023 Phase 2 Closure & Release v0.3.0 (PR: #<TBD>)
 
 ## Next
-- T-023 Remote Logging & Structured Records (controller-side aggregation)
+- Phase 3 (proposal): Orchestration / Fleet Ops / Secrets Management
