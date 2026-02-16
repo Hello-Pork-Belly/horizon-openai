@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # shellcheck source=lib/logging.sh
 . "${REPO_ROOT}/lib/logging.sh"
 # shellcheck source=lib/cli_core.sh
@@ -18,19 +19,11 @@ hz__apply_global_flags() {
   local a
   for a in "$@"; do
     case "$a" in
-      -v|--verbose)
-        LOG_LEVEL="DEBUG"
-        HZ_DEBUG="1"
-        ;;
-      -q|--quiet)
-        LOG_LEVEL="ERROR"
-        ;;
-      *)
-        ARGS_OUT+=("$a")
-        ;;
+      -v|--verbose) LOG_LEVEL="DEBUG"; HZ_DEBUG="1" ;;
+      -q|--quiet) LOG_LEVEL="ERROR" ;;
+      *) ARGS_OUT+=("$a") ;;
     esac
   done
-
   export LOG_LEVEL
   export HZ_DEBUG="${HZ_DEBUG:-0}"
 }
@@ -38,28 +31,14 @@ hz__apply_global_flags() {
 hz__parse_install_args() {
   RECIPE_NAME=""
   HZ_HOST=""
-
   local a
   while [[ $# -gt 0 ]]; do
     a="$1"
     case "$a" in
-      --host=*)
-        HZ_HOST="${a#--host=}"
-        shift
-        ;;
-      --host)
-        shift
-        HZ_HOST="${1:-}"
-        shift || true
-        ;;
-      --)
-        shift
-        break
-        ;;
-      -*)
-        log_error "unknown flag for install: ${a}"
-        return 1
-        ;;
+      --host=*) HZ_HOST="${a#--host=}"; shift ;;
+      --host) shift; HZ_HOST="${1:-}"; shift || true ;;
+      --) shift; break ;;
+      -*) log_error "unknown flag for install: ${a}"; return 1 ;;
       *)
         if [[ -z "$RECIPE_NAME" ]]; then
           RECIPE_NAME="$a"
@@ -71,7 +50,6 @@ hz__parse_install_args() {
         ;;
     esac
   done
-
   [[ -n "$RECIPE_NAME" ]] || return 1
   return 0
 }
@@ -81,7 +59,6 @@ main() {
   set -- "${ARGS_OUT[@]}"
 
   local cmd="${1:-}"
-
   case "${cmd}" in
     ""|help|-h|--help)
       hz_usage
@@ -101,26 +78,20 @@ main() {
       exec bash "${REPO_ROOT}/tools/diagnostics/run.sh" "$@"
       ;;
     ping)
-      # Usage: hz ping --target user@host
+      # Usage: hz ping --target user@host|alias
       shift || true
       target=""
       while [[ $# -gt 0 ]]; do
         case "$1" in
-          --target)
-            target="${2:-}"
-            shift 2
-            ;;
-          --target=*)
-            target="${1#*=}"
-            shift
-            ;;
+          --target) target="${2:-}"; shift 2 ;;
+          --target=*) target="${1#*=}"; shift ;;
           -h|--help)
-            echo "Usage: hz ping --target user@host"
+            echo "Usage: hz ping --target user@host|alias"
             exit 0
             ;;
           *)
             echo "Unknown argument for ping: $1" >&2
-            echo "Usage: hz ping --target user@host" >&2
+            echo "Usage: hz ping --target user@host|alias" >&2
             exit 1
             ;;
         esac
@@ -128,8 +99,16 @@ main() {
 
       if [[ -z "${target}" ]]; then
         echo "ping: missing --target" >&2
-        echo "Usage: hz ping --target user@host" >&2
+        echo "Usage: hz ping --target user@host|alias" >&2
         exit 1
+      fi
+
+      # Resolve alias via inventory (if exists)
+      if declare -F inventory_resolve_target >/dev/null 2>&1; then
+        if ! inventory_resolve_target "${target}"; then
+          exit 1
+        fi
+        target="${HZ_RESOLVED_TARGET:-$target}"
       fi
 
       # Ensure transport is loaded (cli_core should have sourced it)
@@ -161,14 +140,8 @@ main() {
     recipe)
       shift || true
       case "${1:-}" in
-        list)
-          hz_list_targets "recipes"
-          return 0
-          ;;
-        "")
-          hz_usage
-          return 1
-          ;;
+        list) hz_list_targets "recipes"; return 0 ;;
+        "") hz_usage; return 1 ;;
         *)
           [[ $# -ge 2 ]] || { hz_usage; return 1; }
           hz_run_target "recipes" "$1" "$2"
@@ -179,14 +152,8 @@ main() {
     module)
       shift || true
       case "${1:-}" in
-        list)
-          hz_list_targets "modules"
-          return 0
-          ;;
-        "")
-          hz_usage
-          return 1
-          ;;
+        list) hz_list_targets "modules"; return 0 ;;
+        "") hz_usage; return 1 ;;
         *)
           [[ $# -ge 2 ]] || { hz_usage; return 1; }
           hz_run_target "modules" "$1" "$2"
