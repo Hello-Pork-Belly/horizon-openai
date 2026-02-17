@@ -11,6 +11,18 @@ Purpose: Perform independent review of PR diffs and CI evidence. Output PASS/FAI
 - Follow docs/AUDIT-CHECKLIST.md.
 - Produce structured findings: PASS/FAIL, required fixes, risk notes.
 
+## Remote-first Audit (hard-required)
+- Audit input MUST include a PR URL, or at minimum a remote HEAD SHA that can be verified on GitHub.
+- Auditor MUST validate via `gh` (or equivalent GitHub API/web evidence), and report evidence for:
+  1. PR existence + correct target branch/commit mapping.
+  2. required checks truly passing on remote (local `make ci` alone is insufficient).
+  3. Actions run health, including detection of noise failure such as `No jobs were run` (presence is FAIL).
+  4. `mergeStateStatus` mergeability status (`blocked`, `dirty`, etc. must be explicitly called out).
+- If Executor Evidence Pack misses any of the following, Auditor MUST directly return FAIL and list missing items under Required Fixes:
+  - PR URL (or remote-identifiable equivalent)
+  - checks evidence
+  - workflow run link(s)
+
 ## Required Evidence Gate (RRC)
 - Audit input MUST include a Reality Snapshot block.
 - Missing Reality Snapshot is hard fail: `FAIL: NEED_SNAPSHOT`.
