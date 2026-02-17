@@ -51,6 +51,8 @@ Usage:
   hz cron <list|add|remove> ...
   hz watch <run|install> ...
   hz notify --title <text> --message <text> [--status INFO|SUCCESS|FAILURE|WARN]
+  hz report html [--latest|<report.jsonl>] [--out <output.html>]
+  hz secret <gen-key|encrypt|decrypt> ...
   hz recipe list
   hz recipe <name> <subcommand>
   hz module list
@@ -244,4 +246,16 @@ fi
 if [[ -f "$(hz_repo_root)/lib/watch.sh" ]]; then
   # shellcheck source=lib/watch.sh
   . "$(hz_repo_root)/lib/watch.sh"
+fi
+
+# Optional: Phase 5 HTML report renderer
+if [[ -f "$(hz_repo_root)/lib/html_renderer.sh" ]]; then
+  # shellcheck source=lib/html_renderer.sh
+  . "$(hz_repo_root)/lib/html_renderer.sh"
+fi
+
+# Optional: Phase 5 crypto / secrets
+if [[ -f "$(hz_repo_root)/lib/crypto.sh" ]]; then
+  # shellcheck source=lib/crypto.sh
+  . "$(hz_repo_root)/lib/crypto.sh"
 fi

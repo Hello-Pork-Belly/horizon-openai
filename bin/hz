@@ -279,6 +279,134 @@ hz__cmd_notify() {
   return 0
 }
 
+hz__cmd_report() {
+  local sub="${1:-}"
+  shift || true
+
+  case "${sub}" in
+    html)
+      if ! command -v html_render_report >/dev/null 2>&1; then
+        log_error "report: html renderer not available (lib/html_renderer.sh not sourced)"
+        return 1
+      fi
+
+      local in=""
+      local out=""
+      local latest="0"
+      local arg
+      while [[ $# -gt 0 ]]; do
+        arg="$1"
+        case "${arg}" in
+          --latest)
+            latest="1"
+            ;;
+          --out)
+            shift
+            out="${1:-}"
+            ;;
+          --out=*)
+            out="${arg#--out=}"
+            ;;
+          -h|--help)
+            cat <<'EOF'
+Usage:
+  hz report html --latest [--out <output.html>]
+  hz report html <path/to/report.jsonl> [--out <output.html>]
+EOF
+            return 0
+            ;;
+          *)
+            if [[ -z "${in}" ]]; then
+              in="${arg}"
+            else
+              log_error "report html: unexpected argument: ${arg}"
+              return 1
+            fi
+            ;;
+        esac
+        shift || true
+      done
+
+      if [[ "${latest}" == "1" ]]; then
+        in="$(html_find_latest_jsonl)" || {
+          log_error "report html: no *.report.jsonl found under records/"
+          return 1
+        }
+      fi
+
+      [[ -n "${in}" ]] || {
+        log_error "report html: missing input (use --latest or provide jsonl path)"
+        return 1
+      }
+
+      if [[ -z "${out}" ]]; then
+        out="${in%.jsonl}.html"
+      fi
+
+      log_info "report: rendering html: ${in} -> ${out}"
+      html_render_report "${in}" "${out}"
+      return $?
+      ;;
+    ""|-h|--help|help)
+      cat <<'EOF'
+Usage:
+  hz report html --latest [--out <output.html>]
+  hz report html <path/to/report.jsonl> [--out <output.html>]
+EOF
+      return 0
+      ;;
+    *)
+      log_error "Unknown report subcommand: ${sub}"
+      return 1
+      ;;
+  esac
+}
+
+hz__cmd_secret() {
+  local action="${1:-}"
+  shift || true
+
+  case "${action}" in
+    gen-key)
+      crypto_gen_key
+      return $?
+      ;;
+    encrypt)
+      if [[ $# -gt 0 ]]; then
+        crypto_encrypt_string "$*"
+      else
+        crypto_encrypt_string ""
+      fi
+      return $?
+      ;;
+    decrypt)
+      if [[ $# -gt 0 ]]; then
+        crypto_decrypt_string "$*"
+      else
+        crypto_decrypt_string ""
+      fi
+      return $?
+      ;;
+    ""|-h|--help|help)
+      cat <<'EOF'
+Usage:
+  hz secret gen-key
+  hz secret encrypt "<plaintext>"
+  hz secret decrypt "HZENC:..."
+
+Notes:
+  - HZ_SECRET_KEY is required for encrypt/decrypt.
+  - Input/output format uses HZENC:<base64>.
+EOF
+      return 0
+      ;;
+    *)
+      log_error "Unknown secret action: ${action}"
+      return 1
+      ;;
+  esac
+}
+
 hz__cmd_cron() {
   local sub="${1:-}"
   shift || true
@@ -662,6 +790,16 @@ main() {
     notify)
       shift || true
       hz__cmd_notify "$@"
+      return $?
+      ;;
+    report)
+      shift || true
+      hz__cmd_report "$@"
+      return $?
+      ;;
+    secret)
+      shift || true
+      hz__cmd_secret "$@"
       return $?
       ;;
     inventory)
