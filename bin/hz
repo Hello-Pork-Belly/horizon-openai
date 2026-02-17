@@ -407,6 +407,16 @@ EOF
   esac
 }
 
+hz__cmd_completion() {
+  local shell="${1:-}"
+  if ! command -v hz_completion_print >/dev/null 2>&1; then
+    log_error "completion: generator not available (lib/completion.sh not sourced)"
+    return 1
+  fi
+  hz_completion_print "${shell}"
+  return $?
+}
+
 hz__cmd_cron() {
   local sub="${1:-}"
   shift || true
@@ -800,6 +810,11 @@ main() {
     secret)
       shift || true
       hz__cmd_secret "$@"
+      return $?
+      ;;
+    completion)
+      shift || true
+      hz__cmd_completion "$@"
       return $?
       ;;
     inventory)

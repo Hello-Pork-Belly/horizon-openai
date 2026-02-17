@@ -1,98 +1,147 @@
 # Horizon (hz)
 
-Horizon 是一个以 `hz` 为唯一入口的运维自动化框架，具备 Contract-First、Inventory 注入、统一日志、可重放审计记录（records/），并支持 Agentless 远程执行（Phase 2）。
+Horizon 是一个“契约驱动（Contract-First）”的无代理（Agentless）运维框架：同一套 `hz` 可以本地执行、远程执行、以及对主机组并发/滚动执行，并自动生成可审计的执行记录与汇总报表。
 
-## Quick Start
+## 安装
 
-1) 查看帮助
-```bash
-./bin/hz help
-```
-
-2) 本地运行（示例）
+从源码仓库安装（推荐）：
 
 ```bash
-./bin/hz install security-host --dry-run
+git clone https://github.com/Hello-Pork-Belly/horizon-openai.git
+cd horizon-openai
+./bin/hz version
 ```
 
-3) Inventory 注入（本地）
+一键安装（适合服务器）：
 
 ```bash
-# 读取 inventory/group_vars/all.yml + inventory/hosts/web01.yml
-./bin/hz install ols-wp --host web01 --dry-run
+curl -fsSL https://raw.githubusercontent.com/Hello-Pork-Belly/horizon-openai/main/install.sh | bash
+hz version
 ```
 
-## Remote Management (v0.3.0)
+可选：安装指定版本（tag）：
 
-核心能力：控制机通过 SSH 将最小执行包传到目标机 `/tmp` 执行，目标机不需要预装 `hz`，执行后默认清理。
+```bash
+HZ_INSTALL_REF=v1.0.0 curl -fsSL https://raw.githubusercontent.com/Hello-Pork-Belly/horizon-openai/main/install.sh | bash
+```
 
-1) 配置目标机连接信息：`inventory/hosts/<alias>.yml`
+## 快速上手
+
+列出可用 recipes：
+
+```bash
+hz recipe list
+```
+
+本地 dry-run：
+
+```bash
+hz install security-host --dry-run
+```
+
+远程执行（Agentless / 瞬态 Runner）：
+
+```bash
+hz ping --target web01
+hz install ols-wp --target web01 --dry-run
+```
+
+对主机组并发执行（@group）：
+
+```bash
+hz inventory resolve @web
+HZ_MAX_JOBS=5 hz install security-host --target @web
+```
+
+滚动更新（分批 + 暂停）：
+
+```bash
+HZ_MAX_JOBS=5 hz install security-host --target @web --rolling 2 --pause 30
+```
+
+## Inventory 结构（Hosts / Groups）
+
+Host：`inventory/hosts/web01.yml`
 
 ```yaml
-HZ_CONNECTION_HOST: "10.0.0.10"
-HZ_CONNECTION_USER: "ubuntu"
-HZ_CONNECTION_PORT: "22"
-HZ_CONNECTION_KEY: "/Users/you/.ssh/id_ed25519"
+HZ_CONNECTION_HOST: 10.0.0.1
+HZ_CONNECTION_USER: ubuntu
+HZ_CONNECTION_PORT: 22
+HZ_CONNECTION_KEY: /home/me/.ssh/id_ed25519
 ```
 
-2) 验证连通性
+Group：`inventory/groups/web.yml`
 
-```bash
-./bin/hz ping --target web01
+```yaml
+hosts:
+  - web01
+  - web02
 ```
 
-3) 远程执行（dry-run）
+解析验证：
 
 ```bash
-./bin/hz install security-host --target web01 --host web01 --dry-run
+hz inventory resolve @web
 ```
 
-更多细节见：`docs/REMOTE_GUIDE.md`
+## 报表（JSONL + HTML）
 
-## Recipes
+组执行结束会生成 `records/.../*.report.jsonl`，并在终端打印汇总表。
 
-使用 `hz recipe list` 查看可用 recipes：
+生成 HTML 仪表盘：
 
 ```bash
-./bin/hz recipe list
+hz report html --latest
+# 或
+hz report html records/2026/02/17/<file>.report.jsonl
 ```
 
-常见：
-- security-host
-- ols-wp
-- ols-wp-maintenance
-- lomp-lite / lnmp-lite
-- hub-data / hub-main
-- mail-gateway
-- backup-rclone
+## Secrets（避免 Inventory 明文）
 
-## Diagnostics
+生成密钥（或自备强随机值）：
 
 ```bash
-./bin/hz diagnose
+hz secret gen-key
+export HZ_SECRET_KEY="...你的密钥..."
 ```
 
-## Audit Records
-
-默认情况下，关键命令输出会录制到：
-- `records/YYYY/MM/DD/`
-
-可用 `HZ_NO_RECORD=1` 临时关闭录制：
+加密/解密：
 
 ```bash
-HZ_NO_RECORD=1 ./bin/hz install security-host --dry-run
+hz secret encrypt "MyPassword"
+hz secret decrypt "HZENC:..."
 ```
 
-## Development
+在 Inventory 中使用加密串（前缀 `HZENC:`），运行时会按需解密（需要 `HZ_SECRET_KEY`）。
 
-运行 CI 同等检查：
+## 自动化（Notify / Cron / Watchdog）
+
+Webhook 通知（需要 `HZ_WEBHOOK_URL`）：
 
 ```bash
-make ci
+HZ_WEBHOOK_URL="https://..." hz notify --title "Backup" --message "Done" --status SUCCESS
 ```
 
-版本：
+系统级 cron 管理（写 `/etc/cron.d/hz-tasks`，需 root/sudo）：
 
 ```bash
-./bin/hz version
+sudo hz cron add --name nightly-backup --schedule "0 2 * * *" --user root --cmd "hz install backup-rclone --target @web"
+sudo hz cron list
+```
+
+Watchdog（巡检 + 通知，可选有限自愈）：
+
+```bash
+sudo hz watch install --schedule "*/5 * * * *" --heal
+hz watch run --heal
+```
+
+## Shell 补全
+
+```bash
+# bash
+source <(hz completion bash)
+
+# zsh
+source <(hz completion zsh)
 ```
