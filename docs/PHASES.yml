@@ -29,3 +29,12 @@ phases:
       - "Parallel execution with bounded concurrency"
       - "Rolling updates (batch + pause + fail-fast)"
       - "Aggregated reporting (JSONL + human summary)"
+
+phase_4:
+  name: "Phase 4 - Autonomous Horizon"
+  status: "In Progress"
+  release: ""
+  highlights:
+    - "Cron management"
+    - "Notification layer"
+    - "Watchdog and self-healing"
