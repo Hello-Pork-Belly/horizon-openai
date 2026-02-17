@@ -30,11 +30,21 @@ phases:
       - "Rolling updates (batch + pause + fail-fast)"
       - "Aggregated reporting (JSONL + human summary)"
 
-phase_4:
-  name: "Phase 4 - Autonomous Horizon"
-  status: "Completed"
-  release: "v0.5.0"
-  highlights:
-    - "Cron management"
-    - "Notification layer"
-    - "Watchdog and self-healing"
+  phase_4:
+    name: "Phase 4 - Autonomous Horizon"
+    status: "Completed"
+    release: "v0.5.0"
+    highlights:
+      - "Cron management"
+      - "Notification layer"
+      - "Watchdog and self-healing"
+
+  phase_5:
+    name: "Operations & Interface"
+    status: "In Progress"
+    release: "v1.0.0"
+    highlights:
+      - "HTML report dashboard (hz report html)"
+      - "Inventory secret encryption/decryption (hz secret)"
+      - "Shell completion (bash/zsh)"
+      - "Installer script (curl | bash) + checksums"
