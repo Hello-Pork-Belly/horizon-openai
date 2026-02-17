@@ -216,6 +216,275 @@ EOF
   esac
 }
 
+hz__cmd_notify() {
+  # Usage:
+  #   hz notify --title <t> --message <m> [--status INFO|SUCCESS|FAILURE|WARN]
+  local title=""
+  local message=""
+  local status="INFO"
+  local arg
+
+  while [[ $# -gt 0 ]]; do
+    arg="$1"
+    case "${arg}" in
+      --title)
+        shift
+        title="${1:-}"
+        ;;
+      --title=*)
+        title="${arg#--title=}"
+        ;;
+      --message)
+        shift
+        message="${1:-}"
+        ;;
+      --message=*)
+        message="${arg#--message=}"
+        ;;
+      --status)
+        shift
+        status="${1:-INFO}"
+        ;;
+      --status=*)
+        status="${arg#--status=}"
+        ;;
+      -h|--help)
+        echo "Usage: hz notify --title <t> --message <m> [--status INFO|SUCCESS|FAILURE|WARN]"
+        return 0
+        ;;
+      *)
+        echo "Unknown notify arg: ${arg}" >&2
+        echo "Usage: hz notify --title <t> --message <m> [--status INFO|SUCCESS|FAILURE|WARN]" >&2
+        return 1
+        ;;
+    esac
+    shift || true
+  done
+
+  if [[ -z "${title}" ]]; then
+    echo "notify: --title is required" >&2
+    return 1
+  fi
+  if [[ -z "${message}" ]]; then
+    echo "notify: --message is required" >&2
+    return 1
+  fi
+
+  if ! command -v notify_send >/dev/null 2>&1; then
+    echo "notify: notify_send not available (lib/notify.sh not sourced)" >&2
+    return 1
+  fi
+
+  notify_send "${title}" "${message}" "${status}"
+  return 0
+}
+
+hz__cmd_cron() {
+  local sub="${1:-}"
+  shift || true
+
+  local arg
+  case "${sub}" in
+    list)
+      cron_list_tasks
+      return $?
+      ;;
+    add)
+      local name=""
+      local schedule=""
+      local user="root"
+      local cmd=""
+
+      while [[ $# -gt 0 ]]; do
+        arg="$1"
+        case "${arg}" in
+          --name)
+            shift
+            name="${1:-}"
+            ;;
+          --name=*)
+            name="${arg#--name=}"
+            ;;
+          --schedule)
+            shift
+            schedule="${1:-}"
+            ;;
+          --schedule=*)
+            schedule="${arg#--schedule=}"
+            ;;
+          --user)
+            shift
+            user="${1:-root}"
+            ;;
+          --user=*)
+            user="${arg#--user=}"
+            ;;
+          --cmd)
+            shift
+            cmd="${1:-}"
+            ;;
+          --cmd=*)
+            cmd="${arg#--cmd=}"
+            ;;
+          -h|--help)
+            echo 'Usage: hz cron add --name <name> --schedule "<cron_expr>" --user <user> --cmd "<command>"'
+            return 0
+            ;;
+          *)
+            echo "Unknown cron add arg: ${arg}" >&2
+            echo 'Usage: hz cron add --name <name> --schedule "<cron_expr>" --user <user> --cmd "<command>"' >&2
+            return 1
+            ;;
+        esac
+        shift || true
+      done
+
+      cron_add_task "${name}" "${schedule}" "${user}" "${cmd}"
+      return $?
+      ;;
+    remove)
+      local name=""
+      while [[ $# -gt 0 ]]; do
+        arg="$1"
+        case "${arg}" in
+          --name)
+            shift
+            name="${1:-}"
+            ;;
+          --name=*)
+            name="${arg#--name=}"
+            ;;
+          -h|--help)
+            echo 'Usage: hz cron remove --name <name>'
+            return 0
+            ;;
+          *)
+            echo "Unknown cron remove arg: ${arg}" >&2
+            echo 'Usage: hz cron remove --name <name>' >&2
+            return 1
+            ;;
+        esac
+        shift || true
+      done
+
+      cron_remove_task "${name}"
+      return $?
+      ;;
+    ""|-h|--help|help)
+      cat <<'EOF'
+Usage:
+  hz cron list
+  hz cron add --name <name> --schedule "<cron_expr>" --user <user> --cmd "<command>"
+  hz cron remove --name <name>      (requires sudo/root)
+
+Notes:
+  - System cron file: /etc/cron.d/hz-tasks
+  - Run with sudo: sudo ./bin/hz cron ...
+EOF
+      return 0
+      ;;
+    *)
+      echo "Unknown cron subcommand: ${sub}" >&2
+      echo "Try: hz cron --help" >&2
+      return 1
+      ;;
+  esac
+}
+
+hz__cmd_watch() {
+  local sub="${1:-run}"
+  shift || true
+
+  local heal_flag="0"
+  local schedule="*/5 * * * *"
+  local user="root"
+  local name="hz-watchdog"
+  local arg
+
+  case "${sub}" in
+    -h|--help|help)
+      cat <<'EOF'
+Usage:
+  hz watch run [--heal]
+  hz watch install [--schedule "<cron_expr>"] [--user <user>] [--name <taskname>] [--heal]
+
+Notes:
+  - Default schedule: */5 * * * *
+  - install requires sudo/root (writes /etc/cron.d/hz-tasks via hz cron)
+  - --heal enables limited self-healing (v1: nginx restart heuristic)
+EOF
+      return 0
+      ;;
+  esac
+
+  while [[ $# -gt 0 ]]; do
+    arg="$1"
+    case "${arg}" in
+      --heal)
+        heal_flag="1"
+        ;;
+      --schedule)
+        shift
+        schedule="${1:-*/5 * * * *}"
+        ;;
+      --schedule=*)
+        schedule="${arg#--schedule=}"
+        ;;
+      --user)
+        shift
+        user="${1:-root}"
+        ;;
+      --user=*)
+        user="${arg#--user=}"
+        ;;
+      --name)
+        shift
+        name="${1:-hz-watchdog}"
+        ;;
+      --name=*)
+        name="${arg#--name=}"
+        ;;
+      -h|--help)
+        cat <<'EOF'
+Usage:
+  hz watch run [--heal]
+  hz watch install [--schedule "<cron_expr>"] [--user <user>] [--name <taskname>] [--heal]
+
+Notes:
+  - Default schedule: */5 * * * *
+  - install requires sudo/root (writes /etc/cron.d/hz-tasks via hz cron)
+  - --heal enables limited self-healing (v1: nginx restart heuristic)
+EOF
+        return 0
+        ;;
+      *)
+        echo "Unknown watch arg: ${arg}" >&2
+        echo "Try: hz watch --help" >&2
+        return 1
+        ;;
+    esac
+    shift || true
+  done
+
+  case "${sub}" in
+    run|once)
+      export HZ_HEAL="${heal_flag}"
+      watch_run_cycle
+      return $?
+      ;;
+    install)
+      export HZ_HEAL="${heal_flag}"
+      watch_install_cron "${schedule}" "${user}" "${name}"
+      return $?
+      ;;
+    *)
+      echo "Unknown watch subcommand: ${sub}" >&2
+      echo "Try: hz watch --help" >&2
+      return 1
+      ;;
+  esac
+}
+
 hz__maybe_orchestrate_install_group() {
   # Args: <recipe> [install_args...]
   local recipe="${1:-}"
@@ -378,6 +647,21 @@ main() {
     ping)
       shift || true
       hz__cmd_ping "$@"
+      return $?
+      ;;
+    cron)
+      shift || true
+      hz__cmd_cron "$@"
+      return $?
+      ;;
+    watch)
+      shift || true
+      hz__cmd_watch "$@"
+      return $?
+      ;;
+    notify)
+      shift || true
+      hz__cmd_notify "$@"
       return $?
       ;;
     inventory)
