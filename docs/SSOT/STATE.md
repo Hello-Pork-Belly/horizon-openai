@@ -1,17 +1,18 @@
 # Project State Ledger (SSOT)
 
-This file is the single source of truth for project progress.
-Update this file via PR whenever work starts/finishes.
+This file is the single source of truth for project progress. Update this file via PR whenever work starts/finishes.
 
-Last updated: 2026-02-17
+Last updated: 2026-02-17  
 Owner: Pork-Belly
 
 ## Phase Position
-- Current Phase: Phase 4 (Autonomous Horizon)
-- Phase reference: `docs/SSOT/PHASES.md`
-- Progress rule: all status claims must match `PHASES.md` + this file.
+
+- Current Phase: Phase 5 (Operations & Interface)
+- Phase reference: `docs/PHASES.yml`
+- Progress rule: all status claims must match `docs/PHASES.yml` + this file.
 
 ## Done (merged tasks)
+
 - (2026-02-13) SSOT bootstrap
 - (2026-02-15) T-004 CLI Skeleton (hz) (PR: #63)
 - (2026-02-15) T-005 Recipe Runner (hz install) (PR: #64)
@@ -47,10 +48,14 @@ Owner: Pork-Belly
 - (2026-02-17) T-035 Phase 4 Closure & Release v0.5.0: Done
 
 ## Doing
-Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
-- Phase 4 complete. Waiting for next phase kickoff.
 
-## Next (Phase 3 aligned roadmap)
-- T-031 Fleet Reporting Schema Freeze (stabilize report.jsonl/report.txt fields and compatibility notes)
-- T-032 Fleet Failure Taxonomy (standardize noise_classification and failure buckets in orchestration outputs)
-- T-033 Fleet Operator Runbook (group/parallel/rolling/report troubleshooting and acceptance checklist)
+Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
+
+- (2026-02-17) T-036 Phase 5 Detailed Plan (Operations & Interface): Doing (PR: #TBD)
+
+## Next (Phase 5 aligned roadmap)
+
+- T-037 HTML Reports (`hz report html`)
+- T-038 Secret Management (`hz secret encrypt/decrypt` + inventory decrypt injection)
+- T-039 UX Polish (completion + installer + docs refresh)
+- T-040 Final Release v1.0.0 (closure + tag)
