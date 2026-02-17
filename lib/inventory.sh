@@ -150,6 +150,38 @@ inventory_load_vars() {
       fi
     done < <(inventory__dump_kv_from_yaml "$f" || true)
   done
+
+  inventory__maybe_decrypt_env || return $?
+}
+
+inventory__maybe_decrypt_env() {
+  # Phase 5: decrypt encrypted inventory values (HZENC:...) after load.
+  # Fail fast if encrypted values exist but decryption preconditions are missing.
+  local name="" value="" plain=""
+
+  while IFS= read -r name; do
+    [[ -n "${name}" ]] || continue
+    [[ "${name}" == "HZ_SECRET_KEY" ]] && continue
+    value="${!name-}"
+    [[ "${value}" == HZENC:* ]] || continue
+
+    if ! declare -F crypto_decrypt_string >/dev/null 2>&1; then
+      log_error "inventory: encrypted value detected for ${name}, but crypto_decrypt_string is unavailable"
+      return 1
+    fi
+
+    if [[ -z "${HZ_SECRET_KEY:-}" ]]; then
+      log_error "inventory: encrypted value detected for ${name}, but HZ_SECRET_KEY is not set"
+      return 1
+    fi
+
+    plain="$(crypto_decrypt_string "${value}")" || {
+      log_error "inventory: failed to decrypt value for ${name}"
+      return 1
+    }
+    export "${name}=${plain}"
+    log_debug "inventory decrypted: ${name}"
+  done < <(compgen -e)
 }
 
 inventory__ssh_args_has_port() {
