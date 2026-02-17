@@ -47,15 +47,16 @@ Owner: Pork-Belly
 - (2026-02-17) T-034 Watchdog / Self-Healing: Done (PR: #97)
 - (2026-02-17) T-035 Phase 4 Closure & Release v0.5.0: Done
 - (2026-02-17) T-036 Phase 5 Detailed Plan (Operations & Interface): Done (PR: #100)
-- (2026-02-17) T-037 HTML Reports (`hz report html`): Done (PR: #TBD)
-- (2026-02-17) T-038 Secret Management (`hz secret encrypt/decrypt`): Done (PR: #TBD)
+- (2026-02-17) T-037 HTML Reports (`hz report html`): Done (PR: #101)
+- (2026-02-17) T-038 Secret Management (`hz secret encrypt/decrypt`): Done (PR: #101)
+- (2026-02-17) T-039 UX Polish (completion + installer + docs refresh): Done (PR: #direct)
+- (2026-02-17) T-040 Final Release v1.0.0 (closure + tag): Done (PR: #direct)
 
 ## Doing
 
 Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
-- (2026-02-17) No active task.
+- Phase 5 complete. Waiting for next phase kickoff.
 
 ## Next (Phase 5 aligned roadmap)
 
-- T-039 UX Polish (completion + installer + docs refresh)
-- T-040 Final Release v1.0.0 (closure + tag)
+- Phase 6 planning (TBD)

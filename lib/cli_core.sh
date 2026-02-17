@@ -53,6 +53,7 @@ Usage:
   hz notify --title <text> --message <text> [--status INFO|SUCCESS|FAILURE|WARN]
   hz report html [--latest|<report.jsonl>] [--out <output.html>]
   hz secret <gen-key|encrypt|decrypt> ...
+  hz completion [bash|zsh]
   hz recipe list
   hz recipe <name> <subcommand>
   hz module list
@@ -258,4 +259,10 @@ fi
 if [[ -f "$(hz_repo_root)/lib/crypto.sh" ]]; then
   # shellcheck source=lib/crypto.sh
   . "$(hz_repo_root)/lib/crypto.sh"
+fi
+
+# Optional: Phase 5 shell completion
+if [[ -f "$(hz_repo_root)/lib/completion.sh" ]]; then
+  # shellcheck source=lib/completion.sh
+  . "$(hz_repo_root)/lib/completion.sh"
 fi

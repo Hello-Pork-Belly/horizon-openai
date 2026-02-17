@@ -41,7 +41,7 @@ phases:
 
   phase_5:
     name: "Operations & Interface"
-    status: "In Progress"
+    status: "Completed"
     release: "v1.0.0"
     highlights:
       - "HTML report dashboard (hz report html)"
