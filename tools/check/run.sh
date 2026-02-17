@@ -132,16 +132,12 @@ echo "[check] post-release hardening"
   "$hz_installed" completion zsh >/dev/null
 
   # Secret roundtrip smoke (no key/cipher/plaintext in logs).
-  if command -v openssl >/dev/null 2>&1; then
-    key="$("$hz_installed" secret gen-key | tail -n 1)"
-    ct="$(HZ_SECRET_KEY="$key" "$hz_installed" secret encrypt "hello")"
-    pt="$(HZ_SECRET_KEY="$key" "$hz_installed" secret decrypt "$ct")"
-    if [[ "$pt" != "hello" ]]; then
-      echo "[check] FAIL: secret roundtrip mismatch"
-      exit 1
-    fi
-  else
-    echo "[check] WARN: openssl not found, secret smoke skipped"
+  key="$("$hz_installed" secret gen-key | tail -n 1)"
+  ct="$(HZ_SECRET_KEY="$key" "$hz_installed" secret encrypt "hello")"
+  pt="$(HZ_SECRET_KEY="$key" "$hz_installed" secret decrypt "$ct")"
+  if [[ "$pt" != "hello" ]]; then
+    echo "[check] FAIL: secret roundtrip mismatch"
+    exit 1
   fi
 )
 
