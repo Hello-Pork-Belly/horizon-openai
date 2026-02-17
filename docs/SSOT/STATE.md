@@ -43,6 +43,7 @@ Owner: Pork-Belly
 
 ## Doing
 Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
+- (2026-02-17) T-031 Phase 4 Planning: Doing (branch: codex/feature/T-031-phase-4-plan)
 - Phase 3 complete. Waiting for next phase kickoff.
 
 ## Next (Phase 3 aligned roadmap)
