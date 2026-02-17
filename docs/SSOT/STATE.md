@@ -3,11 +3,11 @@
 This file is the single source of truth for project progress.
 Update this file via PR whenever work starts/finishes.
 
-Last updated: 2026-02-18
+Last updated: 2026-02-17
 Owner: Pork-Belly
 
 ## Phase Position
-- Current Phase: Phase 3 (Fleet Orchestration)
+- Current Phase: Phase 4 (Autonomous Horizon)
 - Phase reference: `docs/SSOT/PHASES.md`
 - Progress rule: all status claims must match `PHASES.md` + this file.
 
@@ -40,11 +40,13 @@ Owner: Pork-Belly
 - (2026-02-18) T-028 Aggregated Reporting Engine (PR: #91)
 - (2026-02-18) T-029 UX Hardening (timeouts, interrupt handling, partial report on Ctrl-C) (PR: #93)
 - (2026-02-18) T-030 Phase 3 Closure Gate (DoD consolidation + workflow hygiene closure) (PR: #94)
+- (2026-02-17) T-031 Phase 4 Planning (Autonomous Horizon) (PR: #96)
+- (2026-02-17) T-032 Notification Layer (PR: #<TBD>)
+- (2026-02-17) T-033 Cron Manager (PR: #<TBD>)
 
 ## Doing
 Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
-- (2026-02-17) T-031 Phase 4 Planning: Doing (branch: codex/feature/T-031-phase-4-plan)
-- Phase 3 complete. Waiting for next phase kickoff.
+- (2026-02-17) T-034 Watchdog / Self-Healing: Doing (PR: #<TBD>)
 
 ## Next (Phase 3 aligned roadmap)
 - T-031 Fleet Reporting Schema Freeze (stabilize report.jsonl/report.txt fields and compatibility notes)

@@ -48,6 +48,9 @@ Usage:
   hz check
   hz install <recipe> [--host <hostname>] [--target <alias|user@host>] [--dry-run[=0|1|2]]
   hz ping --target <user@host|alias>
+  hz cron <list|add|remove> ...
+  hz watch <run|install> ...
+  hz notify --title <text> --message <text> [--status INFO|SUCCESS|FAILURE|WARN]
   hz recipe list
   hz recipe <name> <subcommand>
   hz module list
@@ -223,4 +226,22 @@ fi
 if [[ -f "$(hz_repo_root)/lib/reporting.sh" ]]; then
   # shellcheck source=lib/reporting.sh
   . "$(hz_repo_root)/lib/reporting.sh"
+fi
+
+# Optional: Phase 4 notification layer
+if [[ -f "$(hz_repo_root)/lib/notify.sh" ]]; then
+  # shellcheck source=lib/notify.sh
+  . "$(hz_repo_root)/lib/notify.sh"
+fi
+
+# Optional: Phase 4 cron manager
+if [[ -f "$(hz_repo_root)/lib/cron.sh" ]]; then
+  # shellcheck source=lib/cron.sh
+  . "$(hz_repo_root)/lib/cron.sh"
+fi
+
+# Optional: Phase 4 watchdog / self-healing
+if [[ -f "$(hz_repo_root)/lib/watch.sh" ]]; then
+  # shellcheck source=lib/watch.sh
+  . "$(hz_repo_root)/lib/watch.sh"
 fi
