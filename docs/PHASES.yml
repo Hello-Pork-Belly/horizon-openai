@@ -32,8 +32,8 @@ phases:
 
 phase_4:
   name: "Phase 4 - Autonomous Horizon"
-  status: "In Progress"
-  release: ""
+  status: "Completed"
+  release: "v0.5.0"
   highlights:
     - "Cron management"
     - "Notification layer"
