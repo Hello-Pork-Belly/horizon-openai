@@ -55,7 +55,7 @@ Owner: Pork-Belly
 ## Doing
 
 Parallel rule: only one active task unless Commander explicitly documents an approved parallel exception with risk split.
-- Phase 5 complete. Waiting for next phase kickoff.
+- (2026-02-17) T-041 v1.0.1 Post-Release Hardening: Doing (PR: #TBD)
 
 ## Next (Phase 5 aligned roadmap)
 

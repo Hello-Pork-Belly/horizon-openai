@@ -7,6 +7,11 @@ set -euo pipefail
 log() { printf "%s\n" "$*" >&2; }
 die() { log "ERROR: $*"; exit 1; }
 need() { command -v "$1" >/dev/null 2>&1 || die "Missing dependency: $1"; }
+ensure_writable_dir() {
+  local dir="$1"
+  mkdir -p "${dir}" 2>/dev/null || die "Cannot create directory: ${dir} (set HZ_INSTALL_DIR/HZ_BIN_DIR)"
+  [[ -w "${dir}" ]] || die "Directory is not writable: ${dir}"
+}
 
 need bash
 need curl
@@ -99,12 +104,12 @@ else
   cp -a "${TMP}/stage/." "${TMP}/src/"
 fi
 
-mkdir -p "${INSTALL_DIR}"
+ensure_writable_dir "${INSTALL_DIR}"
 rm -rf "${INSTALL_DIR}/current"
 mkdir -p "${INSTALL_DIR}/current"
 cp -a "${TMP}/src/." "${INSTALL_DIR}/current/"
 
-mkdir -p "${BIN_DIR}"
+ensure_writable_dir "${BIN_DIR}"
 cat > "${BIN_DIR}/hz" <<WRAPPER
 #!/bin/bash
 set -euo pipefail

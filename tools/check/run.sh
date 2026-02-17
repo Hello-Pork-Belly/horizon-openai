@@ -103,4 +103,46 @@ fi
 echo "[check] vendor-neutral"
 bash tools/check/vendor_neutral_gate.sh
 
+# T-041: post-release hardening smoke tests.
+echo "[check] post-release hardening"
+(
+  set -euo pipefail
+
+  tmp="$(mktemp -d)"
+  trap 'rm -rf "$tmp"' EXIT
+
+  export HZ_INSTALL_DIR="$tmp/hz-install"
+  export HZ_BIN_DIR="$tmp/bin"
+  mkdir -p "$HZ_INSTALL_DIR" "$HZ_BIN_DIR"
+
+  # Installer smoke (silent; avoid leaking environment values).
+  bash "./install.sh" >/dev/null 2>&1
+  hz_installed="$HZ_BIN_DIR/hz"
+  [[ -x "$hz_installed" ]] || { echo "[check] FAIL: installed hz not executable"; exit 1; }
+
+  expected_version="$(cat VERSION)"
+  actual_version="$("$hz_installed" version)"
+  if [[ "$actual_version" != "$expected_version" ]]; then
+    echo "[check] FAIL: installed hz version mismatch"
+    exit 1
+  fi
+
+  # Completion smoke.
+  "$hz_installed" completion bash >/dev/null
+  "$hz_installed" completion zsh >/dev/null
+
+  # Secret roundtrip smoke (no key/cipher/plaintext in logs).
+  if command -v openssl >/dev/null 2>&1; then
+    key="$("$hz_installed" secret gen-key | tail -n 1)"
+    ct="$(HZ_SECRET_KEY="$key" "$hz_installed" secret encrypt "hello")"
+    pt="$(HZ_SECRET_KEY="$key" "$hz_installed" secret decrypt "$ct")"
+    if [[ "$pt" != "hello" ]]; then
+      echo "[check] FAIL: secret roundtrip mismatch"
+      exit 1
+    fi
+  else
+    echo "[check] WARN: openssl not found, secret smoke skipped"
+  fi
+)
+
 echo "[check] PASS"
