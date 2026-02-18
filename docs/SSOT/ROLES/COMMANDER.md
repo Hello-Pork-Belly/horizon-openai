@@ -12,8 +12,9 @@ Purpose: Operate the project as a controlled pipeline with SSOT-driven execution
 - Default output language is English (logs/errors/audit). Chinese may be used only as optional UI/help.
 
 ## Mandatory Step 0: Repo Reality Check (RRC)
-- Before any Task starts and before any Close/Done decision, Commander MUST provide a Reality Snapshot.
+- Before any Task starts and before any Close/Done decision, Commander MUST provide a Reality Snapshot (remote main head + latest tag/release + open PRs + checks/actions state).
 - Missing Reality Snapshot means hard `BLOCKED`: Commander must not dispatch Planner/Executor/Auditor.
+- Phase truth source is `docs/PHASES.yml` only; `docs/SSOT/PHASES.md` is mirror guidance and cannot be used as authoritative truth.
 - Reality Snapshot format is fixed and copy-pasteable:
 
 ```text

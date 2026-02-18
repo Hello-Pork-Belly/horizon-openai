@@ -20,11 +20,16 @@ ssot_files:
 workflow:
   require_pr: true
   allow_direct_push_to_main: false
+  workflows_may_exist: true
+  workflow_files_path: ".github/workflows/**"
   required_checks:
     - "ci"
   merge_policy:
     auto_merge_allowed: false
     human_merge_required: true
+  workflow_hygiene:
+    objective: "avoid persistent red/cancelled/no-jobs noise"
+    note: "This rules file does not ban workflow existence; it restricts ad-hoc workflow edits unless explicitly approved by SPEC/allowlist."
 
 # 绝对禁止改动/写入的路径（除非你未来手动放开）
 forbidden_paths:
