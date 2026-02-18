@@ -42,6 +42,26 @@ Rollback:
 Links:
 - PR #<n>, Issue #<n>
 
+## 2026-02-18 — D-008: SSOT reality alignment (phase truth + workflow policy wording)
+
+Decision:
+- Declare `docs/PHASES.yml` as the only authoritative phase truth source.
+- Mark `docs/SSOT/PHASES.md` as deprecated mirror guidance only.
+- Align `docs/RULES.yml` wording with repository reality: workflows may exist and run; workflow file edits remain restricted unless explicitly allowlisted.
+
+Rationale:
+- Remove dual-truth drift between phase docs.
+- Remove policy wording ambiguity against actual `.github/workflows/**` usage.
+
+Scope:
+- docs/PHASES.yml (truth reference, unchanged content)
+- docs/SSOT/PHASES.md
+- docs/RULES.yml
+- docs/SSOT/STATE.md
+
+Links:
+- PR: <fill-after-pr-created>
+
 ## Template
 ### YYYY-MM-DD — <Decision Title>
 Decision:
